@@ -1,31 +1,54 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../store/auth-context';
 import { db } from '../firebaseConfig';
 import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
-import TransactionInput from '../components/ui/TransactionInput';
+
 import TransactionList from '../components/ui/TransactionList';
-
-import RecurringTransactionInput from '../components/ui/RecurringTransactionInput';
 import RecurringTransactionList from '../components/ui/RecurringTransactionList';
-
-import Budget from '../components/ui/Budget';
-import BudgetInput from '../components/ui/BudgetInput';
-
-import GoalInput from '../components/ui/GoalInput';
 import GoalList from '../components/ui/GoalList';
+import YourBalance from '../components/ui/YourBalance';
+import UpcomingRecurring from '../components/ui/UpcomingRecurring';
+import LatestTransactions from '../components/ui/LatestTransactions';
+import BudgetSummary from '../components/ui/BudgetSummary';
+import YourPoints from '../components/ui/YourPoints';
+import JoinedChallanges from '../components/ui/JoinedChallanges';
+
 
 function WelcomeScreen() {
   const [transactions, setTransactions] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [goals, setGoals] = useState([]);
   const [recurringTransactions, setRecurringTransactions] = useState([]);
+  // const [budgets, setBudgets] = useState([]);
+  const [points, setPoints] = useState([]);
+  const [challanges, setChallanges] = useState([]);
 
+  // const [goals, setGoals] = useState([]);
 
+  const [activeTab, setActiveTab] = useState('overview');
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx;
 
+  const fetchRecurringTransactions = async () => {
+    try {
+      const recurringTransactionsQuery = query(
+        collection(db, 'recurring_payments'),
+        where('uid', '==', userId)
+      );
+      const querySnapshot = await getDocs(recurringTransactionsQuery);
+
+      const fetchedRecurringTransactions = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setRecurringTransactions(fetchedRecurringTransactions);
+    } catch (error) {
+      console.error('Error fetching transactions:', error.message);
+    }
+  };
+
+ 
   const fetchTransactions = async () => {
     try {
       const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
@@ -37,127 +60,58 @@ function WelcomeScreen() {
       }));
 
       setTransactions(fetchedTransactions);
-    } catch (error) {
+    } 
+    catch (error) 
+    {
       console.error('Error fetching transactions:', error.message);
     }
   };
 
-  const fetchBudgets = async () => {
+  const fetchPoints = async () => {
     try {
-      const budgetsQuery = query(collection(db, 'budgets'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(budgetsQuery);
+      const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
+      const querySnapshot = await getDocs(pointsQuery);
 
-      const fetchedBudgets = querySnapshot.docs.map((doc) => ({
+      const fetchedpoints = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      console.log('Budgets: ', fetchedBudgets)
-      setBudgets(fetchedBudgets);
+      setPoints(fetchedpoints);
+      console.log('fetched points:', fetchedpoints);
+
     } catch (error) {
-      console.error('Error fetching budgets:', error.message);
+      console.error('Error fetching points:', error.message);
     }
   };
 
-  const fetchGoals = async () => {
+  const fetchChallanges = async () => {
     try {
-      const goalsQuery = query(collection(db, 'goals'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(goalsQuery);
+      const challangesQuery = query(collection(db, 'challanges'), where('uid', '==', userId));
+      const querySnapshot = await getDocs(challangesQuery);
 
-      console.log("Goasl: ", querySnapshot)
-
-      const fetchedGoals = querySnapshot.docs.map((doc) => ({
+      const fetchedpchallanges = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      console.log('fetchedGoals Goals: ', fetchedGoals);
-      setGoals(fetchedGoals);
+      setChallanges(fetchedpchallanges);
+      console.log('fetched challanges:', fetchedpchallanges);
+
     } catch (error) {
-      console.error('Error fetching goals:', error.message);
+      console.error('Error fetching points:', error.message);
     }
   };
 
-  const fetchRecurringTransactions = async () => {
-    try {
-      const recurringTransactionsQuery = query(collection(db, 'recurring_payments'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(recurringTransactionsQuery);
-
-      const fetchedRecurringTransactions = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      console.log('Recurrings : ', fetchedRecurringTransactions)
-
-      setRecurringTransactions(fetchedRecurringTransactions);
-    } catch (error) {
-      console.error('Error fetching transactions:', error.message);
-    }
-  };
 
   useEffect(() => {
     fetchTransactions();
-    fetchBudgets();
-    fetchGoals();
     fetchRecurringTransactions();
+    // fetchBudgets();
+    fetchPoints();
+    fetchChallanges();
 
   }, [userId]);
-
-  const addTransactionHandler = async (newTransaction) => {
-    try {
-      await addDoc(collection(db, 'transactions'), {
-        ...newTransaction,
-        uid: userId,
-        date: new Date(),
-      });
-
-      fetchTransactions();
-    } catch (error) {
-      console.error('Error adding transaction:', error.message);
-    }
-  };
-
-  const addBudgetHandler = async (newBudget) => {
-    try {
-      await addDoc(collection(db, 'budgets'), {
-        ...newBudget,
-        uid: userId,
-      });
-  
-      fetchBudgets();
-    } catch (error) {
-      console.error('Error adding budget:', error.message);
-    }
-  };
-
-  const addGoalHandler = async (newGoal) => {
-    try {
-      await addDoc(collection(db, 'goals'), {
-        ...newGoal,
-        uid: userId,
-        Date: new Date(),
-      });
-
-      fetchGoals();
-    } catch (error) {
-      console.error('Error adding goal:', error.message);
-    }
-  };
-
-  const addRecurringTransactionHandler = async (newRecurringTransaction) => {
-    try {
-      await addDoc(collection(db, 'recurring_payments'), {
-        ...newRecurringTransaction,
-        uid: userId,
-        Date: new Date(),
-        
-      });
-
-      fetchRecurringTransactions();
-    } catch (error) {
-      console.error('Error adding transaction:', error.message);
-    }
-  };
 
   return (
     <ScrollView
@@ -166,38 +120,87 @@ function WelcomeScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.headerContainer}>
-        <Text style={styles.title}>Home screen!</Text>
-        <Text>You authenticated successfully!</Text>
-        {userId && <Text style={styles.text}>Your user ID: {userId}</Text>}
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'overview' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('overview')}
+        >
+          <Text
+            style={[
+              styles.tabButtonText,
+              activeTab === 'overview' && styles.activeTabButtonText,
+            ]}
+          >
+            Overview
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'budget' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('budget')}
+        >
+          <Text
+            style={[
+              styles.tabButtonText,
+              activeTab === 'budget' && styles.activeTabButtonText,
+            ]}
+          >
+            Budget
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'progress' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('progress')}
+        >
+          <Text
+            style={[
+              styles.tabButtonText,
+              activeTab === 'progress' && styles.activeTabButtonText,
+            ]}
+          >
+            Progress
+          </Text>
+        </TouchableOpacity>
       </View>
-  
-      <Text style={styles.title}>Add Transactions:</Text>
-      <TransactionInput onAddTransaction={addTransactionHandler}/>
-      <Text style={styles.title}>Your Transactions:</Text>
-      <TransactionList transactions={transactions} style={styles.listContainer} />
 
-      <Text style={styles.title}>Add Budgets:</Text>
-      <BudgetInput onAddBudget={addBudgetHandler} />
-      <Text style={styles.title}>Your Budgets:</Text>
-      <Budget budgets={budgets} />
+      {activeTab === 'overview' && (
+      <YourBalance balance="$1000" income="600" expense="300" />
 
-      <Text style={styles.title}>Add Goals:</Text>
-      <GoalInput onAddGoal={addGoalHandler} />
-      <Text style={styles.title}>Your Goals:</Text>
-      <GoalList goals={goals} />
+      )}
 
+      {activeTab === 'overview' && (
+      <UpcomingRecurring recurringTransactions={recurringTransactions} />
+      )}
 
-      <Text style={styles.title}>Add Recurring payments:</Text>
-      <RecurringTransactionInput onAddRecurringTransaction={addRecurringTransactionHandler}/>
+      {activeTab === 'overview' && (
+      <LatestTransactions transactions={transactions} />
+      )}
 
-      <Text style={styles.title}>Upcoming Recurring:</Text>
-      <RecurringTransactionList recurringTransactions={recurringTransactions} style={styles.listContainer} />
+      {activeTab === 'budget' && (
+      <BudgetSummary transactions={transactions} />
+      )}
 
+      {activeTab === 'progress' && points && !!points[0] && (
+        <YourPoints score={points[0].score} total={points[0].total} />
+      )}
 
+      {activeTab === 'progress' && challanges && !!challanges[0] &&(
+      <JoinedChallanges challanges={challanges[0]} />
+      )}
+
+      {/* <Text style={styles.title}>Your Goals:</Text>
+      <GoalList goals={goals} /> */}
     </ScrollView>
   );
-  
-  
 }
 
 const styles = StyleSheet.create({
@@ -207,27 +210,43 @@ const styles = StyleSheet.create({
   scrollContentContainer: {
     alignItems: 'center',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingTop: 30
+  },
+  tabButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 38,
+    borderRadius: 99,
+  },
+  tabButtonText: {
+    color: '#1A1A2C',
+    fontSize: 14,
+    fontFamily: 'Inter', // Make sure you have the Inter font available
+  },
+  activeTabButton: {
+    backgroundColor: '#1A1A2C',
+  },
+  activeTabButtonText: {
+    color: '#FFFFFF',
+  },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 18,
     marginTop: 18,
-
   },
   text: {
     marginBottom: 8,
-  },
-  headerContainer: {
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-  inputContainer: {
-    width: '100%',
   },
   listContainer: {
     width: '100%',
   },
 });
-
 
 export default WelcomeScreen;

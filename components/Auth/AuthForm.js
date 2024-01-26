@@ -1,18 +1,26 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import Button from '../ui/Button';
 import Input from './Input';
+import GoogleButton from '../ui/GoogleButton';
+import FacebookButton from '../ui/FacebookButton';
+import IOSButton from '../ui/IOSButton';
+import Separator from '../ui/Separator';
+
+
 
 function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
   const [enteredEmail, setEnteredEmail] = useState('');
-  const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
+  // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
 
   const {
     email: emailIsInvalid,
-    confirmEmail: emailsDontMatch,
+    // confirmEmail: emailsDontMatch,
     password: passwordIsInvalid,
     confirmPassword: passwordsDontMatch,
   } = credentialsInvalid;
@@ -22,9 +30,9 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
       case 'email':
         setEnteredEmail(enteredValue);
         break;
-      case 'confirmEmail':
-        setEnteredConfirmEmail(enteredValue);
-        break;
+      // case 'confirmEmail':
+      //   setEnteredConfirmEmail(enteredValue);
+      //   break;
       case 'password':
         setEnteredPassword(enteredValue);
         break;
@@ -37,38 +45,33 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
   function submitHandler() {
     onSubmit({
       email: enteredEmail,
-      confirmEmail: enteredConfirmEmail,
+      // confirmEmail: enteredConfirmEmail,
       password: enteredPassword,
       confirmPassword: enteredConfirmPassword,
     });
   }
 
   return (
-    <View style={styles.form}>
       <View>
         <Input
-          label="Email Address"
+          label="Email"
+          // placeholder="Email Address"
+          defaultValue= "efeef"
           onUpdateValue={updateInputValueHandler.bind(this, 'email')}
           value={enteredEmail}
           keyboardType="email-address"
           isInvalid={emailIsInvalid}
         />
-        {!isLogin && (
-          <Input
-            label="Confirm Email Address"
-            onUpdateValue={updateInputValueHandler.bind(this, 'confirmEmail')}
-            value={enteredConfirmEmail}
-            keyboardType="email-address"
-            isInvalid={emailsDontMatch}
-          />
-        )}
+        
         <Input
           label="Password"
+          placeholder="Password"
           onUpdateValue={updateInputValueHandler.bind(this, 'password')}
           secure
           value={enteredPassword}
           isInvalid={passwordIsInvalid}
         />
+
         {!isLogin && (
           <Input
             label="Confirm Password"
@@ -81,20 +84,55 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid }) {
             isInvalid={passwordsDontMatch}
           />
         )}
-        <View style={styles.buttons}>
+        <View >
           <Button onPress={submitHandler}>
-            {isLogin ? 'Log In' : 'Sign Up'}
+            {isLogin ? 'Log In with email' : 'Sign Up'}
           </Button>
         </View>
+
+        <View>
+          <Separator isLogin={isLogin} />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <FacebookButton>
+            {'Continute with Facebook'}
+          </FacebookButton>
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <GoogleButton>
+            {'Continute with Google'}
+          </GoogleButton>
+        </View>
+
+        
+        <View style={styles.buttonContainer} >
+          <IOSButton>
+            {'Continute with Apple'}
+          </IOSButton>
+        </View>
+
+
       </View>
-    </View>
   );
 }
 
 export default AuthForm;
 
 const styles = StyleSheet.create({
-  buttons: {
-    marginTop: 12,
+  loginButton: {
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonContainer: {
+    marginTop: 20,
   },
 });

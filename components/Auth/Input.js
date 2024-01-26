@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 import { Colors } from '../../constants/styles';
@@ -12,9 +13,9 @@ function Input({
 }) {
   return (
     <View style={styles.inputContainer}>
-      <Text style={[styles.label, isInvalid && styles.labelInvalid]}>
-        {label}
-      </Text>
+      {/* <Text style={[styles.label, isInvalid && styles.labelInvalid]}>
+        // {label}
+      </Text> */}
       <TextInput
         style={[styles.input, isInvalid && styles.inputInvalid]}
         autoCapitalize={false}
@@ -23,7 +24,10 @@ function Input({
         secureTextEntry={secure}
         onChangeText={onUpdateValue}
         value={value}
+        placeholder={label}  
+
       />
+      
     </View>
   );
 }
@@ -36,17 +40,22 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'white',
-    marginBottom: 4,
+    marginBottom: 1,
   },
   labelInvalid: {
     color: Colors.error500,
   },
   input: {
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    backgroundColor: Colors.primary100,
-    borderRadius: 4,
-    fontSize: 16,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    // 1CB854
+    // E7E7E9
+    borderColor: '#E7E7E9',
+    backgroundColor: '#F6F6F6',
+    marginBottom: 10,
+    paddingHorizontal: 5,
+    
   },
   inputInvalid: {
     backgroundColor: Colors.error100,

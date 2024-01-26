@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '../../constants/styles';
@@ -5,7 +6,7 @@ import { Colors } from '../../constants/styles';
 function Button({ children, onPress }) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.signInButton, pressed && styles.pressed]}
       onPress={onPress}
     >
       <View>
@@ -18,24 +19,19 @@ function Button({ children, onPress }) {
 export default Button;
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 6,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: Colors.primary500,
-    elevation: 2,
-    shadowColor: 'black',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+  signInButton: {
+    height: 51,
+    backgroundColor: '#1CB854',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 14,
+  },
+  buttonText: {
+    color: 'white', // Corrected text color for Sign in button
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   pressed: {
     opacity: 0.7,
-  },
-  buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
+  }
 });

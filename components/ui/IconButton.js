@@ -1,8 +1,10 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 function IconButton({ icon, color, size, onPress }) {
   return (
+    // eslint-disable-next-line react/react-in-jsx-scope
     <Pressable
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       onPress={onPress}

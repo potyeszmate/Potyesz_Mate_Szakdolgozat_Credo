@@ -1,47 +1,62 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet,Image, ScrollView } from 'react-native';
 import TransactionItem from './TransactionItem';
 
 import { Feather } from '@expo/vector-icons'; 
 
+const iconMapping = {
+  Entertainment: require('../../assets/Entertainment.png'),
+  Grocieries: require('../../assets/Grocieries.png'),
+  UtilityCosts: require('../../assets/UtilityCosts.png'),
+  Shopping: require('../../assets/Shopping.png'),
+  Food: require('../../assets/Food.png'),
+
+  Housing: require('../../assets/Housing.png'),
+  Transport : require('../../assets/Transport.png'),
+  Sport : require('../../assets/Sport.png'),
+};
 
 const TransactionList = ({ transactions }) => {
 
+
   return (
-    <ScrollView
-      style={styles.listContainer}
-      contentContainerStyle={styles.listContentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={styles.listContainer}>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.transactionItem}>
             <View style={styles.transactionIcon}>
-              <Feather name="dollar-sign" size={24} color="#333" />
+              {/* <Feather name={item.icon} size={24} color="#333" /> */}
+              <Image source={iconMapping[item.category]} style={styles.iconImage} />
+
             </View>
             <View style={styles.transactionInfo}>
               <Text style={styles.transactionName}>{item.name}</Text>
-              <Text style={styles.transactionDate}>
-                {item.date.toDate().toLocaleDateString()}
-              </Text>
+              <Text style={styles.transactionCategory}>{item.category}</Text>
             </View>
             <View style={styles.transactionAmount}>
-              <Text style={styles.transactionAmountText}>- ${item.value}</Text>
+              <Text style={styles.transactionAmountText}>${item.value}</Text>
+              <Text style={styles.transactionDate}>
+                {item.date.toDate().toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}{' '}
+                {item.date.toDate().toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                })}
+              </Text>
             </View>
           </View>
         )}
       />
-    </ScrollView>
+    </View>
   );
-  
-
 };
 const styles = StyleSheet.create({
   listContainer: {
-    marginVertical: 20,
-    height: 250, // Set the desired height
+    marginTop: 10,
   },
   listTitle: {
     fontSize: 18,
@@ -56,13 +71,11 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
-    elevation: 2, // For Android shadow
-    shadowColor: '#000', // For iOS shadow
+    elevation: 2,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    width: '80%',
-    marginLeft: 'auto', // Center the card horizontally
-    marginRight: 'auto', // Center the card horizontally
+    width: '100%',
   },
   transactionIcon: {
     marginRight: 10,
@@ -81,10 +94,14 @@ const styles = StyleSheet.create({
   transactionAmount: {
     alignItems: 'flex-end',
   },
+  transactionCategory: {
+    fontSize: 16,
+    color: '#888',
+  },
   transactionAmountText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: 'red', // You can change the color as needed
+    color: '#1A1A2C', // You can change the color as needed
   },
 });
 

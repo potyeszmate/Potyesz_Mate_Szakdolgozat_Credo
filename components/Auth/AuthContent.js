@@ -1,5 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View,Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import FlatButton from '../ui/FlatButton';
@@ -12,7 +13,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
     password: false,
-    confirmEmail: false,
+    // confirmEmail: false,
     confirmPassword: false,
   });
 
@@ -33,18 +34,20 @@ function AuthContent({ isLogin, onAuthenticate }) {
 
     const emailIsValid = email.includes('@');
     const passwordIsValid = password.length > 6;
-    const emailsAreEqual = email === confirmEmail;
+    // const emailsAreEqual = email === confirmEmail;
     const passwordsAreEqual = password === confirmPassword;
 
     if (
       !emailIsValid ||
       !passwordIsValid ||
-      (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
+      // (!isLogin && (!emailsAreEqual || !passwordsAreEqual))
+
+      (!isLogin && (!passwordsAreEqual))
     ) {
       Alert.alert('Invalid input', 'Please check your entered credentials.');
       setCredentialsInvalid({
         email: !emailIsValid,
-        confirmEmail: !emailIsValid || !emailsAreEqual,
+        // confirmEmail: !emailIsValid || !emailsAreEqual,
         password: !passwordIsValid,
         confirmPassword: !passwordIsValid || !passwordsAreEqual,
       });
@@ -60,10 +63,8 @@ function AuthContent({ isLogin, onAuthenticate }) {
         onSubmit={submitHandler}
         credentialsInvalid={credentialsInvalid}
       />
-      <View style={styles.buttons}>
-        <FlatButton onPress={switchAuthModeHandler}>
-          {isLogin ? 'Create a new user' : 'Log in instead'}
-        </FlatButton>
+      <View>
+
       </View>
     </View>
   );
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 32,
     padding: 16,
     borderRadius: 8,
-    backgroundColor: Colors.primary800,
+    // backgroundColor: Colors.primary800,
     elevation: 2,
     shadowColor: 'black',
     shadowOffset: { width: 1, height: 1 },
@@ -86,5 +87,26 @@ const styles = StyleSheet.create({
   },
   buttons: {
     marginTop: 8,
+  },
+  forgotPassword: {
+    fontSize: 15,
+    color: '#149E53',
+    textAlign: 'right',
+    marginBottom: 20,
+  },
+  separatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  separatorText: {
+    flex: 1,
+    height: 1.3,
+    backgroundColor: '#CFCFD3',
+    marginHorizontal: 8,
+  },
+  separatorOrText: {
+    color: '#CFCFD3',
+    // fontWeight: 'bold',
   },
 });

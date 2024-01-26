@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   chart: {
     height: 20,
-    backgroundColor: 'blue', // You can change the color as needed
+    backgroundColor: 'blue', 
     borderRadius: 5,
   },
   amount: {

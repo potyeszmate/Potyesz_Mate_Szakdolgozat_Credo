@@ -1,10 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useState } from 'react';
-import { getUid } from '../util/auth'; // Import the getUid function
+import { getEmail, getUid } from '../util/auth'; 
 
 export const AuthContext = createContext({
   token: '',
-  userId: '', // Add userId to the context
+  userId: '', 
+  email: '',
   isAuthenticated: false,
   authenticate: (token) => {},
   logout: () => {},
@@ -13,6 +14,8 @@ export const AuthContext = createContext({
 function AuthContextProvider({ children }) {
   const [authToken, setAuthToken] = useState('');
   const [userId, setUserId] = useState(''); // State for user ID
+  const [email, setEmail] = useState(''); // State for user ID
+
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -22,8 +25,12 @@ function AuthContextProvider({ children }) {
 
         // Fetch the user ID when the token is available
         const uid = await getUid(storedToken);
-        console.log(uid);
+        // console.log(uid);
         setUserId(uid);
+
+        const email = await getEmail(storedToken);
+        // console.log(uid);
+        setEmail(email);
       }
     };
 
@@ -48,17 +55,26 @@ function AuthContextProvider({ children }) {
     };
 
     fetchUserId();
+
+    const fetchEmail = async () => {
+      const email = await getEmail(token);
+      setEmail(email);
+    };
+
+    fetchEmail();
   }
 
   function logout() {
     setAuthToken(null);
     setUserId(''); // Clear the user ID
+    setEmail('');
     AsyncStorage.removeItem('token');
   }
 
   const value = {
     token: authToken,
     userId: userId,
+    email: email,
     isAuthenticated: !!authToken,
     authenticate: authenticate,
     logout: logout,

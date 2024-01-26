@@ -1,25 +1,33 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-function LoadingOverlay({ message }) {
+function LoadingOverlay({}) {
   return (
-    <View style={styles.rootContainer}>
-      <Text style={styles.message}>{message}</Text>
-      <ActivityIndicator size="large" />
-    </View>
+    <ImageBackground
+      source={require('../../assets/Gradient.png')} 
+      style={styles.imageBackground}
+      resizeMode="cover"
+    >
+      <View>
+        <Text style={styles.message}>Credo</Text>
+        <ActivityIndicator size="large" color="#1CB854" />
+      </View>
+    </ImageBackground>
   );
 }
 
 export default LoadingOverlay;
 
 const styles = StyleSheet.create({
-  rootContainer: {
+  imageBackground: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
   },
   message: {
     fontSize: 16,
+    fontWeight: 'bold',
     marginBottom: 12,
+    color: '#1CB854', // Text color
   },
 });
