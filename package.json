@@ -12,7 +12,7 @@
   "dependencies": {
     "@expo/metro-runtime": "^3.1.1",
     "@gorhom/bottom-sheet": "^4.6.0",
-    "@react-native-async-storage/async-storage": "^1.16.1",
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/datetimepicker": "^7.6.2",
     "@react-native-picker/picker": "^2.6.1",
     "@react-navigation/bottom-tabs": "^6.5.11",
@@ -32,6 +32,7 @@
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.14.0",
+    "react-native-picker-select": "^9.1.3",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "~3.6.2",
     "react-native-splash-screen": "^3.3.0",
@@ -41,8 +42,14 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@tsconfig/react-native": "^3.0.3",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.28",
+    "@types/react": "^18.2.66",
+    "@types/react-test-renderer": "^18.0.7",
     "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2"
+    "eslint-plugin-react": "^7.33.2",
+    "typescript": "^5.4.2"
   },
   "private": true
 }
