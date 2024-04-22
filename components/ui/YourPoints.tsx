@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import DonutChartPoints from './DonutChartPoints';
+import ProgressCircle from 'react-native-progress-circle';
 import { useNavigation } from '@react-navigation/native';
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
+import { Feather } from '@expo/vector-icons';
 
 const languages: any = {
   English: en,
@@ -16,19 +17,27 @@ const languages: any = {
 const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
   const scorePoint = parseFloat(score);
   const totalPoint = parseFloat(total);
-  const progressValue = total !== '0' ? scorePoint / totalPoint : 0;
+  const progressPercentage = total !== '0' ? (scorePoint / totalPoint) * 100 : 0;
   const navigation = useNavigation();
 
   const handleGamificationClick = () => {
     // @ts-ignore
-    navigation.navigate('Gamification'); //as never
+    navigation.navigate('Gamification');
   };
 
   return (
     <View style={styles.cardContainer}>
-      {/* Left Side */}
       <View style={styles.leftContainer}>
-        <DonutChartPoints size={60} progress={progressValue} strokeWidth={12} color="#1A1A2C" />
+        <ProgressCircle
+          percent={progressPercentage}
+          radius={40}
+          borderWidth={16}
+          color="#1CB854" 
+          shadowColor="#F3F4F7" 
+          bgColor="#fff"
+        >
+          {/* <Text style={{ fontSize: 18 }}>{`${progressPercentage.toFixed(0)}%`}</Text> */}
+        </ProgressCircle>
 
         <View style={styles.pointsContainer}>
           <Text style={styles.yourPointsText}>{languages[selectedLanguage].yourPoints}</Text>
@@ -38,10 +47,9 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
         </View>
       </View>
 
-      {/* Right Side */}
       <View style={styles.rightContainer}>
         <TouchableOpacity onPress={handleGamificationClick}>
-          <FontAwesome name="chevron-right" size={20} color="#1A1A2C" />
+          <Feather name="chevron-right" size={24} color="#888" />
         </TouchableOpacity>
       </View>
     </View>

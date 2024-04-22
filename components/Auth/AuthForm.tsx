@@ -11,7 +11,6 @@ import IOSButton from '../ui/IOSButton';
 import Separator from '../ui/Separator';
 
 
-
 const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   const [enteredEmail, setEnteredEmail] = useState('');
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
@@ -50,7 +49,7 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
       confirmPassword: enteredConfirmPassword,
     });
   }
-
+  
   return (
       <View>
         <Input

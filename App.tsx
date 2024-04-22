@@ -42,6 +42,10 @@ import SavingsScreen from './screens/Save/SavingsScreen';
 import CryptoCurrenciesScreen from './screens/Save/CryptoCurrenciesScreen';
 import CryptoDetails from './components/ui/CryptoDetails';
 import StocksScreen from './screens/Save/StocksScreen';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import BudgetDetail from './components/ui/BudgetDetail';
+import UserProfileCard from './components/ui/UserProfileCard';
+import Payment from './screens/Payment/Payment';
 
 
 const languages: any = {
@@ -50,6 +54,7 @@ const languages: any = {
   Hungarian: hu,
 };
 
+const STRIPE_KEY = 'pk_test_51P7PiGRxFFZ42bcDIB4ZlNMLSkp7SxCfBXQjbsAlYVpcS8j6me3cjfcqNKrZZL7Gz4EybixVJibN0YkfWUnysMVL008ZkfArvi'
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -116,7 +121,7 @@ function TabNavigator() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarStyle: { backgroundColor: '#F5F6F5' },
-        tabBarActiveTintColor: '#1A1A2C',
+        tabBarActiveTintColor: '#35BA52',
         headerShown: route.name === 'Welcome' ? true : false,
       })}
     >
@@ -160,7 +165,7 @@ function TabNavigator() {
         options={{
           tabBarIcon: ({ color }) => (
             <Image
-              source={require('./assets/plus-navbar.png')}
+              source={require('./assets/IconButton.png')}
               style={{ width: 62, height: 62, marginTop: 30 }}
               />
           ),
@@ -247,7 +252,9 @@ export default function App() {
       <BottomSheetModalProvider>
         <AuthContextProvider>
           <StatusBar style="light" />
-          <Root />
+          <StripeProvider publishableKey={STRIPE_KEY}>
+            <Root />
+          </StripeProvider>
         </AuthContextProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
@@ -362,6 +369,15 @@ function WelcomeStack() {
         name="FaqPage"
         component={FaqPage}
       />  
+
+      <Stack.Screen 
+        name="BudgetDetail" 
+        component={BudgetDetail} />
+
+      <Stack.Screen 
+        name="Payment" 
+        component={Payment} />
+
     </Stack.Navigator>
   );
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
@@ -27,7 +28,7 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
       <View style={styles.firstRow}>
         <Text style={styles.challangesText}>{languages[selectedLanguage].challenges}</Text>
         <TouchableOpacity onPress={handleChallangesOnClick}>
-          <FontAwesome name="chevron-right" size={15} color="#1A1A2C" />
+          <Feather name="chevron-right" size={24} color="#888" />
         </TouchableOpacity>
       </View>
 

@@ -63,6 +63,7 @@ const RecurringPayments = () => {
   const { userId } = authCtx as any;
 
   const fetchRecurringTransactions = async () => {
+    console.log("userId in recurring: ", userId)
     try {
       setLoading(true);
 
@@ -86,8 +87,10 @@ const RecurringPayments = () => {
   };
 
   const fetchUserSettings = async () => {
+    console.log("userId in recurring: ", userId)
+
     try {
-      const settingsQuery = query(collection(db, 'users'));
+      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId))
       const querySnapshot = await getDocs(settingsQuery);
   
       if (!querySnapshot.empty) {

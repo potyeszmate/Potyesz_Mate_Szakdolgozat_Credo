@@ -451,7 +451,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
                   onBlur={() => setTextInputFocused(false)}
                 />
                 <TouchableOpacity style={styles.button} onPress={() =>setModalNotesVisible(false)}>
-                  <Text style={styles.buttonText}>Save Note</Text>
+                  <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
               </View>
             </BottomSheet>
@@ -587,7 +587,8 @@ const styles = StyleSheet.create({
     // flex: 1,
     // alignItems: 'center',
     paddingTop: 20, // Adjust as needed
-
+    marginLeft: 40,
+    marginRight: 40
   },
   iconContainer: {
     borderWidth: 2,
@@ -846,9 +847,17 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#35BA52',
     padding: 10,
     borderRadius: 5,
+    // marginLeft: 130,
+    // marginRight: 130,
+    alignItems: 'center',
+    // width: '50%',
+    marginLeft: 60,
+    marginRight: 60
+
+
   },
   buttonText: {
     color: '#ffffff',

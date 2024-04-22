@@ -24,15 +24,26 @@ const iconMapping: any = {
   };
 
   const UpcomingRecurring: React.FC<any> = ({ recurringTransactions }) => {
+    console.log("IN UpcomingRecurring")
     const navigation = useNavigation();
     const currentDate = new Date();
-  
+    
+    // console.log("recurringTransactions: ", recurringTransactions)
     // Filter recurring transactions with dates not earlier than the current date
     const upcomingRecurring = recurringTransactions
-      .filter((item: any) => item.Date >= currentDate)
-      .sort((a: any, b: any) => a.Date.getTime() - b.Date.getTime());
+      .map((item: any) => ({ ...item, Date: item.Date.toDate() })) // Ensure Date is a Date object
+      .filter((item: any) => {
+        const transactionDate = new Date(item.Date);
+        transactionDate.setHours(0, 0, 0, 0); // Normalize transaction date
+        return transactionDate >= currentDate;
+      })
+      .sort((a: any, b: any) => a.Date - b.Date);
+
+      // console.log("Filtered Upcoming Recurring: ", upcomingRecurring);
+
   
     if (upcomingRecurring.length === 0) {
+      console.log("THERE IS NO UPCOMING RECURRING")
       // Return null or any placeholder if there are no upcoming recurring transactions
       return null;
     }
@@ -68,7 +79,7 @@ const iconMapping: any = {
     return (
       <View style={styles.cardContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Upcoming subscriptions</Text>
+          <Text style={styles.title}>Upcoming subscription</Text>
           <TouchableOpacity onPress={handleRecurringPaymentsClick} style={styles.viewAllButton}>
             <Text style={styles.viewAllText}>View all ({recurringTransactions.length})</Text>
           </TouchableOpacity>

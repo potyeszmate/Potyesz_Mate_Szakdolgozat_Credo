@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'white',
-    },
+  },
     welcomeText: {
         color: '#1CB854',
         fontSize: 18, // Updated size for Welcome text

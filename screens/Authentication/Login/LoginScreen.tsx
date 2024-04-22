@@ -16,7 +16,11 @@ const LoginScreen: React.FC = () => {
     try {
       const token = await login(email, password);
       authCtx.authenticate(token);
+      setIsAuthenticating(false);
+
     } catch (error) {
+      console.error(error);
+
       Alert.alert(
         'Authentication failed!',
         'Could not log you in. Please check your credentials or try again later!'

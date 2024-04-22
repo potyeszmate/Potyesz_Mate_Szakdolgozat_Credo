@@ -25,7 +25,7 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage }) => {
+const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency, conversionRate, symbol }) => {
   const [budgets, setBudgets] = useState<any[]>([]);
   const [totalAmount, setTotalAmount] = useState<any>(0);
   const [spentAmount, setSpentAmount] = useState<any>(0);
@@ -159,34 +159,68 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage }) => {
   };
 
   return (
+    !loading && 
     <View style={styles.container}>
-      <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
-      <Text style={styles.amountLeftText}>${remainingAmount} {languages[selectedLanguage].left}</Text>
       {!loading && spentPercentage > 0 && (
-        <Progress.Bar
-          progress={spentPercentage / 100}
-          width={Math.round(Dimensions.get('window').width * 0.82)}
-          height={15}
-          color={'#35BA52'}
-          borderRadius={10}
-          borderColor='#FFFFFF'
-          animationType='decay'   
-          unfilledColor='#F3F4F7'
-        />
+      <View style={styles.summaryContainer}>
+        <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
+        <Text style={styles.amountLeftText}>
+          {currency === 'HUF' ? 
+            Math.round(parseFloat(remainingAmount) * conversionRate) :
+            (parseFloat(remainingAmount) * conversionRate).toFixed(2)
+          }{symbol} {languages[selectedLanguage].left}</Text>
+      </View>
       )}
+      {!loading && spentPercentage > 0 && (
+        <View style={{ marginLeft: 12, marginRight: 8 }}>
+          <Progress.Bar
+            progress={spentPercentage / 100}
+            width={Math.round(Dimensions.get('window').width * 0.82)}
+            height={15}
+            color={'#35BA52'}
+            borderRadius={10}
+            borderColor='#FFFFFF'
+            animationType='decay'   
+            unfilledColor='#F3F4F7'
+          />
+        </View>
+
+      )}
+      {!loading && (
       <View style={styles.spentSetRow}>
-        <Text style={styles.spentText}>${spentAmount} {languages[selectedLanguage].spent}</Text>
-        <Text style={styles.setText}>${totalAmount} {languages[selectedLanguage].set}</Text>
+        <Text style={styles.spentText}>
+        {currency === 'HUF' ? 
+            Math.round(parseFloat(spentAmount) * conversionRate) :
+            (parseFloat(spentAmount) * conversionRate).toFixed(0)
+          }{symbol} {languages[selectedLanguage].spent}</Text>
+        <Text style={styles.setText}>{currency === 'HUF' ? 
+            Math.round(parseFloat(totalAmount) * conversionRate) :
+            (parseFloat(totalAmount) * conversionRate).toFixed(0)}{symbol} {languages[selectedLanguage].set}</Text>
       </View>
-      {budgets.map((budget) => (
-        <Budget key={budget.id} budget={budget} transactions={transactions} onDelete={() => showDeleteModal(budget)} onEdit={() => showEditModal(budget)} />
-      ))}
-      <View style={styles.addButtonContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-          <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
-          <Text style={styles.addButtonText}>Create new</Text>
-        </TouchableOpacity>
-      </View>
+      )}
+      <View style={styles.separator} />
+       {budgets.map((budget, index) => (
+          <View key={budget.id}>
+            <Budget 
+              budget={budget} 
+              transactions={transactions} 
+              onDelete={() => showDeleteModal(budget)} 
+              onEdit={() => showEditModal(budget)} 
+              currency = {currency}
+              conversionRate = {conversionRate}
+              symbol = {symbol}
+            />
+            {index !== budgets.length - 1 && <View style={styles.separator} />}
+          </View>
+        ))}
+      {!loading && (
+        <View style={styles.addButtonContainer}>
+          <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
+            <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
+            <Text style={styles.addButtonText}>Create new</Text>
+          </TouchableOpacity>
+        </View>
+       )}
       <Modal
         visible={deleteModalVisible}
         transparent={true}
@@ -281,16 +315,18 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
     container: {
       backgroundColor: '#FFFFFF',
       borderRadius: 20,
-      padding: 16,
       marginTop: 16,
       width: '90%',
       alignSelf: 'center',
-
+    },
+    summaryContainer: {
+      marginLeft: 16,
+      marginRight: 16,
+      marginTop: 20
     },
     expenseSummaryText: {
       fontSize: 16,
@@ -307,13 +343,13 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: 10,
-     marginLeft: 4
-
+      // marginLeft: 4,
+      marginBottom: 20
     },
     spentText: {
       fontSize: 16,
       color: '#333',
-    //   marginLeft: -17
+      marginLeft: 15
     },
     bottomSheetBackground: {
       backgroundColor: 'white',
@@ -327,7 +363,7 @@ const styles = StyleSheet.create({
     setText: {
         fontSize: 16,
         color: '#888',
-        marginRight: 6
+        marginRight: 25
     },
     buttonsRow: {
         flexDirection: 'row',
@@ -335,7 +371,14 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingLeft: 4
       },
-      
+      separator: {
+        height: 1,
+        backgroundColor: '#EEEEEE',
+        marginLeft: 16, // Adjust this value to align with the transactionInfo
+        marginRight: 16, // Add a bigger right margin
+        marginBottom: 2, // Add a bigger right margin
+        marginTop: 2, // Add a bigger right margin
+      },
       editButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -357,7 +400,7 @@ const styles = StyleSheet.create({
         padding: 16,
       },
       addButton: {
-        backgroundColor: '#1A1A2C',
+        backgroundColor: '#35BA52',
         borderRadius: 8,
         paddingVertical: 14,
         alignItems: 'center',

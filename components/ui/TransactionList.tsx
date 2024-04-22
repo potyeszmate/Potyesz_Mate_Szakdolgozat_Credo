@@ -85,7 +85,6 @@ const styles = StyleSheet.create({
     marginRight: 16, // Add a bigger right margin
     marginBottom: 2, // Add a bigger right margin
     marginTop: 2, // Add a bigger right margin
-
   },
   transactionIcon: {
     marginRight: 10,

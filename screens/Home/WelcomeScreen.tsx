@@ -21,6 +21,8 @@ import CustomHeader from '../../components/ui/CustomHeader';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { convertCurrencyToCurrency } from '../../util/conversion';
 import MonthlyIncome from '../../components/ui/MonthlyIncome';
+import Payment from '../Payment/Payment';
+import WelcomeCard from '../../components/ui/WelcomeCard';
 
 const languages: any = {
   English: en,
@@ -43,6 +45,7 @@ function WelcomeScreen() {
   const [conversionRate, setConversionRate] = useState<number | null>(null);
   const [symbol, setSymbol] = useState<any>('');
   const [loading, setLoading] = useState(true);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   // const [goals, setGoals] = useState([]);
 
@@ -50,7 +53,9 @@ function WelcomeScreen() {
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
+  const { email } = authCtx as any;
 
+  // fetching data
   const fetchRecurringTransactions = async () => {
     // console.log("userId in home: ", userId)
     try {
@@ -65,7 +70,7 @@ function WelcomeScreen() {
         ...doc.data(),
       }));
 
-      // console.log("fetchedRecurringTransactions", fetchedRecurringTransactions)
+      console.log("fetchedRecurringTransactions", fetchedRecurringTransactions)
       setRecurringTransactions(fetchedRecurringTransactions);
     } catch (error: any) {
       console.error('Error fetching transactions:', error.message);
@@ -82,6 +87,7 @@ function WelcomeScreen() {
         ...doc.data(),
       }));
 
+      //  console.log(fetchedTransactions)
       // console.log("fetchedTransactions", fetchedTransactions)
       setTransactions(fetchedTransactions);
     } 
@@ -109,7 +115,6 @@ function WelcomeScreen() {
     }
   };
 
-
   const fetchChallanges = async () => {
     try {
       //, where('uid', '==', userId -> Only the actie challanges
@@ -130,37 +135,61 @@ function WelcomeScreen() {
   };
 
   const fetchUserSettings = async () => {
-    try {
-      console.log("loading: ", loading)
-      setLoading(true);
+    // console.log("userId in recurring: ", userId)
 
-      const settingsQuery = query(collection(db, 'users'));
+    try {
+      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId))
       const querySnapshot = await getDocs(settingsQuery);
   
       if (!querySnapshot.empty) {
         const userData = querySnapshot.docs[0]?.data(); 
-        if (userData) {
-          setUserSettings(userData as any);
-          setLoading(false);
-          console.log("loading: ", loading)
 
-          console.log('Fetched settings:', userData);
+        if (userData) {
+          setUserSettings(userData);
+
+          // console.log('Fetched settings:', userData);
         } else {
           console.log('No user data found.');
         }
       } else {
-        // console.log('No documents found.');
+        console.log('No documents found.');
       }
     } catch (error: any) {
       console.error('Error fetching settings:', error.message);
-      setLoading(false);
-
     }
   };
 
+  const fetchIncome = async () => {
+    try {
+      // console.log("loading: ", loading);
+      setLoading(true);  // Ensure you're using setLoading correctly before fetching.
+  
+      const incomeQuery = query(collection(db, 'income'),  where('uid', '==', userId))
+      const querySnapshot = await getDocs(incomeQuery);
+  
+      if (!querySnapshot.empty) {
+        const incomeData = querySnapshot.docs[0]?.data();
+        if (incomeData && incomeData.income) {
+          setUserIncome(incomeData.income);  // Set only the income value, not the entire object.
+          // console.log('Fetched income:', incomeData.income);
+        } else {
+          console.log('No user income found.');
+          setUserIncome('0');  // Set a default or reset the income state if not found.
+        }
+      } else {
+        console.log('No documents found.');
+        setUserIncome('0');  // Set a default or reset the income state if no documents are found.
+      }
+    } catch (error: any) {
+      console.error('Error fetching income:', error.message);
+      setUserIncome('0');  // Handle the error by setting income to a default value.
+    } finally {
+      setLoading(false);  // Ensure you turn off loading no matter the outcome.
+    }
+  };
 
   const getCurrencySymbol = (currencyCode: any) => {
-    console.log("CHANGING CURRENCY SYMBOL")
+    // console.log("CHANGING CURRENCY SYMBOL")
     
     switch (currencyCode) {
       case 'USD':
@@ -180,42 +209,12 @@ function WelcomeScreen() {
     }
   };
 
-  const fetchIncome = async () => {
-    try {
-      console.log("loading: ", loading);
-      setLoading(true);  // Ensure you're using setLoading correctly before fetching.
-  
-      const incomeQuery = query(collection(db, 'income'));
-      const querySnapshot = await getDocs(incomeQuery);
-  
-      if (!querySnapshot.empty) {
-        const incomeData = querySnapshot.docs[0]?.data();
-        if (incomeData && incomeData.income) {
-          setUserIncome(incomeData.income);  // Set only the income value, not the entire object.
-          console.log('Fetched income:', incomeData.income);
-        } else {
-          console.log('No user income found.');
-          setUserIncome('0');  // Set a default or reset the income state if not found.
-        }
-      } else {
-        console.log('No documents found.');
-        setUserIncome('0');  // Set a default or reset the income state if no documents are found.
-      }
-    } catch (error: any) {
-      console.error('Error fetching income:', error.message);
-      setUserIncome('0');  // Handle the error by setting income to a default value.
-    } finally {
-      setLoading(false);  // Ensure you turn off loading no matter the outcome.
-    }
-  };
-  
-
   const updateIncome = async (newIncome: string) => {
-    console.log('Called updateIncome.');
+    // console.log('Called updateIncome.');
   
     try {
       const querySnapshot = await getDocs(collection(db, 'income'));
-      console.log('In try.');
+      // console.log('In try.');
   
       for (const doc of querySnapshot.docs) {
         const userData = doc.data();
@@ -224,7 +223,7 @@ function WelcomeScreen() {
 
         if (userData.uid === userId) {
           await updateDoc(doc.ref, { income: convertedIncome });
-          console.log('Income updated.');
+          // console.log('Income updated.');
           await fetchIncome();
         }
       }
@@ -232,17 +231,11 @@ function WelcomeScreen() {
       console.error('Error updating:', error);
     }
   };
-  
 
-  useEffect(() => {
-    fetchTransactions();
-    fetchRecurringTransactions();
-    // fetchBudgets();
-    fetchPoints();
-    fetchChallanges();
-    fetchIncome();
+  const updateProfilePicture = (imageUrl: any) => {
+    setProfilePicture(imageUrl);
+  };
 
-  }, []);
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -326,8 +319,8 @@ function WelcomeScreen() {
           await fetchUserSettings();
           // }
   
-          console.log("prevCurrency: ", prevCurrency)
-          console.log("current currency: ", userSettings.currency)
+          // console.log("prevCurrency: ", prevCurrency)
+          // console.log("current currency: ", userSettings.currency)
   
           // Check if the currency value is valid and has changed
           if (userSettings.currency && userSettings.currency !== prevCurrency) {
@@ -354,7 +347,7 @@ function WelcomeScreen() {
               setSymbol(newSymbol);
               await AsyncStorage.setItem('symbol', newSymbol);
             }
-            console.log(conversionRate)
+            // console.log(conversionRate)
             // Update the previous currency value
             setPrevCurrency(userSettings.currency);
           }
@@ -364,17 +357,39 @@ function WelcomeScreen() {
         }
       };
       
+      fetchTransactions();
+      fetchRecurringTransactions();
+      fetchPoints();
+      fetchChallanges();
+      fetchIncome();
       fetchData();
       fetchLanguage();
     }
-  }, [ isFocused]);
+  }, [isFocused]);
 
+  useEffect(() => {
+    console.log("WelcomeScreen useEffect")
+    fetchTransactions();
+    fetchRecurringTransactions();
+    fetchPoints();
+    fetchChallanges();
+    fetchIncome();
+    fetchUserSettings();
 
+  }, [userId]);
+
+  useEffect(() => {
+    fetchUserSettings
+  }, []);
+
+  
+
+  
   return (
 
     <View style={styles.container}>
        <CustomHeader
-        authCtx={authCtx}
+        authCtx={authCtx} updateProfilePicture={updateProfilePicture} profile={userSettings}
       />
 
       <View style={styles.tabBarContainer}>
@@ -438,28 +453,39 @@ function WelcomeScreen() {
             
 
         {activeTab === 'overview' && (
-        <YourBalance balance={300} income={600} expense={300} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} loading={loading}/>
+          <YourBalance balance={300} income={600} expense={300} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} loading={loading}/>
         )}
 
-        {/* {activeTab === 'overview' && (
-        <UpcomingRecurring recurringTransactions={recurringTransactions} />
-        )} */}
+        {activeTab === 'overview' && !userSettings.isPremiumUser && (
+          <WelcomeCard 
+            email={email} 
+            firstName={userSettings.firstName} 
+            lastName={userSettings.lastName}
+          />
+        )}
 
         {activeTab === 'overview' && (
-        <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
+          <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
         )}
 
         {activeTab === 'overview' && (
           <MonthlyIncome income={userIncome} updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
         )}
 
+        {activeTab === 'overview' && (
+          <UpcomingRecurring recurringTransactions={recurringTransactions} />
+          // <View>
+          //   <Text>TEST</Text>
+          // </View>
+        )}
+
 
         {/* {activeTab === 'overview' && (
-        <ClosestSubscription transactions={transactions} selectedLanguage={selectedLanguage}/>
+          <ClosestSubscription transactions={transactions} selectedLanguage={selectedLanguage}/>
         )} */}
 
         {activeTab === 'budget' && (
-        <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage}/>
+        <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage} currency={userSettings.currency} conversionRate={conversionRate} symbol={symbol}/>
         )}
 
         {activeTab === 'progress' && points && !!points[0] && (
@@ -519,7 +545,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter', // Make sure you have the Inter font available
   },
   activeTabButton: {
-    backgroundColor: '#1A1A2C',
+    backgroundColor: '#35BA52',
   },
   activeTabButtonText: {
     color: '#FFFFFF',

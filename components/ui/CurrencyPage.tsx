@@ -5,28 +5,57 @@ import { AuthContext } from '../../store/auth-context';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { convertCurrencyToCurrency } from '../../util/conversion';
 
 const CurrencyPage = () => {
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
 
-  const updateUserCurrency = async (newCurrency: string) => {
-    try {
-      const settingsQuery = query(collection(db, 'users'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(settingsQuery);
-  
-      if (!querySnapshot.empty) {
-        querySnapshot.forEach((doc) => {
-          updateDoc(doc.ref, { currency: newCurrency });
-          console.log('User currency updated successfully.');
-        });
-      } else {
-        console.error('No user document found.');
-      }
-    } catch (error) {
-      console.error('Error updating user currency:', error);
+  const getCurrencySymbol = (currencyCode: any) => {
+    // console.log("CHANGING CURRENCY SYMBOL")
+    
+    switch (currencyCode) {
+      case 'USD':
+        return '$';
+      case 'EUR':
+        return '€';
+      case 'HUF':
+        return 'HUF';
+      case 'AUD':
+        return '$';
+      case 'CAD':
+        return '$';
+      case 'GBP':
+        return '£';
+      default:
+        return ''; 
     }
   };
+
+  const updateUserCurrency = async (newCurrency: string) => {
+    try {
+        const settingsQuery = query(collection(db, 'users'), where('uid', '==', userId));
+        const querySnapshot = await getDocs(settingsQuery);
+
+        if (!querySnapshot.empty) {
+            for (const doc of querySnapshot.docs) {
+                await updateDoc(doc.ref, { currency: newCurrency });
+                console.log('User currency updated successfully.');
+
+                const newSymbol = getCurrencySymbol(newCurrency)
+                const result = await convertCurrencyToCurrency('USD', newCurrency);
+                await AsyncStorage.setItem('conversionRate', result.toString());
+                await AsyncStorage.setItem('symbol', newSymbol);
+            }
+        } else {
+            console.error('No user document found.');
+        }
+    } catch (error) {
+        console.error('Error updating user currency:', error);
+    }
+};
+
   
   
   const route: any = useRoute();

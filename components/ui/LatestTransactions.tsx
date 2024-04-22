@@ -34,7 +34,7 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
   const sortedTransactions = transactions
     .filter((transaction: any) => {
       const transactionDate = new Date(transaction.date.toDate());
-      console.log("Transaction time:", transactionDate.toString()); // Log each transaction time for debugging
+      // console.log("Transaction time:", transactionDate.toString()); // Log each transaction time for debugging
       return transactionDate <= now;
     })
     .sort((a: any, b: any) => b.date.toDate() - a.date.toDate())

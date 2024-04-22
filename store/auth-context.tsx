@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useEffect, useState } from 'react';
 import { getEmail, getUid } from '../util/auth'; 
+// import { FIREBASE_APP, FIREBASE_AUTH } from '../firebaseConfig';
 
 export const AuthContext: any = createContext({
   token: '',
@@ -63,6 +64,32 @@ function AuthContextProvider({ children }: any) {
 
     fetchEmail();
   }
+
+  // function authenticate(token: AnyCnameRecord) {
+  //   setAuthToken(token);
+  //   AsyncStorage.setItem('token', token);
+  // }
+
+  // useEffect(() => {
+  //   const unsubscribe = FIREBASE_AUTH.onAuthStateChanged(user => {
+  //     if (user) {
+  //       // User is signed in
+  //       const newToken = user.refreshToken; // Assuming you're storing the refresh token
+  //       AsyncStorage.setItem('token', newToken);
+  //       setAuthToken(newToken);
+  //       setUserId(user.uid);
+  //       setEmail(user.email as any);
+  //     } else {
+  //       // User is signed out
+  //       AsyncStorage.removeItem('token');
+  //       setAuthToken(null);
+  //       setUserId('');
+  //       setEmail('');
+  //     }
+  //   });
+
+  //   return () => unsubscribe(); // Clean up the subscription on unmount
+  // }, []);
 
   function logout() {
     setAuthToken(null as any);

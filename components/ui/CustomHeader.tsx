@@ -7,11 +7,11 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
 
-const CustomHeader: React.FC<any> = ({ authCtx, route }) => {
+const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
   const { userId } = authCtx;
   const navigation = useNavigation();
 
-  const [profile, setProfile] = useState<any>();
+  // const [profile, setProfile] = useState<any>();
   const [isProfileFetched, setIsProfileFetched] = useState(false); // State to track if profile data is fetched
 
   const handleSettingsPage = () => {
@@ -19,65 +19,102 @@ const CustomHeader: React.FC<any> = ({ authCtx, route }) => {
     navigation.navigate('SettingsPage');
   };
 
+  const handleChatBotsPage = () => {
+    // @ts-ignore
+    // navigation.navigate('ChatBot');
+  };
+
   const handleProfilePage = () => {
     // @ts-ignore
     navigation.navigate('ProfilePage');
   };
 
-  const fetchProfile = async () => {
-    try {
-      const profileQuery = query(collection(db, 'users'),  where('uid', '==', userId));
-      const querySnapshot = await getDocs(profileQuery);
-      const fetchedProfiles = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
 
-      setProfile(fetchedProfiles);
-      console.log("fetchedProfiles", fetchedProfiles)
-      setIsProfileFetched(true); // Update state to indicate profile data is fetched
-    } catch (error: any) {
-      console.error('Error fetching profile:', error.message);
-    }
-  };
+  console.log("profile: ", profile)// const fetchProfile = async () => {
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  if(profile){
+    console.log("profile: ", profile)// const fetchProfile = async () => {
+  //   console.log("userId: ", userId)
+  //   try {
+  //     const profileQuery = query(collection(db, 'users'),  where('uid', '==', userId));
+  //     const querySnapshot = await getDocs(profileQuery);
+  //     const fetchedProfiles = querySnapshot.docs.map((doc) => ({
+  //       id: doc.id,
+  //       ...doc.data(),
+  //     }));
 
-  useEffect(() => {
-    fetchProfile();
-  }, [userId]); // Include userId in the dependency array
-  
+  //     setProfile(fetchedProfiles);
+  //     console.log("fetchedProfiles", fetchedProfiles)
+  //     setIsProfileFetched(true); // Update state to indicate profile data is fetched
+  //   } catch (error: any) {
+  //     console.error('Error fetching profile:', error.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchProfile();
+  // }, []);
+
+  // useEffect(() => {
+  //   // fetchProfile();
+  // }, [userId]); // Include userId in the dependency array
+  }
 
   return (
     <View style={styles.headerContainer}>
-      <View style={styles.leftSection}>
-        <TouchableOpacity onPress={handleProfilePage}>
+  {profile ? (
+    <View style={styles.leftSection}>
+      <TouchableOpacity onPress={handleProfilePage}>
+        {profile?.profilePicture ? (
+          <Image
+            source={{ uri: profile.profilePicture }}
+            style={styles.avatar}
+          />
+        ) : (
           <Image
             source={require('../../assets/avatar.png')}
             style={styles.avatar}
           />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.headerTextTop}>Good morning,</Text>
-          {isProfileFetched && profile && profile.length > 0 && (
-            <Text style={styles.headerTextBottom}>
-              {profile[0].firstName} {profile[0].lastName}
-            </Text>
-          )}
-        </View>
-      </View>
-      <View style={styles.rightSection}>
-        <TouchableOpacity onPress={handleSettingsPage}>
-          <Image
-            source={require('../../assets/settings.png')}
-            style={styles.settingsIcon}
-          />
-        </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+      <View>
+        <Text style={styles.headerTextTop}>Good morning,</Text>
+        {profile && (
+          <Text style={styles.headerTextBottom}>
+            {profile.firstName} {profile.lastName}
+          </Text>
+        )}
       </View>
     </View>
+  ) : (
+    <View>
+      <Text>Loading</Text>
+    </View>
+  )}
+
+<View style={[styles.rightSection, { flexDirection: 'row' }]}> 
+  <TouchableOpacity onPress={handleSettingsPage}>
+    <Image
+      source={require('../../assets/settings.png')}
+      style={styles.settingsIcon}
+    />
+  </TouchableOpacity>
+
+  {profile.isPremiumUser && ( // Corrected syntax
+    <TouchableOpacity onPress={handleChatBotsPage}>
+      <Image
+        source={require('../../assets/chatBot.png')}
+        style={[styles.settingsIcon, { marginLeft: 20, marginRight: 10}]}
+      />
+    </TouchableOpacity>
+  )}
+</View>
+
+</View>
+
+
   );
+  
 };
 const styles = StyleSheet.create({
   headerContainer: {
@@ -98,8 +135,9 @@ const styles = StyleSheet.create({
   avatar: {
     width: 42,
     height: 42,
-    borderRadius: 20,
+    borderRadius: 100,
     marginRight: 9,
+    marginLeft: 5
   },
   headerTextTop: {
     color: 'gray',
@@ -112,8 +150,8 @@ const styles = StyleSheet.create({
   },
   rightSection: {},
   settingsIcon: {
-    width: 24,
-    height: 24,
+    width: 26,
+    height: 26,
   },
 });
 

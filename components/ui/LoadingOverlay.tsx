@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   message: {
-    fontSize: 16,
+    fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 12,
-    color: '#1CB854', // Text color
+    color: '#FFFFFF', // Text color
   },
 });

@@ -93,7 +93,7 @@ const LoansAndDebt = () => {
 
   const fetchUserSettings = async () => {
     try {
-      const settingsQuery = query(collection(db, 'users'));
+      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId));
       const querySnapshot = await getDocs(settingsQuery);
   
       if (!querySnapshot.empty) {
