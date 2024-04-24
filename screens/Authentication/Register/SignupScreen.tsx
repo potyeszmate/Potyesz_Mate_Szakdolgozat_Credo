@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import AuthContent from '../../../components/Auth/AuthContent';
 import LoadingOverlay from '../../../components/ui/LoadingOverlay';
@@ -26,12 +26,31 @@ const SignupScreen: React.FC = () => {
     }
   }
 
+  // if (isAuthenticating) {
+  //   return <LoadingOverlay/>;
+  // }
+  // // Get auth props
+  // return <AuthContent onAuthenticate={signupHandler}/>;
+
   if (isAuthenticating) {
     return <LoadingOverlay/>;
   }
+  return (
+    <View style={styles.content}>
 
-  // Get auth props
-  return <AuthContent onAuthenticate={signupHandler} />;
+    <AuthContent onAuthenticate={signupHandler} />
+    </View>
+
+  );
+
+
 }
+
+const styles = StyleSheet.create({
+  content: {
+   backgroundColor: "#FAFAFA",
+   height: '100%'
+  },
+});
 
 export default SignupScreen;

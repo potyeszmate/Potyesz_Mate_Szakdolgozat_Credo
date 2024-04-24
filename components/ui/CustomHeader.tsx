@@ -121,12 +121,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    // backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingTop: 50, 
     height: 100,
     paddingBottom: 10,
-
+    backgroundColor: '#F5F6F5',
+    borderRadius: 7
   },
   leftSection: {
     flexDirection: 'row',

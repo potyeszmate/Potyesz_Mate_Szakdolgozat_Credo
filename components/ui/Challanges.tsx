@@ -229,10 +229,10 @@ const styles = StyleSheet.create({
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    fontFamily: 'Inter', // Make sure you have the Inter font available
+    // fontFamily: 'Inter', // Make sure you have the Inter font available
   },
   activeTabButton: {
-    backgroundColor: '#1A1A2C',
+    backgroundColor: '#149E53',
   },
   activeTabButtonText: {
     color: '#FFFFFF',

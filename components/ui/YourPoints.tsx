@@ -42,7 +42,7 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
         <View style={styles.pointsContainer}>
           <Text style={styles.yourPointsText}>{languages[selectedLanguage].yourPoints}</Text>
           <Text style={styles.pointsText}>
-            <Text style={{ color: '#1A1A2C' }}>{scorePoint}</Text> / <Text style={{ color: '#7E8086' }}>{totalPoint}</Text>
+            <Text style={{ color: '#1A1A2C', fontWeight: 'bold' }}>{scorePoint}</Text> / <Text style={{ color: '#7E8086', fontWeight: 'bold' }}>{totalPoint}</Text>
           </Text>
         </View>
       </View>
@@ -64,29 +64,44 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    // elevation: 2,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.2,
     marginTop: 16,
     width: '90%',
     alignSelf: 'center',
+
+    // flexDirection: 'row',
+    // backgroundColor: '#FFFFFF',
+    // padding: 16,
+    // marginTop: 20,
+    // width: '90%',
+    // alignSelf: 'center',
+    elevation: 4, // Shadow for Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+    shadowOpacity: 0.1, // Shadow for iOS
+    shadowRadius: 4, // Shadow for iOS
+    borderColor: '#E0E0E0', // A slightly darker shade for the border
   },
   leftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   yourPointsText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#1A1A2C',
   },
   pointsContainer: {
     marginLeft: 17,
     alignItems: 'center',
+
   },
   pointsText: {
     fontSize: 20,
     marginVertical: 2,
+    marginLeft: -10
   },
   rightContainer: {},
 });

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, updateDoc } from 'firebase/firestore';
@@ -23,6 +23,9 @@ import { convertCurrencyToCurrency } from '../../util/conversion';
 import MonthlyIncome from '../../components/ui/MonthlyIncome';
 import Payment from '../Payment/Payment';
 import WelcomeCard from '../../components/ui/WelcomeCard';
+import AddBudget from '../../components/ui/AddBudget';
+import BottomSheet from '@gorhom/bottom-sheet';
+import BudgetInput from '../../components/ui/BudgetInput';
 
 const languages: any = {
   English: en,
@@ -46,6 +49,11 @@ function WelcomeScreen() {
   const [symbol, setSymbol] = useState<any>('');
   const [loading, setLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [modalVisible, setModalVisible] = useState<any>(false);
+  const bottomSheetRef = useRef<any>(null);
+  const [budgets, setBudgets] = useState<any[]>([]);
+
+  const snapPoints = useMemo(() => ['30%', '50%'], []);
 
   // const [goals, setGoals] = useState([]);
 
@@ -187,6 +195,7 @@ function WelcomeScreen() {
       setLoading(false);  // Ensure you turn off loading no matter the outcome.
     }
   };
+
 
   const getCurrencySymbol = (currencyCode: any) => {
     // console.log("CHANGING CURRENCY SYMBOL")
@@ -375,6 +384,7 @@ function WelcomeScreen() {
     fetchChallanges();
     fetchIncome();
     fetchUserSettings();
+    // fetchUserSettings();
 
   }, [userId]);
 
@@ -464,6 +474,7 @@ function WelcomeScreen() {
           />
         )}
 
+        {/* Flatlist delete */}
         {activeTab === 'overview' && (
           <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
         )}
@@ -479,14 +490,14 @@ function WelcomeScreen() {
           // </View>
         )}
 
-
-        {/* {activeTab === 'overview' && (
-          <ClosestSubscription transactions={transactions} selectedLanguage={selectedLanguage}/>
-        )} */}
+        {activeTab === 'budget' && (
+          <AddBudget updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
+        )}
 
         {activeTab === 'budget' && (
         <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage} currency={userSettings.currency} conversionRate={conversionRate} symbol={symbol}/>
         )}
+
 
         {activeTab === 'progress' && points && !!points[0] && (
           <YourPoints score={points[0].score} total={points[0].total} selectedLanguage={selectedLanguage}/>
@@ -517,9 +528,9 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    paddingTop: 30
+    // paddingVertical: 16,
+    // paddingHorizontal: 24,
+    paddingTop: 35,
   },
   tabButton: {
     flex: 1,
@@ -527,22 +538,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 38,
     borderRadius: 99,
+    borderColor: '#149E53',
+    borderWidth: 0.6
+    // backgroundColor: '#FAFAFA',
   },
   container: {
     flex: 1,
+    backgroundColor: '#FAFAFA',
+
   },
   tabBarContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 16,
+    // paddingVertical: 16
+    marginBottom: 5,
     paddingHorizontal: 24,
-    paddingTop: 30,
+    paddingTop: 10,
+    gap: 5
   },
 
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    fontFamily: 'Inter', // Make sure you have the Inter font available
+    // fontFamily: 'Inter', // Make sure you have the Inter font available
   },
   activeTabButton: {
     backgroundColor: '#35BA52',
@@ -562,6 +580,20 @@ const styles = StyleSheet.create({
   listContainer: {
     width: '100%',
   },
+
+  bottomSheetBackground: {
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  contentContainer: {
+  flex: 1,
+  alignItems: 'center',
+},
 
 });
 

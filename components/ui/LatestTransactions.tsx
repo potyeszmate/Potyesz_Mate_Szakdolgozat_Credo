@@ -57,22 +57,30 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 16,
-    marginTop: 16,
-    width: '90%',
-    alignSelf: 'center',
+      backgroundColor: '#FFFFFF',
+      borderRadius: 22,
+      padding: 16,
+      marginTop: 20,
+      width: '90%',
+      alignSelf: 'center',
+      elevation: 4, // Shadow for Android
+      shadowColor: '#000', // Shadow for iOS
+      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+      shadowOpacity: 0.1, // Shadow for iOS
+      shadowRadius: 4, // Shadow for iOS
+      borderColor: '#E0E0E0', // A slightly darker shade for the border
+      paddingBottom: 5
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    // marginBottom: 5,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#7E8086',
   },
 });
 

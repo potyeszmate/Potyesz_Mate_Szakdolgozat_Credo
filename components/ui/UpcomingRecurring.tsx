@@ -112,11 +112,17 @@ const iconMapping: any = {
   const styles = StyleSheet.create({
     cardContainer: {
       backgroundColor: '#FFFFFF',
-      borderRadius: 20,
+      borderRadius: 22,
       padding: 16,
-      marginTop: 16,
+      marginTop: 20,
       width: '90%',
       alignSelf: 'center',
+      elevation: 4, // Shadow for Android
+      shadowColor: '#000', // Shadow for iOS
+      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+      shadowOpacity: 0.1, // Shadow for iOS
+      shadowRadius: 4, // Shadow for iOS
+      borderColor: '#E0E0E0', // A slightly darker shade for the border
     },
     header: {
       flexDirection: 'row',

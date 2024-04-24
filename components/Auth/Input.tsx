@@ -19,6 +19,7 @@ const Input: React.FC<any> = ({
         // {label}
       </Text> */}
       <TextInput
+        placeholderTextColor="#8B8B8B"
         style={[styles.input, isInvalid && styles.inputInvalid]}
         autoCapitalize="none"
         keyboardType={keyboardType}
@@ -32,14 +33,13 @@ const Input: React.FC<any> = ({
   );
 };
 
-export default Input;
 
 const styles = StyleSheet.create({
   inputContainer: {
     marginVertical: 8,
   },
   label: {
-    color: 'white',
+    color: '#f0f0f0',
     marginBottom: 1,
   },
   labelInvalid: {
@@ -49,15 +49,14 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 12,
     borderWidth: 1,
-    // 1CB854
-    // E7E7E9
-    borderColor: '#E7E7E9',
+    borderColor: '#F0F0F0',
     backgroundColor: '#F6F6F6',
-    marginBottom: 10,
-    paddingHorizontal: 5,
-    
+    paddingHorizontal: 16, // Adjusted for internal spacing
+    fontSize: 16, // Optional, for placeholder text size
   },
   inputInvalid: {
     backgroundColor: Colors.error100,
   },
 });
+
+export default Input;

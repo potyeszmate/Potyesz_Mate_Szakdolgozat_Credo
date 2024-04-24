@@ -105,12 +105,20 @@ const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 16,
     marginTop: 16,
     width: '90%',
     alignSelf: 'center',
+    elevation: 4, // Shadow for Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+    shadowOpacity: 0.1, // Shadow for iOS
+    shadowRadius: 4, // Shadow for iOS
+    borderColor: '#E0E0E0', // A slightly darker shade for the border
   },
+
+  
   loadingText: {
     fontSize: 16,
     color: '#FFFFFF', // Example color
@@ -123,6 +131,8 @@ const styles = StyleSheet.create({
     color: '#7E8086',
     fontSize: 16,
     paddingBottom: 5,
+    fontWeight: 'bold',
+
   },
   balanceAmount: {
     fontSize: 29,

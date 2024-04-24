@@ -158,7 +158,7 @@ const CryptoDetails = () => {
       <View style={styles.descriptionContainer}>
         <Text style={styles.label}>Description:</Text>
         <TouchableOpacity onPress={toggleDescription} style={styles.description}>
-          <Text numberOfLines={expanded ? undefined : 3}>{cryptoDetails.description}</Text>
+          <Text numberOfLines={expanded ? undefined : 4}>{cryptoDetails.description}</Text>
         </TouchableOpacity>
       </View>
 

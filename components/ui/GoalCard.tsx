@@ -6,6 +6,7 @@ import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
 import * as Progress from 'react-native-progress';
+import { useNavigation } from '@react-navigation/native';
 
 const languages: any = {
   English: en,
@@ -16,6 +17,7 @@ const languages: any = {
 
 const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) => {
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   let progressValue = 0;
   let remainingAmount = 0;
@@ -29,7 +31,8 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
   }
 
   return (
-    <View style={styles.cardContainer}>
+    // @ts-ignore
+    <TouchableOpacity style={styles.cardContainer} onPress={() => navigation.navigate('GoalDetailScreen', { goal })}>
       {/* First Row */}
       <View style={styles.rowContainer}>
         <Text style={styles.goalName}>{goal.Name}</Text>
@@ -47,8 +50,17 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
 
       {/* Second Row */}
       <View style={styles.progressBarContainer}>
-        <View style={styles.progressBarWrapper}>
+        <View style={styles.rowContainer}>
+          <Text style={[styles.amountTextCurrent, { color: '#1A1A2C' }]}>${goal.Current_Ammount}</Text>
 
+          <View style={styles.rightPart}>
+            <Text style={[styles.remainingAmount, { color: '#7E8086', marginRight: 4 }]}>${remainingAmount}</Text>
+            <Text style={[styles.amountText, { color: '#7E8086', marginLeft: 4 }]}>{languages[selectedLanguage].leftOf}</Text>
+            <Text style={[styles.amountTextTotal, { color: '#1A1A2C', marginLeft: 4 }]}>${goal.Total_Ammount}</Text>
+          </View>
+        </View>
+
+        <View style={styles.progressBarWrapper}>
         <Progress.Bar
           progress={progressValue}
           width={Math.round(Dimensions.get('window').width * 0.82)}
@@ -63,17 +75,16 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
 
       </View>
 
-      {/* Third Row */}
-      <View style={styles.rowContainer}>
-        <Text style={[styles.amountTextCurrent, { color: '#1A1A2C' }]}>${goal.Current_Ammount}</Text>
-
-        <View style={styles.rightPart}>
-          <Text style={[styles.remainingAmount, { color: '#7E8086', marginRight: 4 }]}>${remainingAmount}</Text>
-          <Text style={[styles.amountText, { color: '#7E8086', marginLeft: 4 }]}>{languages[selectedLanguage].leftOf}</Text>
-          <Text style={[styles.amountTextTotal, { color: '#1A1A2C', marginLeft: 4 }]}>${goal.Total_Ammount}</Text>
-        </View>
+      <View style={styles.monthlySpentRowContainer}>
+        <Text style={[styles.amountTextCurrent, { color: '#35BA52' }]}>$200</Text> 
+        <Text style={[styles.remainingAmount, { color: '#7E8086', marginRight: 4 }]}>this month</Text> 
+      {/* ... rest of the rightPart */}
       </View>
-    </View>
+
+      {/* Third Row */}
+    
+
+    </TouchableOpacity>
   );
 };
 
@@ -108,6 +119,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  monthlySpentRowContainer: {
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 6
   },
   goalName: {
     fontSize: 16,

@@ -61,7 +61,7 @@ const TransactionList: React.FC<any> = ({ transactions, currency, conversionRate
 
 const styles = StyleSheet.create({
   listContainer: {
-    marginTop: 10,
+    // marginTop: 5,
   },
   iconImage: {
     width: 35,
@@ -72,7 +72,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 15,
+    // padding: 15,
+    paddingBottom: 12,
+    paddingTop: 12,
     // marginBottom: 10,
     borderRadius: 8,
     elevation: 2,
@@ -81,10 +83,11 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: '#EEEEEE',
-    marginLeft: 60, // Adjust this value to align with the transactionInfo
-    marginRight: 16, // Add a bigger right margin
-    marginBottom: 2, // Add a bigger right margin
-    marginTop: 2, // Add a bigger right margin
+    // marginLeft: 5, // Adjust this value to align with the transactionInfo
+    // marginRight: 5, // Add a bigger right margin
+    // marginBottom: 2, // Add a bigger right margin
+    // marginTop: 2, // Add a bigger right margin
+    // marginVertical: 18,
   },
   transactionIcon: {
     marginRight: 10,

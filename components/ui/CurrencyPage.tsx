@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   header: {
-    fontFamily: 'Inter',
+    // fontFamily: 'Inter',
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   currencyText: {
     flex: 1,
-    fontFamily: 'Inter',
+    // fontFamily: 'Inter',
     fontSize: 16,
   },
 });

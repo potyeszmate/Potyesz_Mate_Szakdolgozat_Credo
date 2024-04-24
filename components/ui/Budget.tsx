@@ -87,7 +87,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    padding: 15,
+    paddingTop: 13,
+    paddingBottom: 13,
     marginHorizontal: 10, // Reduced margin for a wider card
     // shadowColor: '#000',
     // shadowOffset: { width: 0, height: 1 },

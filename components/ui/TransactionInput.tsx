@@ -696,7 +696,7 @@ const styles = StyleSheet.create({
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    fontFamily: 'Inter',
+    // fontFamily: 'Inter',
   },
   scrollViewContent: {
     paddingBottom: 100, // Adjust as needed

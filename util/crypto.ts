@@ -100,28 +100,6 @@ export const getCryptoChartData = async (symbol: string, startDate: any, endDate
   }
 };
 
-export const getStockChartData = async (symbol: string) => {
-  try {
-    console.log("CALLED THE getStockChartData API with IDS: ", symbol)
-
-
-    const apiKey = '012d681fe88749e3964a547eeab622d8';
-    const apiUrl = `https://api.twelvedata.com/time_series?&start_date=2020-01-06&end_date=2020-05-06&symbol=${symbol}&interval=1day&apikey=${apiKey}`;
-
-    const response = await fetch(apiUrl);
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data: any = await response.json();
-    console.log(`Chart data: : `, data); 
-    return data;
-  } catch (error: any) {
-    console.error(error);
-    throw new Error(`Error fetching conversion rates: ${error.message}`);
-  }
-};
 
 // https://api.twelvedata.com/time_series?&start_date=2020-01-06&end_date=2020-05-06&symbol=aapl&interval=1day&apikey=xxx
 // 012d681fe88749e3964a547eeab622d8

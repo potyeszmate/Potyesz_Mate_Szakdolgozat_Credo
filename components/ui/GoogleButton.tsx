@@ -24,11 +24,13 @@ export default GoogleButton;
 const styles = StyleSheet.create({
     signInButton: {
         height: 51,
-        backgroundColor: '#EEEEEE',
+        backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 14,
-        padding: 15
+        // padding: 15,
+        borderColor: '#EEEEEE',
+        borderWidth: 1
       },
       buttonText: {
         color: '#0000008A',

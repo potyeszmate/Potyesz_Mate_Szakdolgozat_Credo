@@ -14,6 +14,8 @@ import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc,deleteDoc,updateDoc, doc } from 'firebase/firestore';
 import { AuthContext } from '../../store/auth-context';
 import { Feather } from '@expo/vector-icons';
+import RNPickerSelect from 'react-native-picker-select';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
@@ -24,6 +26,8 @@ const languages: any = {
   German: de,
   Hungarian: hu,
 };
+
+
 
 const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency, conversionRate, symbol }) => {
   const [budgets, setBudgets] = useState<any[]>([]);
@@ -39,6 +43,22 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   const [selectedBudget, setSelectedBudget] = useState<any | null>(null);
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
+  const [selectedMonth, setSelectedMonth] = React.useState('January');
+
+  const months = [
+    { label: 'January', value: 'January' },
+    { label: 'February', value: 'February' },
+    { label: 'March', value: 'March' },
+    { label: 'April', value: 'April' },
+    { label: 'May', value: 'May' },
+    { label: 'June', value: 'June' },
+    { label: 'July', value: 'July' },
+    { label: 'August', value: 'August' },
+    { label: 'September', value: 'September' },
+    { label: 'October', value: 'October' },
+    { label: 'November', value: 'November' },
+    { label: 'December', value: 'December' },
+  ];
 
   const fetchBudgets = async () => {
     try {
@@ -163,7 +183,20 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     <View style={styles.container}>
       {!loading && spentPercentage > 0 && (
       <View style={styles.summaryContainer}>
-        <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
+        <View>
+          <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
+          <View style={styles.monthSelectorContainer}>
+            <View style={styles.monthSelectorCard}>
+              <RNPickerSelect
+                value={selectedMonth}
+                onValueChange={(value) => setSelectedMonth(value)}
+                items={months.map(month => ({ label: month.label, value: month.value }))}
+                style={{ inputIOS: styles.monthSelector }}
+              />
+              <Ionicons name="caret-down" size={20} style={styles.monthSelectorIcon} />
+            </View>
+          </View>
+        </View>
         <Text style={styles.amountLeftText}>
           {currency === 'HUF' ? 
             Math.round(parseFloat(remainingAmount) * conversionRate) :
@@ -172,7 +205,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
       </View>
       )}
       {!loading && spentPercentage > 0 && (
-        <View style={{ marginLeft: 12, marginRight: 8 }}>
+        <View style={{ }}>
           <Progress.Bar
             progress={spentPercentage / 100}
             width={Math.round(Dimensions.get('window').width * 0.82)}
@@ -213,14 +246,16 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
             {index !== budgets.length - 1 && <View style={styles.separator} />}
           </View>
         ))}
-      {!loading && (
+
+      {/* {!loading && (
         <View style={styles.addButtonContainer}>
           <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
             <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
             <Text style={styles.addButtonText}>Create new</Text>
           </TouchableOpacity>
         </View>
-       )}
+       )} */}
+
       <Modal
         visible={deleteModalVisible}
         transparent={true}
@@ -278,39 +313,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
           </BottomSheet>
         </Pressable>
       </Modal>
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalBackground}
-          onPress={() => {
-            // Close both the modal and BottomSheet when clicking outside
-            // setModalVisible(false);
-            // bottomSheetRef.current?.close();
-          }}
-        >
-          <BottomSheet
-            ref={bottomSheetRef}
-            index={1}
-            snapPoints={snapPoints}
-            enablePanDownToClose
-            onClose={() => {
-              console.log('BottomSheet closed');
-              setModalVisible(false);
-            }}
-            backgroundComponent={({ style }) => (
-              <View style={[style, styles.bottomSheetBackground]} />
-            )}
-          >
-            <View style={styles.contentContainer}>
-              <BudgetInput onAddBudget={addBudgetHandler} existingCategories={budgets.map(budget => budget.Category)} />
-            </View>
-          </BottomSheet>
-        </Pressable>
-      </Modal>
+     
     </View>
   );
 };
@@ -318,22 +321,29 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
 const styles = StyleSheet.create({
     container: {
       backgroundColor: '#FFFFFF',
-      borderRadius: 20,
-      marginTop: 16,
+      borderRadius: 22,
+      padding: 16,
+      marginTop: 10,
       width: '90%',
       alignSelf: 'center',
+      elevation: 4, // Shadow for Android
+      shadowColor: '#000', // Shadow for iOS
+      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+      shadowOpacity: 0.1, // Shadow for iOS
+      shadowRadius: 4, // Shadow for iOS
+      borderColor: '#E0E0E0', // A slightly darker shade for the border
     },
     summaryContainer: {
-      marginLeft: 16,
-      marginRight: 16,
-      marginTop: 20
+      // marginLeft: 5,
+      // marginRight: 5,
+      // marginTop: 5
     },
     expenseSummaryText: {
       fontSize: 16,
       color: '#888',
     },
     amountLeftText: {
-      fontSize: 29,
+      fontSize: 25,
       fontWeight: 'bold',
       color: '#333',
       marginTop: 8,
@@ -349,7 +359,7 @@ const styles = StyleSheet.create({
     spentText: {
       fontSize: 16,
       color: '#333',
-      marginLeft: 15
+      marginLeft: 2
     },
     bottomSheetBackground: {
       backgroundColor: 'white',
@@ -363,7 +373,7 @@ const styles = StyleSheet.create({
     setText: {
         fontSize: 16,
         color: '#888',
-        marginRight: 25
+        marginRight: 3
     },
     buttonsRow: {
         flexDirection: 'row',
@@ -374,8 +384,8 @@ const styles = StyleSheet.create({
       separator: {
         height: 1,
         backgroundColor: '#EEEEEE',
-        marginLeft: 16, // Adjust this value to align with the transactionInfo
-        marginRight: 16, // Add a bigger right margin
+        // marginLeft: 5, // Adjust this value to align with the transactionInfo
+        // marginRight: 5, // Add a bigger right margin
         marginBottom: 2, // Add a bigger right margin
         marginTop: 2, // Add a bigger right margin
       },
@@ -450,7 +460,30 @@ const styles = StyleSheet.create({
       fontSize: 16,
       color: '#1A1A2C',
     },
-      
+    monthSelectorContainer: {
+      position: 'absolute',
+      top: 0,
+      right: -3,
+      zIndex: 1,
+    },
+    monthSelectorCard: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 20,
+      padding: 8,
+      borderWidth: 1,
+      borderColor: '#F0F0F0',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    monthSelector: {
+      flex: 1,
+      color: '#000000',
+      paddingRight: 30, // To account for the icon
+    },
+    monthSelectorIcon: {
+      position: 'absolute',
+      right: 10,
+    },
   });
     
 

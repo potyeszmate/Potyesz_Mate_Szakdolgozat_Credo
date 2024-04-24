@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
-import { Image, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
@@ -46,6 +46,9 @@ import { StripeProvider } from '@stripe/stripe-react-native';
 import BudgetDetail from './components/ui/BudgetDetail';
 import UserProfileCard from './components/ui/UserProfileCard';
 import Payment from './screens/Payment/Payment';
+import StockDetails from './components/ui/StockDetails';
+import GoalDetailScreen from './components/ui/GoalDetailScreen';
+import SpendingAnalytics from './screens/Analytics/SpendingAnalytics';
 
 
 const languages: any = {
@@ -175,7 +178,7 @@ function TabNavigator() {
       
       <Tab.Screen
         name={languages[selectedLanguage].analytics}
-        component={AnalyticsScreen}
+        component={AnalyticsStack}
         options={{
           tabBarIcon: ({ color }) => (
             <Image
@@ -183,7 +186,7 @@ function TabNavigator() {
               style={{ tintColor: color, width: 24, height: 24 }}
             />
           ),
-          headerShown: true,
+          // headerShown: true,
         }
       }
         
@@ -210,13 +213,16 @@ function Navigation() {
   const authCtx = useContext(AuthContext) as any;
 
   return (
-    <NavigationContainer>
-      {!authCtx.isAuthenticated ? (
-        <AuthStackScreen />
-      ) : (
-        <AuthenticatedStack />
-      )}
-    </NavigationContainer>
+    <View style={styles.appBackground}>
+      <NavigationContainer>
+        {!authCtx.isAuthenticated ? (
+          <AuthStackScreen />
+        ) : (
+          <AuthenticatedStack />
+        )}
+      </NavigationContainer>
+    </View>
+
   );
 }
 
@@ -251,15 +257,22 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
         <AuthContextProvider>
-          <StatusBar style="light" />
+          <StatusBar barStyle="dark-content" />
           <StripeProvider publishableKey={STRIPE_KEY}>
-            <Root />
+              <Root />
           </StripeProvider>
         </AuthContextProvider>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  appBackground: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
+  },
+});
 
 function ExpensesStack() {
   return (
@@ -402,8 +415,18 @@ function SavingsStack() {
       />
 
       <Stack.Screen
+        name="GoalDetailScreen"
+        component={GoalDetailScreen}
+      /> 
+
+      <Stack.Screen
         name="Stocks"
         component={StocksScreen}
+      />
+
+      <Stack.Screen
+        name="StockDetails"
+        component={StockDetails}
       />
 
       <Stack.Screen
@@ -414,7 +437,33 @@ function SavingsStack() {
       <Stack.Screen
         name="CryptoDetails"
         component={CryptoDetails}
+      /> 
+      
+    </Stack.Navigator>
+  );
+}
+
+function AnalyticsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        // headerStyle: { backgroundColor: '#F5F6F5' },
+        // headerTintColor: 'white',
+        // contentStyle: { backgroundColor: Colors.primary100 },
+        
+      }}
+    >
+      <Stack.Screen
+        name="AnalyticsScreen"
+        component={AnalyticsScreen}
       />
+
+      <Stack.Screen
+        name="SpendingAnalytics"
+        component={SpendingAnalytics}
+
+      />
+    
       
     </Stack.Navigator>
   );

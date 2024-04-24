@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Text, View, Image, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import currencies from '../../util/currencies.json'; 
+import currencies from '../../db/currencies.json';
 import { getCryptoInfo } from "../../util/crypto";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(255,255,255,0.9)',
       zIndex: 1,
       height: 200,
+      marginTop: 10
       // top: searchBarHeight,
   },
     left: {

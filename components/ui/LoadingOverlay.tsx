@@ -10,7 +10,7 @@ function LoadingOverlay() { // Use the defined interface
     >
       <View>
         <Text style={styles.message}>Credo</Text>
-        <ActivityIndicator size="large" color="#1CB854" />
+        {/* <ActivityIndicator size="large" color="#1CB854" /> */}
       </View>
     </ImageBackground>
   );

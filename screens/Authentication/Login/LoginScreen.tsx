@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import AuthContent from '../../../components/Auth/AuthContent';
 import LoadingOverlay from '../../../components/ui/LoadingOverlay';
@@ -32,8 +32,21 @@ const LoginScreen: React.FC = () => {
   if (isAuthenticating) {
     return <LoadingOverlay/>;
   }
+  return (
+    <View style={styles.content}>
 
-  return <AuthContent isLogin onAuthenticate={loginHandler} />;
+    <AuthContent isLogin onAuthenticate={loginHandler} />
+    </View>
+
+  );
+
 }
+
+const styles = StyleSheet.create({
+  content: {
+   backgroundColor: "#FAFAFA",
+   height: '100%'
+  },
+});
 
 export default LoginScreen;

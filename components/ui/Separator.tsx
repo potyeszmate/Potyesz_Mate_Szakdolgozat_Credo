@@ -7,14 +7,6 @@ import FlatButton from './FlatButton';
 const Separator: React.FC<any> = ({ onPress, isLogin }) => {
   return (
     <View style={styles.separatorContainer}>
-      <View style={styles.forgotPasswordContainer}>
-        {isLogin && (
-          <FlatButton onPress={onPress}>
-            <Text style={styles.forgotPassword}>Forgot password?</Text>
-          </FlatButton>
-        )}
-      </View>
-
       <View style={styles.separatorTextContainer}>
         <Text style={styles.separatorText}>--------------------</Text>
         <Text style={styles.separatorOrText}>OR</Text>

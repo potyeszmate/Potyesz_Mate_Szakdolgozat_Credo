@@ -106,13 +106,19 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
 
 const styles = StyleSheet.create({
   cardContainer: {
-    flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 16,
-    marginTop: 16,
+    marginTop: 20,
     width: '90%',
     alignSelf: 'center',
+    elevation: 4, // Shadow for Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+    shadowOpacity: 0.1, // Shadow for iOS
+    shadowRadius: 4, // Shadow for iOS
+    borderColor: '#E0E0E0', // A slightly darker shade for the border
+    flexDirection: 'row',
   },
   leftSide: {
     flex: 1,
@@ -124,12 +130,13 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 15,
     color: '#7E8086',
-    fontFamily: 'Inter',
+    fontWeight: 'bold'
+    // fontFamily: 'Inter',
   },
   incomeText: {
     fontSize: 20,
     color: '#000',
-    fontFamily: 'Inter',
+    // fontFamily: 'Inter',
     marginTop: 4,
     fontWeight: 'bold'
   },
@@ -148,7 +155,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#149E53',
     fontSize: 14,
-    fontFamily: 'Inter',
+    // fontFamily: 'Inter',
   },
   modalBackground: {
     flex: 1,
