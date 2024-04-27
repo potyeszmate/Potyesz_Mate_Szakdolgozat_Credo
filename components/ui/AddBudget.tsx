@@ -18,7 +18,7 @@ const allCategories: any = [
   { label: 'Transport', value: 8 },
 ];
 
-const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, currency}) => {
+const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [newIncome, setNewIncome] = useState('');
   const [textInputFocused, setTextInputFocused] = useState(false);

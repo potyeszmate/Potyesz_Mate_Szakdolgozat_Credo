@@ -5,6 +5,7 @@ export const convertCurrencyToCurrency = async (fromCurrency: any, toCurrency: a
     console.log("fromCurrency " + fromCurrency  + "toCurrency: "+ toCurrency)
     try {
       console.log("FETCHING CURRENCY API");
+      console.log("toCurrency: ", toCurrency)
       const response = await fetch(`${apiUrl}/${fromCurrency}`);
       const data = await response.json();
       const rate = data.conversion_rates[toCurrency];

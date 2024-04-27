@@ -60,7 +60,7 @@ const CurrencyPage = () => {
   
   const route: any = useRoute();
 
-  const defaultCurrency = route.params?.defaultCurrency ?? 'United States Dollar (USD)';
+  const defaultCurrency = route.params?.defaultCurrency ?? 'USD';
 
   const currencies = [
     { fullName: 'United States Dollar (USD)', shortName: 'USD' },

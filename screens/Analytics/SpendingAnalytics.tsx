@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
@@ -7,6 +7,8 @@ import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } f
 import { db } from '../../firebaseConfig';
 import { AuthContext } from "../../store/auth-context";
 import DonutChart from "../../components/ui/DonutChart";
+import DateLineChart from "../../components/ui/DateLineChart";
+import BarChartSpending from "../../components/ui/BarchartSpending";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -30,7 +32,7 @@ const SpendingAnalytics = () => {
         } catch (error: any) {
           console.error('Error fetching transactions:', error.message);
         }
-      };
+    };
 
     const navigateDate = (direction: any) => {
         const newDate = new Date(currentDate);
@@ -71,12 +73,44 @@ const SpendingAnalytics = () => {
         setFilterModalVisible(false);
     };
 
-    useEffect(() => {
+    const filterTransactionsByDate = () => {
+        let filteredTransactions = transactions;
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+      
+        if (filterType === 'monthly') {
+          filteredTransactions = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.date.seconds * 1000); // Assuming transaction.date is a Firestore Timestamp
+            return transactionDate.getMonth() === currentDate.getMonth() &&
+                   transactionDate.getFullYear() === currentDate.getFullYear();
+          });
+        } else if (filterType === 'weekly') {
+          filteredTransactions = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
+          });
+        } else if (filterType === 'yearly') {
+          filteredTransactions = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            return transactionDate.getFullYear() === currentDate.getFullYear();
+          });
+        }
+        
+        return filteredTransactions || [];
+    };
+      
+    const memoizedFilteredTransactions = useMemo(() => filterTransactionsByDate(), [transactions, currentDate, filterType]);
+
+
+      useEffect(() => {
         fetchTransactions();
-      }, [userId]);
+      }, [userId, filterType, currentDate, []]); // Depend on filterType and currentDate too
+      
     
     return (
-        <View> 
+    <View> 
         <View style={styles.filterBar}>
             <TouchableOpacity onPress={() => navigateDate(-1)}>
                 <Feather name="chevron-left" size={24} color="black" />
@@ -90,7 +124,8 @@ const SpendingAnalytics = () => {
         </View>
 
         <ScrollView >
-            <DonutChart data={transactions}/>
+            <DonutChart data={memoizedFilteredTransactions} />
+            <BarChartSpending data={memoizedFilteredTransactions} />
         </ScrollView>
 
         <Modal
@@ -187,3 +222,5 @@ const styles = StyleSheet.create({
 });
 
 export default SpendingAnalytics;
+
+

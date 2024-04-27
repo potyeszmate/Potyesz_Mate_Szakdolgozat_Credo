@@ -5,6 +5,9 @@ import AuthContent from '../../../components/Auth/AuthContent';
 import LoadingOverlay from '../../../components/ui/LoadingOverlay';
 import { AuthContext } from '../../../store/auth-context';
 import { createUser } from '../../../util/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, db } from '../../../firebaseConfig';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignupScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false); // Added type boolean
@@ -16,6 +19,8 @@ const SignupScreen: React.FC = () => {
     try {
       const token = await createUser(email, password);
       // Saving token to state
+      
+     
       authCtx.authenticate(token);
     } catch (error) {
       Alert.alert(

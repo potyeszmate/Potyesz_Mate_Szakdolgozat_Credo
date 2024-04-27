@@ -194,7 +194,7 @@ const StockScreen = () => {
         <TouchableOpacity
           key={stock.symbol}
           style={styles.card}
-          onPress={() => handleCardPress(stock.symbol, stock.name)}
+          onPress={() => handleCardPress( stock.name, stock.symbol)}
         >
           {/* <Image source={{ uri: stock.logo }} style={styles.logo} /> */}
           <View style={styles.stockInfo}>

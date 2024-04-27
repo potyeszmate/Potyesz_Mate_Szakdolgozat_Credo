@@ -49,6 +49,11 @@ import Payment from './screens/Payment/Payment';
 import StockDetails from './components/ui/StockDetails';
 import GoalDetailScreen from './components/ui/GoalDetailScreen';
 import SpendingAnalytics from './screens/Analytics/SpendingAnalytics';
+import Chatbot from './screens/Chatbot/Chatbot';
+import RecurringAnalytics from './screens/Analytics/RecurringAnalytics';
+import CashFlowAnalytics from './screens/Analytics/CashFlowAnalytics';
+import BalanceAnalytics from './screens/Analytics/BalanceAnalytics';
+import StocksAndCryptoAnalytics from './screens/Analytics/StocksAndCryptoAnalytics';
 
 
 const languages: any = {
@@ -230,7 +235,6 @@ function Root() {
   const [isTryingLogin, setIsTryingLogin] = useState(true);
 
   const authCtx = useContext(AuthContext) as any;
-
   useEffect(() => {
     async function fetchToken() {
       const storedToken = await AsyncStorage.getItem('token');
@@ -323,6 +327,11 @@ function WelcomeStack() {
       <Stack.Screen
         name="ProfilePage"
         component={ProfilePage}
+      />
+
+      <Stack.Screen
+        name="Chatbot"
+        component={Chatbot}
       />
 
       <Stack.Screen
@@ -459,10 +468,30 @@ function AnalyticsStack() {
       />
 
       <Stack.Screen
+        name="BalanceAnalytics"
+        component={BalanceAnalytics}
+      />
+
+      <Stack.Screen
         name="SpendingAnalytics"
         component={SpendingAnalytics}
-
       />
+      
+      <Stack.Screen
+        name="CashFlowAnalytics"
+        component={CashFlowAnalytics}
+      />
+      
+      <Stack.Screen
+        name="RecurringAnalytics"
+        component={RecurringAnalytics}
+      />
+      
+      <Stack.Screen
+        name="StocksAndCryptoAnalytics"
+        component={StocksAndCryptoAnalytics}
+      />
+    
     
       
     </Stack.Navigator>

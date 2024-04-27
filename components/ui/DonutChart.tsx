@@ -1,12 +1,28 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
+
+const categoryColors: any = { // Predefined colors for categories
+  Food: "#4793AF",
+  Entertainment: "#FFC470",
+  Grocieries: "#DD5746",
+  Shopping: "#8B322C",
+  UtilityCosts: "#416D19",
+  Transportation: "#C4E4FF",
+  Housing: "#121481"
+
+  // add more categories with distinct colors as needed
+};
+
 const DonutChart = ({ data }: { data: any[] }) => {
-  if (data.length === 0) {
-    return <Text style={styles.noDataText}></Text>;
+  if (!data || data.length === 0) {
+    // Display a message when there are no transactions
+    return <Text style={styles.noDataText}>No data available</Text>;
   }
+  
+  const screenWidth = Dimensions.get('window').width;
 
   // Aggregate values for the same category
   const aggregatedData = data.reduce((acc: any[], transaction: any) => {
@@ -23,31 +39,23 @@ const DonutChart = ({ data }: { data: any[] }) => {
 
   const totalAmount = aggregatedData.reduce((total: number, category: any) => total + category.value, 0);
 
-  // Function to generate a random color
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  };
-
   const chartData = aggregatedData.map((category: any) => ({
     name: category.name,
     value: category.value,
     percentage: ((category.value / totalAmount) * 100).toFixed(2),
-    color: getRandomColor(),
+    color: categoryColors[category.name] || '#999999', // Default color if category is not found
   }));
 
   return (
     <View style={styles.chartContainer}>
-      <Text style={styles.cardTitle}>Category Statistic</Text>
+      
       <View style={styles.card}>
+      {/* <Text style={styles.cardTitle}>Category Statistic</Text> */}
+
         <PieChart
           data={chartData}
-          width={300}
-          height={200}
+          width={screenWidth - 120}
+          height={250}
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
@@ -57,15 +65,17 @@ const DonutChart = ({ data }: { data: any[] }) => {
           }}
           accessor="value"
           backgroundColor="transparent"
-          paddingLeft="15"
+          paddingLeft="70"
           absolute
+          hasLegend={false} // Disable the default legend
+
         />
         <Text style={styles.totalAmountText}>Total Amount: ${totalAmount.toFixed(2)}</Text>
         <View style={styles.legendContainer}>
           {chartData.map((category: any, index: number) => (
             <View key={index} style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: category.color }]} />
-              <Text>{category.name}: {category.percentage}%</Text>
+              <Text>{category.name}: {category.percentage}% - {category.value}$</Text>
             </View>
           ))}
         </View>
@@ -76,38 +86,55 @@ const DonutChart = ({ data }: { data: any[] }) => {
 
 const styles = StyleSheet.create({
   chartContainer: {
-    marginTop: 20,
+    // marginTop: 20,
     alignItems: 'center',
   },
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    padding: 15,
+    padding: 20,
     elevation: 5,
-    marginTop: 10,
+    // marginTop: 10,
     alignItems: 'center',
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
-    marginTop: 60,
+    marginTop: 10,
   },
   totalAmountText: {
     marginTop: 10,
-    fontSize: 16,
-  },
-  noDataText: {
+    marginBottom: 20,
     fontSize: 16,
   },
   legendContainer: {
-    marginTop: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    width: '100%', // Ensure the container takes full width
+    marginBottom: 10, // Add space between legend and chart
+    // marginLeft: -40,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    // margin: 10, // Add some margin to space out items
+    // marginLeft: 10,
+    marginRight: 40,
+    marginBottom: 10
   },
+  noDataText: {
+    fontSize: 16,
+  },
+  // legendContainer: {
+  //   marginTop: 10,
+  // },
+  // legendItem: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  //   marginBottom: 5,
+  // },
   legendColor: {
     width: 16,
     height: 16,

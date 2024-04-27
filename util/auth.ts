@@ -6,7 +6,6 @@ import { FIREBASE_AUTH } from '../firebaseConfig';
 
 const API_KEY = 'AIzaSyCevIOdziT9r8ZR-W0ILfCC8rLvqWJcAQ8';
 
-
 //   const user: any = auth.currentUser;
 
 
@@ -35,7 +34,7 @@ export const getUid = async (idToken: any): Promise<string | null> => {
     }
   } catch (error: any) {
     console.error('Error fetching user ID in getUid:', error.message);
-    
+
     return null;
   }
 };

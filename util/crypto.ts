@@ -48,6 +48,8 @@ export const getCryptoInfo = async (id: any) => {
 };
   
 export const getCryptoValues = async (id: any) => {
+  console.log("CALLED THE INFOS API with IDS: ", id)
+
   try {
     console.log("CALLED THE INFOS API with IDS: ", id)
     

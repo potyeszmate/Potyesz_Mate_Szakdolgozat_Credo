@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { Alert, StyleSheet, View, Text, Modal, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
 import Button from '../ui/Button';
 import Input from './Input';
@@ -10,6 +10,10 @@ import FacebookButton from '../ui/FacebookButton';
 import IOSButton from '../ui/IOSButton';
 import Separator from '../ui/Separator';
 import FlatButton from '../ui/FlatButton';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { FIREBASE_AUTH } from '../../firebaseConfig';
+import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo
+
 
 
 const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
@@ -17,6 +21,8 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
+  const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   const {
     email: emailIsInvalid,
@@ -50,6 +56,36 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
       confirmPassword: enteredConfirmPassword,
     });
   }
+
+  const closeModalHandler = () => {
+    setIsResetPasswordModalVisible(false);
+  };
+
+  const forgotPassword = (email: any) => {
+    // Make sure to handle empty email scenario before calling this function
+    if (!email) {
+      Alert.alert('Please enter your email address.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Please enter a valid email address.');
+      return;
+    }
+  
+    sendPasswordResetEmail(FIREBASE_AUTH, email)
+    .then(() => {
+      Alert.alert('Please check your email for the password reset link.');
+    }).catch(error => {
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert('No user found with this email address.');
+      } else {
+        Alert.alert('Error sending password reset email: ' + error.message);
+      }
+    });
+  };
+  
   
   return (
       <View style={styles.content}>
@@ -86,9 +122,9 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
         {isLogin && (
          <View style={styles.forgotPasswordContainer}>
           
-            <FlatButton>
-              <Text style={styles.forgotPassword}>Forgot password?</Text>
-            </FlatButton>
+          <FlatButton onPress={() => setIsResetPasswordModalVisible(true)}>
+            <Text style={styles.forgotPassword}>Forgot password?</Text>
+          </FlatButton>
         
         </View>
         )}
@@ -119,11 +155,11 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
           <Separator isLogin={isLogin} />
         </View>
 
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <FacebookButton>
             {'Continute with Facebook'}
           </FacebookButton>
-        </View>
+        </View> */}
 
         <View style={styles.buttonContainer}>
           <GoogleButton>
@@ -132,11 +168,57 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
         </View>
 
         
-        <View style={styles.buttonContainer} >
+        {/* <View style={styles.buttonContainer} >
           <IOSButton>
             {'Continute with Apple'}
           </IOSButton>
-        </View>
+        </View> */}
+
+        <Modal
+          visible={isResetPasswordModalVisible}
+          animationType="slide"
+          presentationStyle="overFullScreen" // Try using overFullScreen for a full-screen modal
+          transparent={true} // Ensure the background is transparent
+          onRequestClose={closeModalHandler}
+        >
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.centeredView}
+          >
+          <View style={styles.modalView}>
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={closeModalHandler}
+          >
+            <Ionicons name="close" size={24} color="#000" />
+          </TouchableOpacity>
+            <Text style={styles.modalText}>Forgot your password?</Text>
+            <TextInput
+              placeholder="Enter email address here"
+              value={resetEmail}
+              onChangeText={text => setResetEmail(text)}
+              style={styles.modalInput}
+              keyboardType="email-address"
+            />
+             <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                forgotPassword(resetEmail.trim());
+                setIsResetPasswordModalVisible(false);
+              }}
+            >
+              <Text style={styles.buttonText}>Send password reset link</Text>
+            </TouchableOpacity>
+            <Text style={styles.modalNote}>
+              Check your email spam folder to find password reset link
+            </Text>
+            <Button
+              title="Cancel"
+              onPress={closeModalHandler} // Use the same handler for closing
+            />
+          </View>
+          </KeyboardAvoidingView>
+        </Modal>
 
 
       </View>
@@ -150,6 +232,8 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 10
   },
   content: {
   //  backgroundColor: "#FAFAFA"
@@ -161,16 +245,30 @@ const styles = StyleSheet.create({
     // marginVertical: 5,
     color: '#333', // Or any other color you prefer
     marginBottom: 20,
-    marginTop: 10
+    marginTop: 30
 
   },
+  button: {
+    color: 'black',
+    // fontWeight: 'bold',
+    // marginBottom: 10
+  },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalCloseButton: {
+    alignSelf: 'flex-end', // Aligns the button to the right
+    padding: 10, // Makes it easier to tap
   },
   forgotPasswordContainer: {
     marginBottom: 5,
@@ -181,7 +279,40 @@ const styles = StyleSheet.create({
     color: '#149E53',
     textAlign: 'right',
   },
+  modalView: {
+    marginTop: 'auto', // Aligns the modal to the bottom of the screen
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  modalInput: {
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+  },
+  modalNote: {
+    fontSize: 12,
+    color: 'grey',
+    marginTop: 15
+  }
 });
 
 export default AuthForm;
+
 

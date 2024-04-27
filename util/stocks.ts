@@ -52,7 +52,7 @@ export const getStocks = async () => {
 
   export const getStockPrice = async (stock: string) => {
     try {
-      console.log("CALLED THE getStockPrice API with IDS: ")
+      console.log("CALLED THE getStockPrice API with symbol: ", stock)
       //   https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/AAPL?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8
       //   https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8
       // https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/AAPL?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8
@@ -60,6 +60,7 @@ export const getStocks = async () => {
   
       const response = await fetch(apiUrl, {
       });
+
   
       if (!response.ok) {
         throw new Error('Network response was not ok');

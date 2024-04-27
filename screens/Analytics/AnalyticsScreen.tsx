@@ -1,115 +1,61 @@
-// import React, { useContext, useEffect, useState } from 'react';
-// import { ScrollView, StyleSheet } from 'react-native';
-// import { query, collection, where, getDocs, DocumentData } from 'firebase/firestore'; // Import DocumentData
-// import { db } from '../../firebaseConfig';
-// import DonutChart from '../../components/ui/DonutChart';
-// import DateLineChart from '../../components/ui/DateLineChart';
-// import { AuthContext } from '../../store/auth-context';
-// import { styles } from './AnalyticsScreenStyles';
-// import { Transaction } from './AnalyticsScreenTypes';
-
-// const Analytics = () => {
-//   const [transactions, setTransactions] = useState<Transaction[]>([]); // Update type of 
-
-//   const authCtx = useContext(AuthContext);
-//   const { userId } = authCtx as any;
-
-//   const fetchTransactions = async () => {
-//     try {
-//       const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
-//       const querySnapshot = await getDocs(transactionsQuery);
-
-//       const fetchedTransactions = querySnapshot.docs.map((doc) => {
-//         const data = doc.data();
-//         return {
-//           id: doc.id,
-//           category: data.category,
-//           date: data.date.toDate(),
-//           name: data.name,
-//           notes: data.notes,
-//           uid: data.uid,
-//           value: data.value
-//         };
-//       });
-
-//       console.log('Transactions: ', fetchedTransactions);
-
-//       setTransactions(fetchedTransactions);
-//     } catch (error: any) { // Handle the type of error
-//       console.error('Error fetching transactions in:', error.message);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchTransactions();
-//   }, [userId]);
-
-//   return (
-//     <ScrollView contentContainerStyle={styles.container}>
-//       {/* donutstyle={styles.cdonutStyleontainer} */}
-//       <DonutChart data={transactions}/>
-//       <DateLineChart data={transactions} />
-//     </ScrollView>
-//   );
-// };
-
-// export default Analytics;
-
-
+// AnalyticsScreen.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const StatisticCard = ({ title, amount, iconName, iconColor, analyticsType }) => {
-  const navigation = useNavigation();
+// Statistics data array removed for brevity
 
-  const navigateToTransactionAnalytics = (analyticsType: string) => {
-      switch (analyticsType) {
-        // case 'balance':
-        //   // @ts-ignore
-        //   navigation.navigate('BalanceAnalytics');
-        case 'spendings':
-          // @ts-ignore
-          navigation.navigate('SpendingAnalytics');
-        // case 'recurringPayments':
-        //   // @ts-ignore
-        //   navigation.navigate('RecurringAnalytics');
-        // case 'stocksAndCrypto':
-        //   // @ts-ignore
-        //   navigation.navigate('StocksAndCryptoAnalytics');
-        // case 'loansAndDebts':
-        //   // @ts-ignore
-        //   navigation.navigate('LoansAndDebtsAnalytics');
-        default:
-          return ''; 
-      }
+const AnalyticsScreen = () => {
+  const navigation = useNavigation();
+  
+  // Helper function for navigating to the appropriate analytics screen
+  const navigateToAnalytics = (analyticsType) => {
+    let routeName = '';
+    switch (analyticsType) {
+      case 'spendings':
+        routeName = 'SpendingAnalytics';
+        break;
+      case 'recurringPayments':
+        routeName = 'RecurringAnalytics';
+        break;
+      case 'cashFlow':
+        routeName = 'CashFlowAnalytics';
+        break;
+      case 'stocksAndCrypto':
+        routeName = 'StocksAndCryptoAnalytics';
+        break;
+      // Add more cases as needed
+      default:
+        // Handle unknown analyticsType
+        console.warn('Unknown analytics type:', analyticsType);
+        return;
+    }
+    navigation.navigate(routeName);
   };
 
-  return (
-    <TouchableOpacity style={styles.card} onPress={() => navigateToTransactionAnalytics(analyticsType)}
-    >
-      <View style={styles.cardContent}>
-        <View style={styles.cardText}>
-          <Text style={styles.cardTitle}>{title}</Text>
-          <Text style={styles.cardAmount}>{amount}</Text>
+  // StatisticsCard component extracted for clarity
+  const StatisticCard = ({ title, amount, iconName, iconColor, analyticsType }) => {
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigateToAnalytics(analyticsType)}
+      >
+        <View style={styles.cardContent}>
+          <View style={styles.cardText}>
+            <Text style={styles.cardTitle}>{title}</Text>
+            <Text style={styles.cardAmount}>{amount}</Text>
+          </View>
+          <FontAwesome5 name={iconName} size={24} color={iconColor} />
         </View>
-        <FontAwesome5 name={iconName} size={24} color={iconColor} />
-      </View>
-    </TouchableOpacity>
-  );
-};
+      </TouchableOpacity>
+    );
+  };
 
-const AnalyticsScreen= () => {
-  const statistics = [
-    { title: 'Balance', amount: '3 920 941,00 Ft', iconName: 'wallet', iconColor: '#007AFF', analyticsType: 'balance'  },
-    { title: 'Spendings', amount: '20 706 736,35 Ft', iconName: 'shopping-cart', iconColor: '#FF9500', analyticsType: 'spendings'},
-    { title: 'Cash Flow', amount: '3 738 040,65 Ft', iconName: 'exchange-alt', iconColor: '#FF3B30', analyticsType: 'recurringPayments' },
-    { title: 'Recurring Payments', amount: '1 401,00 Ft', iconName: 'redo', iconColor: '#34C759', analyticsType: 'recurringPayments' },
-    { title: 'Stocks And Crypto', amount: '0,00 Ft', iconName: 'chart-line', iconColor: '#5856D6', analyticsType: 'stocksAndCrypto' },
-    { title: 'Loans and debts', amount: '20 000 000,00 Ft', iconName: 'university', iconColor: '#FFCC00', analyticsType: 'loansAndDebts' },
-  ];
-  
+  // Statistics array reinstated for rendering { title: 'Balance', amount: '3 920 941,00 Ft', iconName: 'wallet', iconColor: '#007AFF', analyticsType: 'balance' },
+  const statistics = [{ title: 'Spendings', amount: '20 706 736,35 Ft', iconName: 'shopping-cart', iconColor: '#FF9500', analyticsType: 'spendings'},{ title: 'Cash Flow', amount: '3 738 040,65 Ft', iconName: 'exchange-alt', iconColor: '#FF3B30', analyticsType: 'cashFlow' },{ title: 'Recurring Payments', amount: '1 401,00 Ft', iconName: 'redo', iconColor: '#34C759', analyticsType: 'recurringPayments' },{ title: 'Stocks And Crypto', amount: '0,00 Ft', iconName: 'chart-line', iconColor: '#5856D6', analyticsType: 'stocksAndCrypto' },];
+
+
   return (
     <ScrollView style={styles.container}>
       {statistics.map((stat, index) => (
@@ -126,6 +72,7 @@ const AnalyticsScreen= () => {
   );
 };
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, updateDoc } from 'firebase/firestore';
+import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc } from 'firebase/firestore';
 import TransactionList from '../../components/ui/TransactionList';
 // import RecurringTransactionList from '../components/ui/RecurringTransactionList';
 import GoalList from '../../components/ui/GoalList';
@@ -161,6 +161,14 @@ function WelcomeScreen() {
         }
       } else {
         console.log('No documents found.');
+        const settingsDefault = {
+          uid: userId,  // Include the user's UID for easy querying
+          theme: 'light', // Default settings value
+          notifications: true, // Default settings value
+          currency: "USD"
+        };
+  
+        await setDoc(doc(db, 'users', userId), settingsDefault);  
       }
     } catch (error: any) {
       console.error('Error fetching settings:', error.message);
@@ -332,7 +340,7 @@ function WelcomeScreen() {
           // console.log("current currency: ", userSettings.currency)
   
           // Check if the currency value is valid and has changed
-          if (userSettings.currency && userSettings.currency !== prevCurrency) {
+          if (userSettings.currency != prevCurrency) {
             // Get the saved symbol from AsyncStorage
             const savedSymbol = await AsyncStorage.getItem('symbol');
             
@@ -385,6 +393,12 @@ function WelcomeScreen() {
     fetchIncome();
     fetchUserSettings();
     // fetchUserSettings();
+    // if(!symbol && !conversionRate){
+    //   const savedSymbol = AsyncStorage.getItem('symbol');
+    //   const savedConversionRate: any = AsyncStorage.getItem('conversionRate');
+    //   setConversionRate(parseFloat(savedConversionRate));
+    //   setSymbol(savedSymbol);
+    // }
 
   }, [userId]);
 

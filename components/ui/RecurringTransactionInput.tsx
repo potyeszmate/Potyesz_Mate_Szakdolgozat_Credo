@@ -167,7 +167,7 @@ const RecurringTransactionInput: React.FC<RecurringTransactionInputProps> = ({ o
       value: conversionRate !== null ? (1 / conversionRate) * parseFloat(recurringTransactionValue) : parseFloat(recurringTransactionValue),
       Date: selectedDate,
       Usage_frequency: activeTab,
-      Acceptance: '',
+      Importance: '',   // mandatory, necessary, neutral, negligible, 
     };
   
     if (initialRecurringTransaction && initialRecurringTransaction.id) {

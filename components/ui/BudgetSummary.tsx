@@ -178,6 +178,10 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     setSelectedBudget(null);
   };
 
+  console.log( "budgets.length: ", budgets.length)
+
+ 
+
   return (
     !loading && 
     <View style={styles.container}>
@@ -220,17 +224,29 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
 
       )}
       {!loading && (
-      <View style={styles.spentSetRow}>
-        <Text style={styles.spentText}>
-        {currency === 'HUF' ? 
-            Math.round(parseFloat(spentAmount) * conversionRate) :
-            (parseFloat(spentAmount) * conversionRate).toFixed(0)
-          }{symbol} {languages[selectedLanguage].spent}</Text>
-        <Text style={styles.setText}>{currency === 'HUF' ? 
-            Math.round(parseFloat(totalAmount) * conversionRate) :
-            (parseFloat(totalAmount) * conversionRate).toFixed(0)}{symbol} {languages[selectedLanguage].set}</Text>
-      </View>
+      budgets.length === 0 ? ( 
+        <View>
+          <Text> No budgets created yet.</Text>
+        </View>
+        ) : ( 
+          <View style={styles.spentSetRow}>
+            <Text style={styles.spentText}>
+              {currency === 'HUF' ? 
+                Math.round(parseFloat(spentAmount) * conversionRate) :
+                (parseFloat(spentAmount) * conversionRate).toFixed(0)
+              }{symbol} {languages[selectedLanguage].spent}
+            </Text>
+            <Text style={styles.setText}>
+              {currency === 'HUF' ? 
+                Math.round(parseFloat(totalAmount) * conversionRate) :
+                (parseFloat(totalAmount) * conversionRate).toFixed(0)
+              }{symbol} {languages[selectedLanguage].set}
+            </Text>
+          </View>
+        )
       )}
+
+      
       <View style={styles.separator} />
        {budgets.map((budget, index) => (
           <View key={budget.id}>
