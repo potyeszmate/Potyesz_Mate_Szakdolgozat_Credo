@@ -147,8 +147,8 @@ function TabNavigator() {
         tabBarStyle: { backgroundColor: '#F5F6F5' },
         tabBarActiveTintColor: '#35BA52',
         tabBarIndicatorStyle: {
-          backgroundColor: '#35BA52', // Set to your active tab color
-          height: '100%', // Set the height to 100% to fill the entire tab
+          backgroundColor: '#35BA52', 
+          height: '100%', 
         },
         headerShown: route.name === 'Welcome' ? true : false,
       })}
@@ -164,13 +164,7 @@ function TabNavigator() {
             />
           ),
           headerShown: route.name === 'Welcome' ? true : false,
-          // header: () => (
-          //   <CustomHeader
-          //     navigation={navigation}
-          //     route={route}
-          //     authCtx={authCtx}
-          //   />
-          // ),
+         
         })}
       />
 
@@ -211,7 +205,6 @@ function TabNavigator() {
               style={{ tintColor: color, width: 24, height: 24 }}
             />
           ),
-          // headerShown: true,
         }
       }
         
@@ -226,8 +219,6 @@ function TabNavigator() {
               style={{ tintColor: color, width: 24, height: 24 }}
             />
           ),
-          // headerShown: true,
-
         }}
       />
     </Tab.Navigator>
@@ -302,9 +293,7 @@ function ExpensesStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerStyle: { backgroundColor: '#F5F6F5' },
-        // headerTintColor: 'white',
-        // contentStyle: { backgroundColor: Colors.primary100 },
+        
       }}
     >
       <Stack.Screen

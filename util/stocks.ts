@@ -1,4 +1,4 @@
-const apiKey = '20pxfp55CRF4QFeF0P1uQXdppypX7nk8';
+const apiKey = '';
 
 export const getStocks = async () => {
     try {
