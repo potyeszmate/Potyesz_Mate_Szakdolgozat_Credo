@@ -29,10 +29,30 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
     navigation.navigate('Profile');
   };
 
-  const handleChatbot = () => {
-    // @ts-ignore
+  // const handleChatbot = () => {
+  //   // @ts-ignore
+  //   navigation.navigate('Chatbot');
+  // };
+
+  // Function to handle navigation based on user's premium status
+const handleNavigation = () => {
+  if (profile && profile.isPremiumUser) {
+    // Navigate to Chatbot page for premium users
     navigation.navigate('Chatbot');
-  };
+  } else {
+    // Navigate to Payment page for non-premium users
+    navigation.navigate('Payment');
+  }
+};
+
+// TouchableOpacity that navigates based on the user's subscription status
+<TouchableOpacity onPress={handleNavigation}>
+  <Image
+    source={require('../../assets/chatBot.png')}
+    style={[styles.settingsIcon, { marginLeft: 20, marginRight: 10 }]}
+  />
+</TouchableOpacity>
+
 
 
   console.log("profile: ", profile)// const fetchProfile = async () => {
@@ -107,8 +127,8 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
     />
   </TouchableOpacity>
 
-  {profile && profile.isPremiumUser && ( // Corrected syntax
-    <TouchableOpacity onPress={handleChatbot}>
+  {profile && ( // Corrected syntax
+    <TouchableOpacity onPress={handleNavigation}>
       <Image
         source={require('../../assets/chatBot.png')}
         style={[styles.settingsIcon, { marginLeft: 20, marginRight: 10}]}

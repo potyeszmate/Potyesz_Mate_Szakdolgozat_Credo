@@ -8,6 +8,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { AuthContext } from '../../store/auth-context';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PaymentScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -16,11 +17,15 @@ const PaymentScreen = () => {
   const route: any = useRoute();
   const navigation = useNavigation();
 
+  const ngrokAPI = "https://0f2a-92-249-187-97.ngrok-free.app"
   // const languages = ['English', 'German', 'Hungarian'];
 
   const email = route.params?.email;
   const firstName = route.params?.firstName;
   const lastName = route.params?.firstName;
+  // const onGoBack  = route.params;
+
+
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
 
@@ -55,6 +60,11 @@ const PaymentScreen = () => {
   }
   
   const handleModalConfirm = () => {
+    // route.params?.onGoBack?.();
+
+    //set up asyn
+    AsyncStorage.setItem('profileChanged', 'true');
+    console.log("fetch profile in other pages if this triggers")
     setSuccessModalVisible(false);
     // @ts-ignore
     navigation.navigate('Home');
@@ -64,7 +74,7 @@ const PaymentScreen = () => {
     setLoading(true);
     try {
       // Create a payment intent
-      const response = await axios.post('https://ec83-84-236-104-34.ngrok-free.app/payments/intents', {
+      const response = await axios.post(ngrokAPI+'/payments/intents', {
         amount: 10 * 100, // Convert dollars to cents
         email: email,  // Assuming 'email' is defined somewhere in your component
         name: firstName + ' ' + lastName

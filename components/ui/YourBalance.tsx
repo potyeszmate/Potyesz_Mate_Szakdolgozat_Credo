@@ -76,6 +76,7 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
   useEffect(() => {
     if (loading) return;
 
+
     calculateTotals();
   }, [incomes, transactions, loading]);
  

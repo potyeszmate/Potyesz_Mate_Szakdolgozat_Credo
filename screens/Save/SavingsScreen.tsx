@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../store/auth-context';
 import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
@@ -10,6 +10,7 @@ import Budget from '../../components/ui/Budget';
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
+import { db } from '../../firebaseConfig';
 
 
 const languages: any = {
@@ -21,6 +22,11 @@ const languages: any = {
 const SavingsScreen: React.FC = () => {
   const navigation = useNavigation();
   const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [profile, setProfile] = useState(null as any);
+
+  const authCtx: any = useContext(AuthContext);
+  const { userId } = authCtx as any;  
 
   const handleGoalsClick = () => {
     // @ts-ignore
@@ -29,15 +35,55 @@ const SavingsScreen: React.FC = () => {
 
   };
 
-  const handleCryptoCurrenciesClick = () => {
-    // @ts-ignore
-    navigation.navigate('Cryptocurrencies');
-  };
+  // const handleCryptoCurrenciesClick = () => {
+  //   // @ts-ignore
+  //   navigation.navigate('Cryptocurrencies');
+  // };
 
-  const handleStocksClick = () => {
-    // @ts-ignore
-    navigation.navigate('Stocks');
+  // const handleStocksClick = () => {
+  //   // @ts-ignore
+  //   navigation.navigate('Stocks');
+  // };
+
+  const handleCryptoCurrenciesClick = () => {
+    if (profile && profile.isPremiumUser) {
+      // Navigate to Cryptocurrencies page for premium users
+      // @ts-ignore
+      navigation.navigate('Cryptocurrencies');
+    } else {
+      // @ts-ignore
+      navigation.navigate('Payment');
+    }
   };
+  
+  const handleStocksClick = () => {
+    if (profile && profile.isPremiumUser) {
+      // Navigate to Stocks page for premium users
+      // @ts-ignore
+      navigation.navigate('Stocks');
+    } else {
+      // Navigate to Payment page for non-premium users
+      // @ts-ignore
+      navigation.navigate('Payment');
+    }
+  };
+  
+  async function getUserSettings(uid: any) {
+    setIsProfileLoading(true)
+    const settingsRef = collection(db, 'users');
+    const q = query(settingsRef, where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        // Assuming only one document will match, return the first one
+        const userSettings = querySnapshot?.docs[0]?.data();
+        console.log("User settings exist:", userSettings);
+        setIsProfileLoading(false)
+        return userSettings;
+    }
+    setIsProfileLoading(false)
+
+}
 
   const getSelectedLanguage = async () => {
     try {
@@ -60,11 +106,40 @@ const SavingsScreen: React.FC = () => {
 
   
   useEffect(() => {
-    if (isFocused) {
+    const checkDataAndUpdate = async () => {
+        if (isFocused) {
+
+      const isprofileChanged = await AsyncStorage.getItem('profileChanged');
+
+      if (isprofileChanged == "true") {
+        setIsProfileLoading(true)
+
+        await AsyncStorage.setItem('profileChanged', 'false');
+        const newProfile = await getUserSettings(userId);
+        await setProfile(newProfile);
+        setIsProfileLoading(false)
+
+      }
+
       fetchLanguage();
       console.log("In useEffect")
     }
+  };
+  
+  checkDataAndUpdate(); 
   }, [isFocused]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const settings = await getUserSettings(userId);
+      setProfile(settings)
+    };
+    fetchProfile(); // Immediately call the asyc function
+  }, [userId]);
+
+  if (isProfileLoading || !profile) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <View style={styles.rootContainer}>

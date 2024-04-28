@@ -123,7 +123,7 @@ const StockDetails = () => {
         await addDoc(collection(db, 'stocks'), {
           symbol,
           addedAmount,
-          // name: stockDetails.name,
+          name: name,
           uid: userId,
         });
       } else {
