@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
+import { useFonts, Inter_400Regular } from '@expo-google-fonts/inter';
 
 
 
@@ -15,6 +16,10 @@ const languages: any = {
 };
 
 const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage, symbol, conversionRate, loading }) => {
+  let [fontsLoaded] = useFonts({
+    // Inter_400Regular,
+  });
+
   const months = [
     { label: 'January', value: 'January' },
     { label: 'February', value: 'February' },
@@ -118,7 +123,6 @@ const styles = StyleSheet.create({
     borderColor: '#E0E0E0', // A slightly darker shade for the border
   },
 
-  
   loadingText: {
     fontSize: 16,
     color: '#FFFFFF', // Example color
@@ -132,7 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingBottom: 5,
     fontWeight: 'bold',
-
+    // fontFamily: 'AvenirNextCondensed-Heavy',
   },
   balanceAmount: {
     fontSize: 29,
@@ -154,10 +158,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingLeft: 10,
+
   },
   infoText: {
     color: '#FFFFFF',
     fontSize: 14,
+
   },
   infoAmount: {
     color: '#FFFFFF',

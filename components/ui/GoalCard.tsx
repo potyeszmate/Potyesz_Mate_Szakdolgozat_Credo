@@ -32,7 +32,7 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
 
   return (
     // @ts-ignore
-    <TouchableOpacity style={styles.cardContainer} onPress={() => navigation.navigate('GoalDetailScreen', { goal })}>
+    <TouchableOpacity style={styles.cardContainer} onPress={() => navigation.navigate('Goal Detail', { goal })}>
       {/* First Row */}
       <View style={styles.rowContainer}>
         <Text style={styles.goalName}>{goal.Name}</Text>

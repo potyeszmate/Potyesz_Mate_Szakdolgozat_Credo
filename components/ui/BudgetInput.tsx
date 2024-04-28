@@ -22,8 +22,10 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
   const [filteredCategories, setFilteredCategories] = useState<{ label: string; value: number }[]>([]);
 
   useEffect(() => {
+    console.log("existingCategories: ", existingCategories)
+    
     const availableCategories = allCategories.filter(
-      (category: any) => !existingCategories.includes(category.label)
+      (category) => !existingCategories.includes(category.label)
     );
     setFilteredCategories(availableCategories);
   }, [existingCategories]);
@@ -101,8 +103,6 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
               style={styles.pickerContainer}
               containerStyle={styles.pickerContainer}
               placeholder="Select a category"
-              // dropDownStyle={styles.dropDownStyle}
-              // placeholderValue={null}
             />
           </View>
         ) : (

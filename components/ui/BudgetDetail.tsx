@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 // import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import BudgetDetailsSummaryCard from './BudgetDetailSummaryCard';
@@ -112,6 +112,7 @@ const BudgetDetails = ({ route,  }) => {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#F3F4F7' }}>
+      <Text style={styles.titleStyle}>{budget && budget.Category}</Text>
       {budget && (
         <BudgetDetailsSummaryCard
           currentMonth={new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
@@ -137,5 +138,17 @@ const BudgetDetails = ({ route,  }) => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  // ... other styles ...
+  titleStyle: {
+    textAlign: 'center', // Center the text
+    fontWeight: 'bold',  // Make the text bold
+    fontSize: 20,        // Increase the font size
+    marginVertical: 10,  // Add vertical margin for spacing
+    color: '#333',       // Set the text color (optional)
+  },
+});
+
 
 export default BudgetDetails;

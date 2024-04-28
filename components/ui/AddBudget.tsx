@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Keyboard, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Keyboard, Pressable, ActivityIndicator } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BudgetInput from './BudgetInput';
@@ -18,13 +18,14 @@ const allCategories: any = [
   { label: 'Transport', value: 8 },
 ];
 
-const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
+const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, currency}) => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [newIncome, setNewIncome] = useState('');
   const [textInputFocused, setTextInputFocused] = useState(false);
   const [modalVisible, setModalVisible] = useState<any>(false);
   const [budgets, setBudgets] = useState<any[]>([]);
   const bottomSheetRef = useRef<any>(null);
+  const [isLoading, setIsLoading] = useState(true); // New state to track loading status
 
 
   const authCtx = useContext(AuthContext);
@@ -51,6 +52,8 @@ const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
 
   const fetchBudgets = async () => {
     try {
+      setIsLoading(true); // Start loading
+
       const budgetsQuery = query(collection(db, 'budgets'), where('uid', '==', userId));
       const querySnapshot = await getDocs(budgetsQuery);
       const fetchedBudgets = querySnapshot.docs.map((doc) => ({
@@ -61,8 +64,14 @@ const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
     } catch (error: any) {
       console.error('Error fetching budgets:', error.message);
     }
+    setIsLoading(false); // Start loading
+
   };
 
+  useEffect(() => {
+    fetchBudgets();
+  }, []); // empty dependency array means this effect runs once on component mount
+  
 
   const addBudgetHandler = async (newBudget: any) => {
     try {
@@ -72,11 +81,13 @@ const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
         uid: userId,
       });
       fetchBudgets();
+      // console.log(budgets)
       setModalVisible(false);
     } catch (error: any) {
       console.error('Error adding budget:', error.message);
     }
   };
+
 
   const snapPoints = useMemo(() => {
     return textInputFocused ? ['50%'] : [ '60%'];
@@ -88,13 +99,20 @@ const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
     (category: any) => !existingCategories.includes(category.label)
   );
 
+  //TODO: TRIGGER THE BUDGET SUMMARY HERE
   return (
     <View style={styles.cardContainer}>
       <View style={styles.leftSide}>
         <Text style={styles.headerText}>Budget for categories</Text>
-        <Text style={styles.incomeText}>
-        {availableCategories.length} more categories left
-        </Text>      
+        {isLoading ? (
+          <Text style={styles.incomeText}>
+        </Text>
+        // <ActivityIndicator size="small" color="#0000ff" /> // Add a loading spinner when data is loading
+        ) : (
+            <Text style={styles.incomeText}>
+                {availableCategories.length} more categories left
+            </Text>
+        )}
       </View>
       <View style={styles.rightSide}>
         <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
@@ -129,7 +147,7 @@ const AddBudget = ({ selectedLanguage, symbol, conversionRate, currency}) => {
                     )}
                   >
                     <View style={styles.contentContainer}>
-                      <BudgetInput onAddBudget={addBudgetHandler} existingCategories={budgets.map(budget => budget.Category)} />
+                      <BudgetInput onAddBudget={addBudgetHandler} existingCategories={budgets.map((budget) => budget.Category)} />
                     </View>
                   </BottomSheet>
                 </Pressable>

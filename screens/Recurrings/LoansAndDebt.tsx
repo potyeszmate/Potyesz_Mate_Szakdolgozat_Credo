@@ -263,7 +263,12 @@ const LoansAndDebt = () => {
         <FlatList
           data={recurringTransactions}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
+            const transactionDate = item.Date.toDate();  // Assuming 'item.date' is a Firebase Timestamp
+            const now = new Date();
+            const isPastDate = transactionDate.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0);
+            
+            return (
             <TouchableOpacity style={styles.transactionItem} onPress={() => handleEditIconClick(item)}>
               <View style={styles.transactionIcon}>
               <Image source={iconMapping[item.name]} style={styles.iconImage} />
@@ -275,9 +280,12 @@ const LoansAndDebt = () => {
                     {languages[selectedLanguage][item.category]}
                   </Text>
                   <View style={styles.separator} />
-                  <Text style={styles.transactionDate}>
-                    {item.Date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={[styles.transactionDate, isPastDate ? styles.pastDateText : null]}>
+                        {transactionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </Text>
+                      {isPastDate && <Feather name="alert-circle" size={16} style={styles.warningIcon} />}
+                    </View>
                 </View>
               </View>
               <View style={styles.transactionAmount}>
@@ -292,8 +300,9 @@ const LoansAndDebt = () => {
                 )}
               </View>
             </TouchableOpacity>
-          )}
-        />
+            )
+          }}
+          />
       )}
 
       <TouchableOpacity
@@ -612,6 +621,13 @@ const styles = StyleSheet.create({
     // position: 'absolute',
     alignSelf: 'center',
     marginTop: 200, // Adjust as needed
+  },
+  pastDateText: {
+    color: 'red',
+  },
+  warningIcon: {
+    marginLeft: 5,
+    color: 'red',
   },
 });
 export default LoansAndDebt;

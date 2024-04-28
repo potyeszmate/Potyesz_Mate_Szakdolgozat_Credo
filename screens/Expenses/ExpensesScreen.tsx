@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../store/auth-context';
@@ -22,21 +22,23 @@ const ExpensesScreen: React.FC = () => {
   const navigation = useNavigation();
   const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
 
-  const handleRecurringPaymentsClick = () => {
-    // @ts-ignore
-    navigation.navigate('RecurringPayments');
-    // navigation.navigate('ThemePage', { defaultMode: userSettings.darkMode });
+  const authCtx = useContext(AuthContext);
+  const { userId } = authCtx as any;
 
-  };
+    const handleRecurringPaymentsClick = () => {
+      console.log("Navigating with userId:", userId);  // This should log a defined userId
+      navigation.navigate('Recurrings', { userId: userId });
+    };
+
 
   const handleLoansClick = () => {
     // @ts-ignore
-    navigation.navigate('LoansAndDebt');
+    navigation.navigate('Loans', { userID: userId });
   };
 
   const handleBillsClick = () => {
     // @ts-ignore
-    navigation.navigate('Bills');
+    navigation.navigate('Bills', { userID: userId });
   };
 
   const getSelectedLanguage = async () => {

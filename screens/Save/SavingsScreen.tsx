@@ -31,7 +31,7 @@ const SavingsScreen: React.FC = () => {
 
   const handleCryptoCurrenciesClick = () => {
     // @ts-ignore
-    navigation.navigate('CryptoCurrencies');
+    navigation.navigate('Cryptocurrencies');
   };
 
   const handleStocksClick = () => {

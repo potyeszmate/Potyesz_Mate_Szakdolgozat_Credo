@@ -25,20 +25,27 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
 
   const navigateToBudgetDetails = (budgetId: any) => {
     // @ts-ignore
-    navigation.navigate('BudgetDetail', { budgetId: budgetId, symbol: symbol, conversionRate: conversionRate });
+    navigation.navigate('Budget', { budgetId: budgetId, symbol: symbol, conversionRate: conversionRate });
   };
 
   const handleBudgetPress = (budgetId: any) => {
     navigateToBudgetDetails(budgetId);
   };
   
+  const currentMonth = new Date().getMonth(); // January is 0!
+  const currentYear = new Date().getFullYear();
+
   const spentAmount = transactions
-    .filter((transaction: any) => transaction.category === budget.Category)
+    .filter((transaction: any) => {
+      const transactionDate = new Date(transaction.date.seconds * 1000); // Convert Firestore Timestamp to Date object
+      return transaction.category === budget.Category && 
+             transactionDate.getMonth() === currentMonth &&
+             transactionDate.getFullYear() === currentYear;
+    })
     .reduce((acc: number, transaction: any) => {
-      const convertedValue = currency === 'HUF' ? 
+      return acc + (currency === 'HUF' ? 
         Math.round(parseFloat(transaction.value) * conversionRate) :
-        parseFloat(transaction.value) * conversionRate;
-      return acc + convertedValue;
+        parseFloat(transaction.value) * conversionRate);
     }, 0);
 
   const totalAmount = currency === 'HUF' ?
@@ -46,6 +53,9 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
     parseFloat(budget.Total_ammount) * conversionRate;
 
   const remainingAmount = totalAmount - spentAmount;
+  const remainingColor = remainingAmount < 0 ? '#ff0000' : '#1A1A2C'; // Red color for negative, default color for positive or zero
+
+  console.log("transactions: ", transactions)
 
   return (
     <View style={styles.cardContainer}>
@@ -65,8 +75,8 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
         </View>
         <View style={styles.rightSection}>
           <Text style={styles.leftText}>
-            <Text style={styles.leftValueText}>
-              {remainingAmount.toFixed(0)}{symbol}  {/* Rounded and converted remaining amount */}
+            <Text style={[styles.leftValueText, {color: remainingColor}]}>
+              {remainingAmount.toFixed(0)}{symbol}  {/* Rounded and converted remaining amount displayed in dynamic color */}
             </Text>
             <Text style={styles.leftOutOfText}>left</Text>
           </Text>

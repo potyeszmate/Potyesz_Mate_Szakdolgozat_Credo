@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, FlatList, I
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import RecurringTransactionInput from '../../components/ui/RecurringTransactionInput';
@@ -58,12 +58,17 @@ const RecurringPayments = () => {
   const [symbol, setSymbol] = useState<any>('');
   const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(false);
 
-  const authCtx = useContext(AuthContext);
-  const { userId } = authCtx as any;
+  // const authCtx = useContext(AuthContext);
+  // const { userId } = authCtx as any;
+  const route = useRoute();
+  const { userId } = route.params; 
+
+  console.log("Received userId:", userId);  // This should log the actual userId or undefined
 
   const fetchRecurringTransactions = async () => {
-    console.log("userId in recurring: ", userId)
+    // console.log("userId in recurring: ", userId)
     try {
       setLoading(true);
 
@@ -132,53 +137,53 @@ const RecurringPayments = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Check if user settings have already been fetched
-        if (!userSettings.currency) {
-          // Fetch user settings
-          await fetchUserSettings();
-        }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // Check if user settings have already been fetched
+  //       if (!userSettings.currency) {
+  //         // Fetch user settings
+  //         await fetchUserSettings();
+  //       }
         
-        // Check if the currency value is valid and has changed
-        if (userSettings.currency && userSettings.currency !== prevCurrency) {
-          // Get the saved symbol from AsyncStorage
-          const savedSymbol = await AsyncStorage.getItem('symbol');
+  //       // Check if the currency value is valid and has changed
+  //       if (userSettings.currency && userSettings.currency !== prevCurrency) {
+  //         // Get the saved symbol from AsyncStorage
+  //         const savedSymbol = await AsyncStorage.getItem('symbol');
           
-          // Check if the current symbol is the same as the saved symbol
-          const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
+  //         // Check if the current symbol is the same as the saved symbol
+  //         const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
     
-          if (symbolHaveNotChanged) {
-            // Use saved conversion rate
-            const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-            setConversionRate(parseFloat(savedConversionRate));
-            // Set currency symbol
-            setSymbol(savedSymbol);
-          } else {
-            // Fetch conversion rate from API
-            const result = await convertCurrencyToCurrency('USD', userSettings.currency);
-            setConversionRate(result);
+  //         if (symbolHaveNotChanged) {
+  //           // Use saved conversion rate
+  //           const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+  //           setConversionRate(parseFloat(savedConversionRate));
+  //           // Set currency symbol
+  //           setSymbol(savedSymbol);
+  //         } else {
+  //           // Fetch conversion rate from API
+  //           const result = await convertCurrencyToCurrency('USD', userSettings.currency);
+  //           setConversionRate(result);
         
-            // Save conversion rate and symbol
-            await AsyncStorage.setItem('conversionRate', result.toString());
-            const newSymbol = getCurrencySymbol(userSettings.currency);
-            setSymbol(newSymbol);
-            await AsyncStorage.setItem('symbol', newSymbol);
-          }
+  //           // Save conversion rate and symbol
+  //           await AsyncStorage.setItem('conversionRate', result.toString());
+  //           const newSymbol = getCurrencySymbol(userSettings.currency);
+  //           setSymbol(newSymbol);
+  //           await AsyncStorage.setItem('symbol', newSymbol);
+  //         }
           
-          // Update the previous currency value
-          setPrevCurrency(userSettings.currency);
-        }
-      } catch (error) {
-        console.error('Error fetching user settings or converting currency:', error);
+  //         // Update the previous currency value
+  //         setPrevCurrency(userSettings.currency);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching user settings or converting currency:', error);
         
-      }
-    };
+  //     }
+  //   };
     
   
-    fetchData();
-  }, [userSettings.currency, prevCurrency]); // Add userSettings.currency and prevCurrency to the dependency array
+  //   fetchData();
+  // }, [userSettings.currency, prevCurrency]); // Add userSettings.currency and prevCurrency to the dependency array
   
   const snapPoints = useMemo(() => ['33%', '66%', '85%'], []);
 
@@ -245,21 +250,74 @@ const RecurringPayments = () => {
     }
   };
 
+  const getSelectedCurrency = async () => {
+    try {
+
+      const savedSymbol = await AsyncStorage.getItem('symbol');
+      const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+      console.log("Saved Symbol: ", savedSymbol)
+      console.log("Saved conversionRate: ", savedConversionRate)
+
+      if (savedSymbol && savedConversionRate !== null) {
+        console.log("savedSymbol and savedConversionRate: ", savedSymbol, savedConversionRate )
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      } else {
+        console.log("User des not have saves curreny and symbol yet, we have to use the default. " )
+
+        const defaultsavedSymbol= "$";
+        const defaultConversionRate= 1;
+
+        await AsyncStorage.setItem('conversionRate', defaultConversionRate.toString());
+        await AsyncStorage.setItem('symbol', defaultsavedSymbol);
+
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      }
+
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
+    }
+  };
+
   const totalSubscriptions = recurringTransactions.length;
   const totalValue = recurringTransactions.reduce((acc, curr) => acc + parseInt(curr.value), 0);
 
   const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
+     await getSelectedLanguage();
     // Use the retrieved language for any rendering or functionality
   };
 
-  useEffect(() => {
-    fetchRecurringTransactions();
-    fetchUserSettings();
-    fetchLanguage();
-  }, []);
+  const fetchCurrency = async () => {
+    await getSelectedCurrency();
+    // Use the retrieved language for any rendering or functionality
+  };
 
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const checkDataAndUpdate = async () => {
+      if (isFocused) {
+        await fetchLanguage();
+        await fetchCurrency();
+      }
+    };
   
+    checkDataAndUpdate(); // Immediately call the async function
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchRecurringTransactions();
+      fetchUserSettings();
+      fetchLanguage();
+    } else {
+      console.error("No userId available, check navigation parameters");
+    }
+  }, [userId]);
+
+
   return (
     <View style={styles.container}>
       <View style={styles.space}></View>
@@ -287,7 +345,7 @@ const RecurringPayments = () => {
               {conversionRate !== null ? (
                 <Text style={styles.totalValue}>
                   {' '}
-                  {userSettings.currency === 'HUF'
+                  {symbol === 'HUF'
                     ? Math.round(parseFloat(totalValue) * conversionRate)
                     : (parseFloat(totalValue) * conversionRate).toFixed(2)}{' '}
                   {symbol}
@@ -298,15 +356,20 @@ const RecurringPayments = () => {
             </View>
           )}
         </View>
-        <View style={styles.listContainer}>
 
-        {loading ? (
-          <ActivityIndicator size="large" color="#000" style={styles.loadingIndicator} />
-        ) : (
-          <FlatList
-            data={recurringTransactions}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
+        <View style={styles.listContainer}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" style={styles.loadingIndicator} />
+      ) : (
+        <FlatList
+          data={recurringTransactions}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => {
+            const transactionDate = item.Date.toDate();  // Assuming 'item.date' is a Firebase Timestamp
+            const now = new Date();
+            const isPastDate = transactionDate.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0);
+
+            return (
               <TouchableOpacity style={styles.transactionItem} onPress={() => handleEditIconClick(item)}>
                 <View style={styles.transactionIcon}>
                   <Image source={iconMapping[item.name]} style={styles.iconImage} />
@@ -318,29 +381,25 @@ const RecurringPayments = () => {
                       {languages[selectedLanguage][item.category]}
                     </Text>
                     <View style={styles.separator} />
-                    <Text style={styles.transactionDate}>
-                      {item.Date.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={[styles.transactionDate, isPastDate ? styles.pastDateText : null]}>
+                        {transactionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </Text>
+                      {isPastDate && <Feather name="alert-circle" size={16} style={styles.warningIcon} />}
+                    </View>
                   </View>
                 </View>
                 <View style={styles.transactionAmount}>
-                  {conversionRate !== null ? (
-                    <Text style={styles.transactionAmountValue}>
-                      {' '}
-                      {userSettings.currency === 'HUF'
-                        ? Math.round(parseFloat(item.value) * conversionRate)
-                        : (parseFloat(item.value) * conversionRate).toFixed(2)}{' '}
-                      {symbol}
-                    </Text>
-                  ) : (
-                    <Text style={styles.loadingText}>Loading...</Text>
-                  )}
+                  <Text style={styles.transactionAmountValue}>
+                    {symbol} {(parseFloat(item.value) * conversionRate).toFixed(2)}
+                  </Text>
                 </View>
               </TouchableOpacity>
-            )}
-          />
+            );
+          }}
+        />
         )}
-      </View>
+    </View>
 
 
         {/* Delete Modal */}
@@ -402,7 +461,7 @@ const RecurringPayments = () => {
                   initialRecurringTransaction={selectedRecurringTransaction}
                   onAddRecurringTransaction={editRecurringTransactionHandler}
                   conversionRate={conversionRate}
-                  currency={userSettings.currency}
+                  currency={symbol}
                   selectedLanguage={selectedLanguage}
                   onDeleteRecurringTransaction={deleteRecurringTransactionHandler}
                   onClose={() => setEditModalVisible(false)}
@@ -667,6 +726,13 @@ const styles = StyleSheet.create({
     // position: 'absolute',
     alignSelf: 'center',
     marginTop: 200, // Adjust as needed
+  },
+  pastDateText: {
+    color: 'red',
+  },
+  warningIcon: {
+    marginLeft: 5,
+    color: 'red',
   },
 });
 

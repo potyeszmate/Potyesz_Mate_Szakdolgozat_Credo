@@ -16,7 +16,7 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
 
   const handleSettingsPage = () => {
     // @ts-ignore
-    navigation.navigate('SettingsPage');
+    navigation.navigate('Settings');
   };
 
   const handleChatBotsPage = () => {
@@ -26,7 +26,7 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
 
   const handleProfilePage = () => {
     // @ts-ignore
-    navigation.navigate('ProfilePage');
+    navigation.navigate('Profile');
   };
 
   const handleChatbot = () => {
@@ -105,7 +105,7 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
     />
   </TouchableOpacity>
 
-  {profile.isPremiumUser && ( // Corrected syntax
+  {profile && profile.isPremiumUser && ( // Corrected syntax
     <TouchableOpacity onPress={handleChatbot}>
       <Image
         source={require('../../assets/chatBot.png')}

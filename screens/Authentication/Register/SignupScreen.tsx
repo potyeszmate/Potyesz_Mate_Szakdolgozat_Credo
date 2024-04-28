@@ -8,6 +8,7 @@ import { createUser } from '../../../util/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, db } from '../../../firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignupScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false); // Added type boolean
@@ -18,8 +19,9 @@ const SignupScreen: React.FC = () => {
     setIsAuthenticating(true);
     try {
       const token = await createUser(email, password);
-      // Saving token to state
       
+      console.log("SET ASYNCSTORAGE setonboarding to true")
+      await AsyncStorage.setItem('setOnboardingModal', 'true');
      
       authCtx.authenticate(token);
     } catch (error) {

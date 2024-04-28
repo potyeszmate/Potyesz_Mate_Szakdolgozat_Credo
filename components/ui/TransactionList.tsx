@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet,Image, ScrollView, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet,Image, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 import TransactionItem from './TransactionItem';
 
 import { Feather } from '@expo/vector-icons'; 
@@ -16,7 +16,12 @@ const iconMapping: any = {
   Sport : require('../../assets/Sport.png'),
 };
 
-const TransactionList: React.FC<any> = ({ transactions, currency, conversionRate, symbol }) => {
+const TransactionList: React.FC<any> = ({ transactions, currency, conversionRate, symbol, isLoading }) => {
+
+  // console.log("transactions in TransactionList: ", transactions)
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+}
 
   return (
     <View style={styles.listContainer}>

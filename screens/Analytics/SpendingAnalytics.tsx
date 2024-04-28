@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { Feather } from '@expo/vector-icons';
@@ -15,12 +15,15 @@ const SpendingAnalytics = () => {
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [filterType, setFilterType] = useState('monthly'); // 'monthly', 'weekly', 'yearly'
     const [transactions, setTransactions] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true); // New state to track loading status
 
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
     
     const fetchTransactions = async () => {
         try {
+          setIsLoading(true); // Start loading
+
           const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
           const querySnapshot = await getDocs(transactionsQuery);
           const fetchedTransactions = querySnapshot.docs.map((doc) => ({
@@ -29,9 +32,14 @@ const SpendingAnalytics = () => {
           })) as any[];
     
           setTransactions(fetchedTransactions);
+
         } catch (error: any) {
           console.error('Error fetching transactions:', error.message);
+          setIsLoading(false); // End loading once both promises are resolved
+
         }
+        setIsLoading(false); // End loading once both promises are resolved
+
     };
 
     const navigateDate = (direction: any) => {
@@ -108,7 +116,15 @@ const SpendingAnalytics = () => {
         fetchTransactions();
       }, [userId, filterType, currentDate, []]); // Depend on filterType and currentDate too
       
-    
+      // if (transactions.length) {
+      //   // Display an activity indicator when data is loading
+      //   return (
+      //     <View style={styles.centered}>
+      //       <ActivityIndicator size="large" color="#0000ff" />
+      //     </View>
+      //   );
+      // }
+      
     return (
     <View> 
         <View style={styles.filterBar}>
@@ -166,6 +182,11 @@ const styles = StyleSheet.create({
       dateDisplay: {
         marginHorizontal: 10,
         fontSize: 18,
+      },
+      centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
       },
       modalContent: {
         position: 'absolute',

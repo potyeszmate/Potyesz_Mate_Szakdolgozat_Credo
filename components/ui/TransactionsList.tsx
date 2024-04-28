@@ -10,6 +10,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 // import GoalInput from './TransactionsInput';
 import TransactionInput from './TransactionInput';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface TransactionsListParams {
   symbol: string;
@@ -92,6 +93,10 @@ const TransactionsList: React.FC = () => {
       });
 
       fetchTransactions();
+      //set trigger so last transactions cna be fetched as well.
+      await AsyncStorage.setItem('transactionsChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
+
       setModalVisible(false);
     } catch (error: any) {
       console.error('Error adding transaction:', error.message);
@@ -108,7 +113,8 @@ const TransactionsList: React.FC = () => {
 
       const updatedTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
       setTransactions(updatedTransactions);
-
+      await AsyncStorage.setItem('transactionsChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
       setDeleteModalVisible(false);
     } catch (error: any) {
       console.error('Error deleting transaction:', error.message);

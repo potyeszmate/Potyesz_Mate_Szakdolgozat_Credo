@@ -15,6 +15,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker'; // Assuming you are using Expo to handle image picking
 import * as ImageManipulator from 'expo-image-manipulator';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 
 const languages: any = {
@@ -297,14 +298,15 @@ const handleSelectImage = async () => {
                     <View style={styles.rightSection}>
                       {profile && profile.length > 0 && (
                         <View style={styles.editOption}>
-                          <Text style={styles.label}>{languages[selectedLanguage].firstName}:</Text>
-                          <Text style={styles.value}>{profile[0].firstName}:</Text>
-                        </View>
+                        {/* <FontAwesome5 name="user" style={styles.icon} /> */}
+                        <Text style={styles.label}>{languages[selectedLanguage].firstName}</Text>
+                        <Text style={styles.value}>   {profile[0].firstName}</Text>
+                      </View>
                       )}
                       {profile && profile.length > 0 && (
                         <View  style={styles.editOption}>
                           <Text style={styles.label}>{languages[selectedLanguage].lastName}</Text>
-                          <Text style={styles.value}>{profile[0].lastName}</Text>
+                          <Text style={styles.value}>   {profile[0].lastName}</Text>
                         </View>
                       )}
                     </View>
@@ -313,26 +315,29 @@ const handleSelectImage = async () => {
               </View>
               <View>
               <View style={styles.card}>
-                <Text style={styles.label}>{languages[selectedLanguage].email}:</Text>
-                <Text style={styles.value}>{authCtx.email}</Text>
+                <View style={styles.editOption}>
+                {/* <FontAwesome5 name="envelope" style={styles.icon} solid /> */}
+                <Text style={styles.label}>{languages[selectedLanguage].email}</Text>
+                <Text style={styles.value}>   {authCtx.email}</Text>
+                </View>
+
                 {profile && profile.length > 0 && (
-              <View>
-              <View style={styles.editOption}>
-                <Text style={styles.label}>{languages[selectedLanguage].birthday}:</Text>
-                <Text style={styles.value}>{profile[0].birthday.toDate().toLocaleDateString()}</Text>
+                <View>
+                <View style={styles.editOption}>
+                  <Text style={styles.label}>{languages[selectedLanguage].birthday}:</Text>
+                  <Text style={styles.value}>   {profile[0].birthday.toDate().toLocaleDateString()}</Text>
+                </View>
+                <View style={styles.editOption}>
+                  <Text style={styles.label}>{languages[selectedLanguage].gender}:</Text>
+                  <Text style={styles.value}>   {profile[0].gender}</Text>
+                </View>
+                <View style={styles.editOption}>
+                  <Text style={styles.label}>{languages[selectedLanguage].mobile}:</Text>
+                  <Text style={styles.value}>   {profile[0].mobile}</Text>
+                </View>
               </View>
-              <View style={styles.editOption}>
-                <Text style={styles.label}>{languages[selectedLanguage].gender}:</Text>
-                <Text style={styles.value}>{profile[0].gender}</Text>
-              </View>
-              <View style={styles.editOption}>
-                <Text style={styles.label}>{languages[selectedLanguage].mobile}:</Text>
-                <Text style={styles.value}>{profile[0].mobile}</Text>
-              </View>
-            </View>
             
           )}
-          {/* Edit icon in top right corner */}
           {/* <TouchableOpacity style={styles.editIconContainer} onPress={() => console.log('Edit others')}>
             <Ionicons name="create-outline" size={24} color="black" />
           </TouchableOpacity> */}
@@ -393,88 +398,93 @@ const handleSelectImage = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 20,
+    backgroundColor: '#f4f4f7',
+    padding: 20,
   },
   card: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 20,
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
+    marginBottom: 16,
+    alignItems: 'flex-start', // Align card content to start
   },
   cardContent: {
-    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'flex-start', // Align content to start
   },
-  leftSection: {
+  profileCard: { // New style for profile card
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
+    // marginBottom: 16,
+    // paddingVertical: 24,
+    marginLeft: 30
   },
   avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  bottomSheetBackground: {
-    backgroundColor: 'white',
-    flex: 1,
-  },
-  editButtonContainer: {
-    padding: 16,
-  },
-  editButton: {
-    backgroundColor: '#35BA52',
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-    flexDirection: 'row', 
-    justifyContent: 'center',
-  },
-  editIcon: {
-    marginRight: 8,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
   },
   changePicture: {
-    marginTop: 8,
-    color: 'blue',
-    textAlign: 'center',
+    color: '#149E53',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center', // Center text below the avatar
+    marginBottom: 20, // Space below the change picture text
   },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  rightSection: {
-    flex: 2,
-    marginLeft: 16,
-  },
-  nameInput: {
-    marginBottom: 12,
+  icon: {
+    marginRight: 10,
+    color: '#5c6bc0',
   },
   label: {
     fontWeight: 'bold',
-    marginBottom: 4,
+    color: '#333',
+    fontSize: 16,
+    marginBottom: 5,
   },
   value: {
-    marginBottom: 12,
-    marginLeft: 8, // Added margin to align value with label
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 5,
   },
   editOption: {
-    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center', // Align items in row
+    width: '100%',
+    paddingVertical: 8, // More vertical padding
   },
-  editIconContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
+  editButton: {
+    backgroundColor: '#149E53',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    width: '100%', // Button takes full width
   },
-  modalBackground: {
-    flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+  editIcon: {
+    marginRight: 10,
   },
+  addButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  leftSection: {
+    marginLeft: 100,
+    marginRight: 40
+  },
+  // ... other styles ...
 });
 
+
 export default ProfilePage;
+
+

@@ -14,16 +14,16 @@ const AnalyticsScreen = () => {
     let routeName = '';
     switch (analyticsType) {
       case 'spendings':
-        routeName = 'SpendingAnalytics';
+        routeName = 'Spending';
         break;
       case 'recurringPayments':
-        routeName = 'RecurringAnalytics';
+        routeName = 'Recurring';
         break;
       case 'cashFlow':
-        routeName = 'CashFlowAnalytics';
+        routeName = 'Cash Flow';
         break;
       case 'stocksAndCrypto':
-        routeName = 'StocksAndCryptoAnalytics';
+        routeName = 'Investments';
         break;
       // Add more cases as needed
       default:
@@ -35,7 +35,7 @@ const AnalyticsScreen = () => {
   };
 
   // StatisticsCard component extracted for clarity
-  const StatisticCard = ({ title, amount, iconName, iconColor, analyticsType }) => {
+  const StatisticCard = ({ title, desc, iconName, iconColor, analyticsType }) => {
     return (
       <TouchableOpacity
         style={styles.card}
@@ -44,7 +44,7 @@ const AnalyticsScreen = () => {
         <View style={styles.cardContent}>
           <View style={styles.cardText}>
             <Text style={styles.cardTitle}>{title}</Text>
-            <Text style={styles.cardAmount}>{amount}</Text>
+            <Text style={styles.cardAmount}>{desc}</Text>
           </View>
           <FontAwesome5 name={iconName} size={24} color={iconColor} />
         </View>
@@ -53,7 +53,11 @@ const AnalyticsScreen = () => {
   };
 
   // Statistics array reinstated for rendering { title: 'Balance', amount: '3 920 941,00 Ft', iconName: 'wallet', iconColor: '#007AFF', analyticsType: 'balance' },
-  const statistics = [{ title: 'Spendings', amount: '20 706 736,35 Ft', iconName: 'shopping-cart', iconColor: '#FF9500', analyticsType: 'spendings'},{ title: 'Cash Flow', amount: '3 738 040,65 Ft', iconName: 'exchange-alt', iconColor: '#FF3B30', analyticsType: 'cashFlow' },{ title: 'Recurring Payments', amount: '1 401,00 Ft', iconName: 'redo', iconColor: '#34C759', analyticsType: 'recurringPayments' },{ title: 'Stocks And Crypto', amount: '0,00 Ft', iconName: 'chart-line', iconColor: '#5856D6', analyticsType: 'stocksAndCrypto' },];
+  const statistics = [
+    { title: 'Spendings', desc: 'Check your spendings analytics', iconName: 'shopping-cart', iconColor: '#FF9500', analyticsType: 'spendings'},
+    { title: 'Cash Flow', desc: 'Have you earned more than you spent?', iconName: 'exchange-alt', iconColor: '#FF3B30', analyticsType: 'cashFlow' },
+    { title: 'Recurring Payments', desc: 'Check your recurring payments analytics', iconName: 'redo', iconColor: '#34C759', analyticsType: 'recurringPayments' },
+    { title: 'Stocks And Crypto', desc: 'Check your portfolio', iconName: 'chart-line', iconColor: '#5856D6', analyticsType: 'stocksAndCrypto' },];
 
 
   return (
@@ -62,7 +66,7 @@ const AnalyticsScreen = () => {
         <StatisticCard
           key={index}
           title={stat.title}
-          amount={stat.amount}
+          desc={stat.desc}
           iconName={stat.iconName}
           iconColor={stat.iconColor}
           analyticsType={stat.analyticsType}
@@ -103,13 +107,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   cardAmount: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 15,
+    color: 'grey',
+    // paddingRight: 20
+
   },
   // Add other styles if necessary
 });

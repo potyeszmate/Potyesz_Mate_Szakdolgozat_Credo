@@ -43,7 +43,7 @@ const CurrencyPage = () => {
                 await updateDoc(doc.ref, { currency: newCurrency });
                 console.log('User currency updated successfully.');
 
-                const newSymbol = getCurrencySymbol(newCurrency)
+                const newSymbol = newCurrency  //getCurrencySymbol(newCurrency)
                 const result = await convertCurrencyToCurrency('USD', newCurrency);
                 await AsyncStorage.setItem('conversionRate', result.toString());
                 await AsyncStorage.setItem('symbol', newSymbol);

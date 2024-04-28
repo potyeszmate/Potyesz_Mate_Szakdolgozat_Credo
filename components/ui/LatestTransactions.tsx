@@ -14,12 +14,12 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, symbol, conversionRate, currency}) => {
+const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, symbol, conversionRate, currency, isLoading}) => {
   const navigation = useNavigation();
 
   const handleTransactionsListClick = () => {
     // @ts-ignore
-    navigation.navigate('TransactionsList', {
+    navigation.navigate('Transactions', {
       symbol: symbol,
       selectedLanguage: selectedLanguage,
       conversionRate: conversionRate,
@@ -28,8 +28,9 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
   };
   
   const now = new Date();
-  console.log("Current time:", now.toString()); // Log the current time for debugging
-
+  // console.log("Current time:", now.toString()); // Log the current time for debugging
+    console.log("transactions", transactions)
+    
   // Filter and sort transactions up to the current moment
   const sortedTransactions = transactions
     .filter((transaction: any) => {
@@ -40,6 +41,12 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
     .sort((a: any, b: any) => b.date.toDate() - a.date.toDate())
     .slice(0, 3);  // Get the latest 3 transactions
 
+    console.log("Current time:", now.toLocaleString()); // Check current local time
+    console.log("transactions:", transactions.length); // Check current local time
+
+    console.log("Filtered transactions:", transactions.map(t => new Date(t.date.seconds * 1000).toLocaleString()));
+
+    // console.log("transactions in LatestTransactions: ", transactions)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -49,7 +56,7 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
         </TouchableOpacity>
       </View>
       {/* Render your TransactionList component passing sortedTransactions */}
-      <TransactionList transactions={sortedTransactions} currency={currency} conversionRate={conversionRate} symbol={symbol} />
+      <TransactionList transactions={sortedTransactions} currency={currency} conversionRate={conversionRate} symbol={symbol} isLoading= {isLoading} />
     </View>
   );
 };

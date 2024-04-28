@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
@@ -93,6 +93,22 @@ function AuthenticatedStack() {
   );
 }
 
+function CustomTabButton({ children, onPress, focused }) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: focused ? '#35BA52' : '#F5F6F5', // Change color if focused
+      }}>
+      {children}
+    </TouchableOpacity>
+  );
+}
+
+
 function TabNavigator() {
   const authCtx = useContext(AuthContext);
   const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
@@ -130,6 +146,10 @@ function TabNavigator() {
       screenOptions={({ route }) => ({
         tabBarStyle: { backgroundColor: '#F5F6F5' },
         tabBarActiveTintColor: '#35BA52',
+        tabBarIndicatorStyle: {
+          backgroundColor: '#35BA52', // Set to your active tab color
+          height: '100%', // Set the height to 100% to fill the entire tab
+        },
         headerShown: route.name === 'Welcome' ? true : false,
       })}
     >
@@ -292,12 +312,12 @@ function ExpensesStack() {
         component={ExpensesScreen}
       />
       <Stack.Screen
-        name="RecurringPayments"
+        name="Recurrings"
         component={RecurringPayments}
       />
 
       <Stack.Screen
-        name="LoansAndDebt"
+        name="Loans"
         component={LoansAndDebt}
       />
 
@@ -319,13 +339,13 @@ function WelcomeStack() {
       }}
     >
       <Stack.Screen
-        name="Welcome"
+        name="Home"
         component={WelcomeScreen}
         options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
       />
 
       <Stack.Screen
-        name="ProfilePage"
+        name="Profile"
         component={ProfilePage}
       />
 
@@ -335,11 +355,11 @@ function WelcomeStack() {
       />
 
       <Stack.Screen
-        name="RecurringPayments"
+        name="Recurrings"
         component={RecurringPayments}
       />
       <Stack.Screen
-        name="TransactionsList"
+        name="Transactions"
         component={TransactionsList}
       />
       <Stack.Screen
@@ -347,53 +367,48 @@ function WelcomeStack() {
         component={Gamification}
       />
       <Stack.Screen
-        name="Challanges"
+        name="Challenges"
         component={Challanges}
       />
 
       <Stack.Screen
-        name="SettingsPage"
+        name="Settings"
         component={SettingsPage}
         // options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
       />
 
       <Stack.Screen
-        name="CurrencyPage"
+        name="Currency"
         component={CurrencyPage}
       />
 
       <Stack.Screen
-        name="LanguagePage"
+        name="Language"
         component={LanguagePage}
       />
 
       <Stack.Screen
-        name="NotificationsPage"
+        name="Notifications"
         component={NotificationsPage}
       />
 
       <Stack.Screen
-        name="ThemePage"
-        component={ThemePage}
-      />
-
-      <Stack.Screen
-        name="BugReport"
+        name="Report"
         component={BugReport}
       />
 
       <Stack.Screen
-        name="ConnectPage"
+        name="Connect"
         component={ConnectPage}
       />
 
       <Stack.Screen
-        name="FaqPage"
+        name="FAQ"
         component={FaqPage}
       />  
 
       <Stack.Screen 
-        name="BudgetDetail" 
+        name="Budget" 
         component={BudgetDetail} />
 
       <Stack.Screen 
@@ -424,7 +439,7 @@ function SavingsStack() {
       />
 
       <Stack.Screen
-        name="GoalDetailScreen"
+        name="Goal Detail"
         component={GoalDetailScreen}
       /> 
 
@@ -434,17 +449,17 @@ function SavingsStack() {
       />
 
       <Stack.Screen
-        name="StockDetails"
+        name="Stock Details"
         component={StockDetails}
       />
 
       <Stack.Screen
-        name="CryptoCurrencies"
+        name="Cryptocurrencies"
         component={CryptoCurrenciesScreen}
       />
 
       <Stack.Screen
-        name="CryptoDetails"
+        name="Crypto Details"
         component={CryptoDetails}
       /> 
       
@@ -463,32 +478,32 @@ function AnalyticsStack() {
       }}
     >
       <Stack.Screen
-        name="AnalyticsScreen"
+        name="Analytics"
         component={AnalyticsScreen}
       />
 
       <Stack.Screen
-        name="BalanceAnalytics"
+        name="Balance"
         component={BalanceAnalytics}
       />
 
       <Stack.Screen
-        name="SpendingAnalytics"
+        name="Spending"
         component={SpendingAnalytics}
       />
       
       <Stack.Screen
-        name="CashFlowAnalytics"
+        name="Cash Flow"
         component={CashFlowAnalytics}
       />
       
       <Stack.Screen
-        name="RecurringAnalytics"
+        name="Recurring"
         component={RecurringAnalytics}
       />
       
       <Stack.Screen
-        name="StocksAndCryptoAnalytics"
+        name="Investments"
         component={StocksAndCryptoAnalytics}
       />
     
@@ -508,14 +523,14 @@ function SettingsStack() {
       }}
     >
       <Stack.Screen
-        name="SettingsPage"
+        name="Settings"
         component={SettingsPage}
         options={{ headerShown: false }} // Hide the header for the SettingsPage screen
 
         // options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
       />
       <Stack.Screen
-        name="CurrencyPage"
+        name="Currency"
         component={CurrencyPage}
         // options={{ headerShown: false }} // Hide the header for the SettingsPage screen
         

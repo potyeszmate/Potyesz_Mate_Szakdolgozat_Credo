@@ -19,7 +19,7 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
 
   const handleChallangesOnClick = () => {
     // @ts-ignore
-    navigation.navigate('Challanges');
+    navigation.navigate('Challenges');
   };
 
   const maxLength = 50; // Maximum length of the text

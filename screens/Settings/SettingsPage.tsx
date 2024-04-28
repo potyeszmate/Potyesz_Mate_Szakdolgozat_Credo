@@ -30,37 +30,37 @@ const SettingsPage = () => {
 
   const handleCurrencyClick = () => {
     // @ts-ignore
-    navigation.navigate('CurrencyPage', { defaultCurrency: userSettings.currency });
+    navigation.navigate('Currency', { defaultCurrency: userSettings.currency });
   };
 
   const handleLanguageClick = () => {
     // @ts-ignore    
-    navigation.navigate('LanguagePage', { defaultLanguage: userSettings.language });
+    navigation.navigate('Language', { defaultLanguage: userSettings.language });
   };
 
   const handleNotificationsClick = () => {
     // @ts-ignore    
-    navigation.navigate('NotificationsPage');
+    navigation.navigate('Notifications');
   };
 
-  const handleThemeClick = () => {
-    // @ts-ignore    
-    navigation.navigate('ThemePage', { defaultMode: userSettings.darkMode });
-  };
+  // const handleThemeClick = () => {
+  //   // @ts-ignore    
+  //   navigation.navigate('ThemePage', { defaultMode: userSettings.darkMode });
+  // };
   
   const handleBugReportClick = () => {
     // @ts-ignore   
-    navigation.navigate('BugReport');
+    navigation.navigate('Report');
   };
 
   const handleConnectClick = () => {
     // @ts-ignore   
-    navigation.navigate('ConnectPage');
+    navigation.navigate('Connect');
   };
 
   const handleFaqClick = () => {
     // @ts-ignore    
-    navigation.navigate('FaqPage');
+    navigation.navigate('FAQ');
   };
 
   const handleLogout = () => {
@@ -157,14 +157,14 @@ const SettingsPage = () => {
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      <View style={styles.sectionContainer}>
+      {/* <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>{languages[selectedLanguage].appearance}</Text>
         <TouchableOpacity style={styles.optionContainer} onPress={handleThemeClick}>
           <Ionicons name="color-palette-outline" size={24} color="black" style={styles.icon} />
           <Text style={styles.optionText}>{languages[selectedLanguage].theme}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
-      </View>
+      </View> */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>{languages[selectedLanguage].support}</Text >
         <TouchableOpacity style={styles.optionContainer} onPress={handleBugReportClick}>

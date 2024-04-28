@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable, ActivityIndicator, Alert } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc } from 'firebase/firestore';
+import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc, getDoc } from 'firebase/firestore';
 import TransactionList from '../../components/ui/TransactionList';
 // import RecurringTransactionList from '../components/ui/RecurringTransactionList';
 import GoalList from '../../components/ui/GoalList';
@@ -26,6 +26,7 @@ import WelcomeCard from '../../components/ui/WelcomeCard';
 import AddBudget from '../../components/ui/AddBudget';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BudgetInput from '../../components/ui/BudgetInput';
+import OnboardingModal from '../../components/ui/OnboardingModal';
 
 const languages: any = {
   English: en,
@@ -34,197 +35,265 @@ const languages: any = {
 };
 
 function WelcomeScreen() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
+
+  const [userSettings, setUserSettings] = useState(null as any);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
-  // const [budgets, setBudgets] = useState([]);
+  const [profilePicture, setProfilePicture] = useState(null as any);
+  const authCtx: any = useContext(AuthContext);
+  const { userId, email } = authCtx as any;  
   const [points, setPoints] = useState<any[]>([]);
   const [challanges, setChallanges] = useState<any[]>([]);
-  // const [selectedCurrency, setSelectedCurrency] = useState<string>("");
-  const [userSettings, setUserSettings] = useState<any>([]);
   const [userIncome, setUserIncome] = useState<any>([]);
-
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
   const [prevCurrency, setPrevCurrency] = useState<string | null>(null);
   const [conversionRate, setConversionRate] = useState<number | null>(null);
   const [symbol, setSymbol] = useState<any>('');
-  const [loading, setLoading] = useState(true);
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [modalVisible, setModalVisible] = useState<any>(false);
-  const bottomSheetRef = useRef<any>(null);
-  const [budgets, setBudgets] = useState<any[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
 
-  const snapPoints = useMemo(() => ['30%', '50%'], []);
-
-  // const [goals, setGoals] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const [activeTab, setActiveTab] = useState('overview');
+  const snapPoints = useMemo(() => ['30%', '50%'], []);
+  // authCtx.logout()
 
-  const authCtx = useContext(AuthContext);
-  const { userId } = authCtx as any;
-  const { email } = authCtx as any;
+  console.log("USERS ID: ",userId)
 
-  // fetching data
-  const fetchRecurringTransactions = async () => {
-    // console.log("userId in home: ", userId)
-    try {
-      const recurringTransactionsQuery = query(
-        collection(db, 'recurring_payments'),
-        where('uid', '==', userId)
-      );
-      const querySnapshot = await getDocs(recurringTransactionsQuery);
+  // Fetching initial data
+  useEffect(() => {
+      async function fetchData() {
+        const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
 
-      const fetchedRecurringTransactions = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+          if(isOnboarding == 'true'){
+            console.log("IN ONBOARDING WITH THIS UID: ", userId)
+            setShowOnboarding(true);
 
-      console.log("fetchedRecurringTransactions", fetchedRecurringTransactions)
-      setRecurringTransactions(fetchedRecurringTransactions);
-    } catch (error: any) {
-      console.error('Error fetching transactions:', error.message);
-    }
-  };
- 
-  const fetchTransactions = async () => {
-    try {
-      const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(transactionsQuery);
+            return; // Exit the function early to prevent further execution
 
-      const fetchedTransactions = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+          }
 
-      //  console.log(fetchedTransactions)
-      // console.log("fetchedTransactions", fetchedTransactions)
-      setTransactions(fetchedTransactions);
-    } 
-    catch (error: any) 
-    {
-      console.error('Error fetching transactions:', error.message);
-    }
-  };
+          if (!userId) {
+            // authCtx.logout()
+            return
+          };
+         
+          setIsLoading(true);
+          try {
+              const settings = await getUserSettings(userId);
+              console.log("SET THE USER SETTINGS TO THIS: DATA", settings)
+              setUserSettings(settings);
+              const [trans, recTrans,chall, points, income] = await Promise.all([
+                  fetchTransactions(userId),
+                  fetchRecurringTransactions(userId),
+                  fetchChallanges(userId),
+                  fetchPoints(userId),
+                  fetchIncome(userId),
+                  // fetchLanguage(),
+                  await fetchLanguage(),
+                  await fetchCurrency(),
 
-  const fetchPoints = async () => {
-    try {
-      const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
-      const querySnapshot = await getDocs(pointsQuery);
+              ]);
 
-      const fetchedpoints = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+              console.log("transactionsList:", trans)
+              setTransactions(trans as any);
+              setRecurringTransactions(recTrans as any);
+              setChallanges(chall);
+              setPoints(points);
+              setUserIncome(income);
 
-      setPoints(fetchedpoints);
-      // console.log('fetched points:', fetchedpoints);
+              // setIsLoading(false);
 
-    } catch (error: any) {
-      console.error('Error fetching points:', error.message);
-    }
-  };
+          } catch (error) {
+              console.error('Failed to fetch initial data:', error);
+              setIsLoading(false);
 
-  const fetchChallanges = async () => {
-    try {
-      //, where('uid', '==', userId -> Only the actie challanges
-      const challangesQuery = query(collection(db, 'challanges'));
-      const querySnapshot = await getDocs(challangesQuery);
-
-      const fetchedpchallanges = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      setChallanges(fetchedpchallanges);
-      // console.log('fetched challanges:', fetchedpchallanges);
-
-    } catch (error: any) {
-      console.error('Error fetching points:', error.message);
-    }
-  };
-
-  const fetchUserSettings = async () => {
-    // console.log("userId in recurring: ", userId)
-
-    try {
-      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId))
-      const querySnapshot = await getDocs(settingsQuery);
-  
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0]?.data(); 
-
-        if (userData) {
-          setUserSettings(userData);
-
-          // console.log('Fetched settings:', userData);
-        } else {
-          console.log('No user data found.');
-        }
-      } else {
-        console.log('No documents found.');
-        const settingsDefault = {
-          uid: userId,  // Include the user's UID for easy querying
-          theme: 'light', // Default settings value
-          notifications: true, // Default settings value
-          currency: "USD"
-        };
-  
-        await setDoc(doc(db, 'users', userId), settingsDefault);  
+          } finally {
+              setIsLoading(false);
+          }
       }
-    } catch (error: any) {
-      console.error('Error fetching settings:', error.message);
-    }
-  };
+      fetchData();
+  }, [userId,isOnboardingComplete]);
 
-  const fetchIncome = async () => {
-    try {
-      // console.log("loading: ", loading);
-      setLoading(true);  // Ensure you're using setLoading correctly before fetching.
-  
-      const incomeQuery = query(collection(db, 'income'),  where('uid', '==', userId))
-      const querySnapshot = await getDocs(incomeQuery);
-  
-      if (!querySnapshot.empty) {
-        const incomeData = querySnapshot.docs[0]?.data();
-        if (incomeData && incomeData.income) {
-          setUserIncome(incomeData.income);  // Set only the income value, not the entire object.
-          // console.log('Fetched income:', incomeData.income);
-        } else {
-          console.log('No user income found.');
-          setUserIncome('0');  // Set a default or reset the income state if not found.
+
+//   useEffect(() => {
+//     async function fetchData() {
+//       const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
+
+//       if(isOnboarding == 'true'){
+//         console.log("IN ONBOARDING WITH THIS UID: ", userId)
+//         setShowOnboarding(true);
+//         return; // Exit the function early to prevent further execution
+//       }
+//     }
+//     fetchData();
+// }, []);
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const checkDataAndUpdate = async () => {
+      const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
+
+        if(isOnboarding == 'true'){
+          console.log("IN ONBOARDING WITH THIS UID: ", userId)
+          return; // Exit the function early to prevent further execution
+
         }
-      } else {
-        console.log('No documents found.');
-        setUserIncome('0');  // Set a default or reset the income state if no documents are found.
+
+      if (isFocused) {
+        await fetchLanguage();
+        await fetchCurrency();
+  
+        const isTransactionChanged = await AsyncStorage.getItem('transactionsChanged');
+        
+        console.log("TEST")
+
+        if (isTransactionChanged == "true") {
+          // Handle the condition when the transaction has changed
+          console.log("THERE IS A NEW TRANSACTION, LOAD IT")
+          setIsTransactionsLoading(true)
+
+          await AsyncStorage.setItem('transactionsChanged', 'false');
+          const newTransactions = await fetchTransactions(userId);
+          await setTransactions(newTransactions)
+          // You might want to fetch or update the transactions here
+          console.log("transactions in welcome page:", transactions.length); // Check current local time
+          setIsTransactionsLoading(false)
+
+        }
       }
-    } catch (error: any) {
-      console.error('Error fetching income:', error.message);
-      setUserIncome('0');  // Handle the error by setting income to a default value.
-    } finally {
-      setLoading(false);  // Ensure you turn off loading no matter the outcome.
+    };
+  
+    checkDataAndUpdate(); // Immediately call the async function
+  }, [isFocused]);  // userId, isOnboardingComplete
+
+
+  // Utility functions
+  async function getUserSettings(uid: any) {
+    const settingsRef = collection(db, 'users');
+    const q = query(settingsRef, where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        // Assuming only one document will match, return the first one
+        const userSettings = querySnapshot?.docs[0]?.data();
+        console.log("User settings exist:", userSettings);
+        return userSettings;
+    } else {
+        // If no document exists, create default settings
+        // const defaultSettings = {currency: 'USD', uid: userId, language: "English" };
+        // const newDocRef = doc(settingsRef); // This creates a new document with a new auto-generated ID
+        // await setDoc(newDocRef, { ...defaultSettings, uid }); // Set uid to link this document to the user
+        // console.log("Default settings created for new user.");
+        // return defaultSettings;
+    }
+}
+
+  async function fetchTransactions(uid: any) {
+      const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', uid));
+      const snapshot = await getDocs(transactionsQuery);
+      setIsTransactionsLoading(false)
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));  
+    }
+
+  async function fetchRecurringTransactions(uid: any) {
+      const recurringQuery = query(collection(db, 'recurring_payments'), where('uid', '==', uid));
+      const snapshot = await getDocs(recurringQuery);
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));  }
+
+  async function fetchPoints(uid: any) {
+    const recurringQuery = query(collection(db, 'points'), where('uid', '==', uid));
+    const snapshot = await getDocs(recurringQuery);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    }
+
+  async function fetchChallanges(uid: any) {
+    const recurringQuery = query(collection(db, 'joinedChallenges'), where('uid', '==', uid));
+    const snapshot = await getDocs(recurringQuery);
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    }
+
+  async function fetchIncome(uid: any) {
+    const recurringQuery = query(collection(db, 'income'), where('uid', '==', uid));
+    const snapshot = await getDocs(recurringQuery);
+    return snapshot.docs[0]?.data().income ? snapshot.docs[0]?.data().income : 0
+    }
+  
+  const getSelectedLanguage = async () => {
+    try {
+      const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
+      if (selectedLanguage !== null) {
+        console.log(selectedLanguage)
+        setSelectedLanguage(selectedLanguage);
+      }
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
     }
   };
 
+  const getSelectedCurrency = async () => {
+    try {
 
-  const getCurrencySymbol = (currencyCode: any) => {
-    // console.log("CHANGING CURRENCY SYMBOL")
-    
-    switch (currencyCode) {
-      case 'USD':
-        return '$';
-      case 'EUR':
-        return '€';
-      case 'HUF':
-        return 'HUF';
-      case 'AUD':
-        return '$';
-      case 'CAD':
-        return '$';
-      case 'GBP':
-        return '£';
-      default:
-        return ''; 
+      const savedSymbol = await AsyncStorage.getItem('symbol');
+      const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+      console.log("Saved Symbol: ", savedSymbol)
+      console.log("Saved conversionRate: ", savedConversionRate)
+
+      if (savedSymbol && savedConversionRate !== null) {
+        console.log("savedSymbol and savedConversionRate: ", savedSymbol, savedConversionRate )
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      } else {
+        console.log("User des not have saves curreny and symbol yet, we have to use the default. " )
+
+        const defaultsavedSymbol= "$";
+        const defaultConversionRate= 1;
+
+        await AsyncStorage.setItem('conversionRate', defaultConversionRate.toString());
+        await AsyncStorage.setItem('symbol', defaultsavedSymbol);
+
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      }
+
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
     }
   };
+  
+  const fetchLanguage = async () => {
+    await getSelectedLanguage();
+  };
+
+  const fetchCurrency = async () => {
+    await getSelectedCurrency();
+    // Use the retrieved language for any rendering or functionality
+  };
+
+  const updateProfilePicture = (imageUrl: any) => {
+    setProfilePicture(imageUrl);
+  };
+
+  function getCurrencySymbol(currencyCode: any) {
+      const symbols: any = {
+          'USD': '$', 'EUR': '€', 'HUF': 'Ft', 'AUD': '$', 'CAD': '$', 'GBP': '£'
+      };
+      return symbols[currencyCode] || '';
+  }
 
   const updateIncome = async (newIncome: string) => {
     // console.log('Called updateIncome.');
@@ -241,7 +310,7 @@ function WelcomeScreen() {
         if (userData.uid === userId) {
           await updateDoc(doc.ref, { income: convertedIncome });
           // console.log('Income updated.');
-          await fetchIncome();
+          await fetchIncome(userId);
         }
       }
     } catch (error) {
@@ -249,166 +318,116 @@ function WelcomeScreen() {
     }
   };
 
-  const updateProfilePicture = (imageUrl: any) => {
-    setProfilePicture(imageUrl);
-  };
-
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Check if user settings have already been fetched
-  //       if (!userSettings.currency) {
-  //         // Fetch user settings
-  //         await fetchUserSettings();
-  //       }
-
-  //       console.log("prevCurrency", prevCurrency)
-  //       console.log("prevCurrency", userSettings.currency)
-
-  //       // Check if the currency value is valid and has changed
-  //       if (userSettings.currency && userSettings.currency !== prevCurrency) {
-  //         // Get the saved symbol from AsyncStorage
-  //         const savedSymbol = await AsyncStorage.getItem('symbol');
-          
-  //         // Check if the current symbol is the same as the saved symbol
-  //         const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
-    
-  //         if (symbolHaveNotChanged) {
-  //           // Use saved conversion rate
-  //           const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-  //           setConversionRate(parseFloat(savedConversionRate));
-  //           // Set currency symbol
-  //           setSymbol(savedSymbol);
-  //         } else {
-  //           // Fetch conversion rate from API
-  //           const result = await convertCurrencyToCurrency('USD', userSettings.currency);
-  //           setConversionRate(result);
-        
-  //           // Save conversion rate and symbol
-  //           await AsyncStorage.setItem('conversionRate', result.toString());
-  //           const newSymbol = getCurrencySymbol(userSettings.currency);
-  //           setSymbol(newSymbol);
-  //           await AsyncStorage.setItem('symbol', newSymbol);
-  //         }
-          
-  //         // Update the previous currency value
-  //         setPrevCurrency(userSettings.currency);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching user settings or converting currency:', error);
-        
-  //     }
-  //   };
-    
-  //   fetchData();
-  // }, [userSettings.currency, prevCurrency]); // Add userSettings.currency and prevCurrency to the dependency array
+  const uploadUserData = async (data, userId) => {
+    // Destructure the data object
+    const {
+      firstName,
+      lastName,
+      gender,
+      dateOfBirth,
+      estimatedBalance,
+      monthlyIncome,
+    } = data;
   
-
-  const getSelectedLanguage = async () => {
-    try {
-      const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-      if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
-        setSelectedLanguage(selectedLanguage);
-      }
-    } catch (error) {
-      console.error('Error retrieving selected language:', error);
+    // Set the user's settings
+    console.log("Received data for upload:", data);
+    
+    if (!userId) {
+      throw new Error("User ID is null or undefined.");
     }
+
+    if (!data) {
+      throw new Error("Data object is null or undefined.");
+    }
+
+    const settingsRef = doc(db, 'users', userId);
+    await setDoc(settingsRef, {
+      currency: 'USD',
+      uid: userId,
+      language: "English",
+      firstName: firstName,
+      lastName: lastName,
+      birthday: dateOfBirth,
+      gender: gender,
+      isPremiumUser: false,
+    });
+  
+    // Set the user's balance
+    const balanceRef = doc(db, 'balance', userId);
+    await setDoc(balanceRef, {
+      balance: estimatedBalance,
+      uid: userId,
+    });
+  
+    // Set the user's income
+    const incomeRef = doc(db, 'income', userId);
+    await setDoc(incomeRef, {
+      income: monthlyIncome,
+      uid: userId,
+    });
   };
-
-  const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
-  };
-
-  const isFocused = useIsFocused();
-
   
-  useEffect(() => {
-    if (isFocused) {
+  if (!userId) {
+    // authCtx.logout()
+    console.log("NO USER ID")
+    return <ActivityIndicator size="large" color="#0000ff" />
+  } ;
 
-      const fetchData = async () => {
-        try {
-          // Check if user settings have already been fetched
-          // if (!userSettings.currency) {
-            // Fetch user settings
-          await fetchUserSettings();
-          // }
-  
-          // console.log("prevCurrency: ", prevCurrency)
-          // console.log("current currency: ", userSettings.currency)
-  
-          // Check if the currency value is valid and has changed
-          if (userSettings.currency != prevCurrency) {
-            // Get the saved symbol from AsyncStorage
-            const savedSymbol = await AsyncStorage.getItem('symbol');
-            
-            // Check if the current symbol is the same as the saved symbol
-            const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
-      
-            if (symbolHaveNotChanged) {
-              // Use saved conversion rate
-              const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-              setConversionRate(parseFloat(savedConversionRate));
-              // Set currency symbol
-              setSymbol(savedSymbol);
-            } else {
-              // Fetch conversion rate from API
-              const result = await convertCurrencyToCurrency('USD', userSettings.currency);
-              setConversionRate(result);
-          
-              // Save conversion rate and symbol
-              await AsyncStorage.setItem('conversionRate', result.toString());
-              const newSymbol = getCurrencySymbol(userSettings.currency);
-              setSymbol(newSymbol);
-              await AsyncStorage.setItem('symbol', newSymbol);
+  if (isLoading) {
+      return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
+  if (showOnboarding) {
+    console.log("IN ONBOARDING CASE")
+    return <OnboardingModal
+    isVisible={showOnboarding}
+    onComplete={async (data) => {
+      // Show confirmation alert
+      Alert.alert(
+        "Confirm Details",
+        "Are you sure you want to continue with these details?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          {
+            text: "Yes",
+            onPress: async () => {
+              try {
+                // Upload the data to Firestore
+                await uploadUserData(data, userId);
+    
+                // Set AsyncStorage item 'setOnboardingModal' to 'false'
+                await AsyncStorage.setItem('setOnboardingModal', 'false');
+                
+                // Update state to reflect that onboarding is complete
+                setIsOnboardingComplete(true);
+                setShowOnboarding(false);
+
+                // Alert the user that they can now start their journey
+                Alert.alert("Success", "You can now start your journey in the app!");
+    
+              } catch (error) {
+                // Handle any errors here
+                console.error("Error uploading onboarding data: ", error);
+                Alert.alert("Error", "There was a problem saving your details. Please try again.");
+              }
             }
-            // console.log(conversionRate)
-            // Update the previous currency value
-            setPrevCurrency(userSettings.currency);
           }
-        } catch (error) {
-          console.error('Error fetching user settings or converting currency:', error);
-          
-        }
-      };
-      
-      fetchTransactions();
-      fetchRecurringTransactions();
-      fetchPoints();
-      fetchChallanges();
-      fetchIncome();
-      fetchData();
-      fetchLanguage();
-    }
-  }, [isFocused]);
+        ]
+      );
+    }}
+    
+  />
+}
 
-  useEffect(() => {
-    console.log("WelcomeScreen useEffect")
-    fetchTransactions();
-    fetchRecurringTransactions();
-    fetchPoints();
-    fetchChallanges();
-    fetchIncome();
-    fetchUserSettings();
-    // fetchUserSettings();
-    // if(!symbol && !conversionRate){
-    //   const savedSymbol = AsyncStorage.getItem('symbol');
-    //   const savedConversionRate: any = AsyncStorage.getItem('conversionRate');
-    //   setConversionRate(parseFloat(savedConversionRate));
-    //   setSymbol(savedSymbol);
-    // }
-
-  }, [userId]);
-
-  useEffect(() => {
-    fetchUserSettings
-  }, []);
-
+  // if (!transactions || transactions.length === 0) {
+  //   return <Text>No transactions available.</Text>;
+  // }
   
 
-  
   return (
 
     <View style={styles.container}>
@@ -477,10 +496,10 @@ function WelcomeScreen() {
             
 
         {activeTab === 'overview' && (
-          <YourBalance balance={300} income={600} expense={300} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} loading={loading}/>
+          <YourBalance balance={300} income={600} expense={300} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} loading={isLoading}/>
         )}
 
-        {activeTab === 'overview' && !userSettings.isPremiumUser && (
+        {activeTab === 'overview' && userSettings && !userSettings.isPremiumUser && (
           <WelcomeCard 
             email={email} 
             firstName={userSettings.firstName} 
@@ -489,19 +508,16 @@ function WelcomeScreen() {
         )}
 
         {/* Flatlist delete */}
-        {activeTab === 'overview' && (
-          <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
+        {activeTab === 'overview' && userSettings && (
+           transactions && <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency} isLoading={isTransactionsLoading}/>
         )}
 
-        {activeTab === 'overview' && (
+        {activeTab === 'overview' && userSettings && (
           <MonthlyIncome income={userIncome} updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
         )}
 
         {activeTab === 'overview' && (
           <UpcomingRecurring recurringTransactions={recurringTransactions} />
-          // <View>
-          //   <Text>TEST</Text>
-          // </View>
         )}
 
         {activeTab === 'budget' && (
@@ -509,7 +525,7 @@ function WelcomeScreen() {
         )}
 
         {activeTab === 'budget' && (
-        <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage} currency={userSettings.currency} conversionRate={conversionRate} symbol={symbol}/>
+         transactions && <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage} currency={userSettings.currency} conversionRate={conversionRate} symbol={symbol}/>
         )}
 
 
@@ -521,9 +537,9 @@ function WelcomeScreen() {
         <JoinedChallanges challanges={challanges[0]} selectedLanguage={selectedLanguage}/>
         )}
 
-        {/* <Text style={styles.title}>Your Goals:</Text>
-        <GoalList goals={goals} /> */}
       </ScrollView>
+
+      
 
     </View>
 

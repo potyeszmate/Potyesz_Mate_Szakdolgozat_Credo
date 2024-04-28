@@ -114,26 +114,40 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   }, [userId]);
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && budgets.length > 0) {
       console.log('Calculating progress bar...');
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+  
       const newTotalAmount = budgets.reduce((acc, budget) => acc + budget.Total_ammount, 0);
+      
+      console.log(`Current month/year: ${currentMonth}/${currentYear}`);
+
       const newSpentAmount = transactions
-        ? transactions
-          .filter((transaction: any) => transaction.category)
+      ? transactions
+          .filter((transaction: any) => {
+            const transactionDate = transaction.date.toDate(); // If transaction.date is a Firestore Timestamp
+
+            // const transactionDate = new Date(transaction.date.seconds * 1000); // Convert Firestore Timestamp to Date object
+            return transactionDate.getMonth() === currentMonth &&
+                   transactionDate.getFullYear() === currentYear;
+          })
           .reduce((acc: any, transaction: any) => {
             const matchingBudget = budgets.find((budget) => budget.Category === transaction.category);
-            return acc + (matchingBudget ? transaction.value : 0);
+            return matchingBudget ? acc + parseFloat(transaction.value) : acc;
           }, 0)
-        : 0;
+      : 0;
+  
       const newRemainingAmount = newTotalAmount - newSpentAmount;
       const newSpentPercentage = newTotalAmount !== 0 ? (newSpentAmount / newTotalAmount) * 100 : 0;
+  
       setTotalAmount(newTotalAmount);
       setSpentAmount(newSpentAmount);
       setRemainingAmount(newRemainingAmount);
       setSpentPercentage(newSpentPercentage);
     }
   }, [loading, budgets, transactions]);
-
+  
   useEffect(() => {
     console.log('spentAmount:', spentAmount);
     console.log('totalAmount:', totalAmount);
@@ -178,9 +192,12 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     setSelectedBudget(null);
   };
 
-  console.log( "budgets.length: ", budgets.length)
-
- 
+  let progressBarColor = '#35BA52'; // Default green color
+  if (spentPercentage / 100 >= 0.8) {
+    progressBarColor = '#FF5733'; // Red color for high expenditure
+  } else if (spentPercentage / 100 >= 0.5) {
+    progressBarColor = '#FFA500'; // Orange color for moderate expenditure
+  }
 
   return (
     !loading && 
@@ -189,7 +206,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
       <View style={styles.summaryContainer}>
         <View>
           <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
-          <View style={styles.monthSelectorContainer}>
+          {/* <View style={styles.monthSelectorContainer}>
             <View style={styles.monthSelectorCard}>
               <RNPickerSelect
                 value={selectedMonth}
@@ -199,7 +216,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
               />
               <Ionicons name="caret-down" size={20} style={styles.monthSelectorIcon} />
             </View>
-          </View>
+          </View> */}
         </View>
         <Text style={styles.amountLeftText}>
           {currency === 'HUF' ? 
@@ -214,7 +231,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
             progress={spentPercentage / 100}
             width={Math.round(Dimensions.get('window').width * 0.82)}
             height={15}
-            color={'#35BA52'}
+            color={progressBarColor}
             borderRadius={10}
             borderColor='#FFFFFF'
             animationType='decay'   

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { AuthContext } from '../../store/auth-context';
 
 const iconMapping: any = {
     twitter: require('../../assets/Recurrings/twitter.png'),
@@ -27,7 +28,10 @@ const iconMapping: any = {
     console.log("IN UpcomingRecurring")
     const navigation = useNavigation();
     const currentDate = new Date();
-    
+
+    const authCtx: any = useContext(AuthContext);
+    const { userId} = authCtx as any;  
+
     // console.log("recurringTransactions: ", recurringTransactions)
     // Filter recurring transactions with dates not earlier than the current date
     const upcomingRecurring = recurringTransactions
@@ -73,7 +77,9 @@ const iconMapping: any = {
   
     const handleRecurringPaymentsClick = () => {
       // @ts-ignore
-      navigation.navigate('RecurringPayments');
+      // navigation.navigate('RecurringPayments');
+      navigation.navigate('Recurrings', { userId: userId });
+
     };
   
     return (

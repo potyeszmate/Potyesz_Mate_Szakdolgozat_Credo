@@ -57,7 +57,7 @@ const PaymentScreen = () => {
   const handleModalConfirm = () => {
     setSuccessModalVisible(false);
     // @ts-ignore
-    navigation.navigate('Welcome');
+    navigation.navigate('Home');
   };
   
   const initializePaymentSheet = async () => {
