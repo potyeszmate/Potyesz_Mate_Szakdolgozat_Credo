@@ -187,7 +187,7 @@ function TabNavigator() {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="AddButton"
         component={TransactionInput}
         options={{
@@ -199,7 +199,7 @@ function TabNavigator() {
           ),
           tabBarLabel: '', // Set tabBarLabel to an empty string
         }}
-      />
+      /> */}
       
       <Tab.Screen
         name={languages[selectedLanguage].analytics}

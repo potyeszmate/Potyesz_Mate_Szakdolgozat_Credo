@@ -1,13 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
 
-const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
+const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
   const { userId } = authCtx;
   const navigation = useNavigation();
 
@@ -36,6 +36,10 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
 
 
   console.log("profile: ", profile)// const fetchProfile = async () => {
+
+  if (isLoading || !profile) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   if(profile){
     console.log("profile: ", profile)// const fetchProfile = async () => {
@@ -84,11 +88,9 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile}) => {
       </TouchableOpacity>
       <View>
         <Text style={styles.headerTextTop}>Good morning,</Text>
-        {profile && (
           <Text style={styles.headerTextBottom}>
             {profile.firstName} {profile.lastName}
           </Text>
-        )}
       </View>
     </View>
   ) : (

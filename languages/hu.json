@@ -141,7 +141,7 @@
   "enterBudgetAmmount": "Adja meg a költségterv összegét",
   "enterSubscriptionAmmount": "Adja meg az előfizetés összegét",
   "enterTransactionAmmount": "Adja meg a tranzakció összegét",
-  "enterGoalAmmount": "Adja meg a megtakarítás összegét",
+  "enterGoalAmount": "Adja meg a megtakarítás összegét",
   "enterGoalName": "Adja meg a megtakarítás nevét",
   "totalSaved": "Összesen megtakarítva:",
   "goalName": "Megtakarítás neve",

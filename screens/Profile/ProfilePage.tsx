@@ -128,6 +128,7 @@ const handleSelectImage = async () => {
       try {
         await updateDoc(userDocRef, { profilePicture: imageUrl });
         console.log("Profile image updated successfully.");
+        await AsyncStorage.setItem('profileChanged', 'true');
         setProfile(prev => ({ ...prev, profilePicture: imageUrl }));
       } catch (error) {
         setIsLoading(false);
@@ -220,11 +221,12 @@ const handleSelectImage = async () => {
   
   
   const editProfileHandler = async (editedProfile: any) => {
-    console.log("editedProfile", editedProfile)
+    console.log(" !!!!!!!!!!!!!!! EDITING PROFILE !!!!!", editedProfile)
     try {
       const { id, ...editedData } = editedProfile;
       const docRef = doc(db, 'users', id);
       await updateDoc(docRef, editedData);
+      await AsyncStorage.setItem('profileChanged', 'true');
       fetchProfile();
       setEditModalVisible(false);
     } catch (error: any) {
@@ -346,8 +348,9 @@ const handleSelectImage = async () => {
 
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => setEditModalVisible(true)}
-      >
+        onPress={() => setEditModalVisible(true)
+        }      
+        >
         <Feather name="edit" size={24} color="#fff" style={styles.editIcon} />
         <Text style={styles.addButtonText}>{languages[selectedLanguage].editProfile}</Text>
       </TouchableOpacity>
@@ -480,6 +483,23 @@ const styles = StyleSheet.create({
   leftSection: {
     marginLeft: 100,
     marginRight: 40
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+ bottomSheetBackground: {
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  editButtonContainer: {
+    padding: 16,
+  },
+  modalBackground: {
+    flex: 1,
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
   },
   // ... other styles ...
 });

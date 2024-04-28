@@ -83,7 +83,7 @@ const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedL
         </View>
 
         <View style={styles.inputWrapper}>
-          <Text style={styles.label}>{languages[selectedLanguage].goalName}</Text>
+          <Text style={styles.label}>{languages[selectedLanguage].totalAmmount}</Text>
           <TextInput
             placeholder={languages[selectedLanguage].enterGoalAmmount}
             style={styles.input}

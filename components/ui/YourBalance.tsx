@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image  } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
@@ -15,10 +15,7 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage, symbol, conversionRate, loading }) => {
-  let [fontsLoaded] = useFonts({
-    // Inter_400Regular,
-  });
+const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol, conversionRate, loading }) => {
 
   const months = [
     { label: 'January', value: 'January' },
@@ -39,21 +36,57 @@ const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage
   const ArrowUp = require('../../assets/arrow-up-circle.png');
 
   const [selectedMonth, setSelectedMonth] = React.useState('January');
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
 
+  const calculateTotals = () => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+  
+
+    const calculatedTotalIncome = incomes.reduce((acc, { date, value }) => {
+      if (!date || value == null) {
+        console.log('Invalid income record:', { date, value });
+        return acc;
+      }
+      const incomeDate = new Date(date.seconds * 1000);
+      if (incomeDate.getMonth() === currentMonth && incomeDate.getFullYear() === currentYear) {
+        return acc + Number(value);
+      }
+      return acc;
+    }, 0);
+  
+    const calculatedTotalExpense = transactions.reduce((acc, { date, value }) => {
+      if (!date || value == null) {
+        console.log('Invalid transaction record:', { date, value });
+        return acc;
+      }
+      const expenseDate = new Date(date.seconds * 1000);
+      if (expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear) {
+        return acc + Number(value);
+      }
+      return acc;
+    }, 0);
+
+    setTotalIncome(calculatedTotalIncome);
+    setTotalExpense(calculatedTotalExpense);
+  };
+
+  
+  useEffect(() => {
+    if (loading) return;
+
+    calculateTotals();
+  }, [incomes, transactions, loading]);
+ 
+  if (balance === null) {
+    return <Text>Loading balance...</Text>; // or any other appropriate fallback
+  }
+  
+ 
   return (
     <View style={styles.cardContainer}>
-      {/* Month Selector */}
-      <View style={styles.monthSelectorContainer}>
-        <View style={styles.monthSelectorCard}>
-          <RNPickerSelect
-            value={selectedMonth}
-            onValueChange={(value) => setSelectedMonth(value)}
-            items={months.map(month => ({ label: month.label, value: month.value }))}
-            style={{ inputIOS: styles.monthSelector }}
-          />
-          <Ionicons name="caret-down" size={20} style={styles.monthSelectorIcon} />
-          </View>
-      </View>
+    
 
       <View style={styles.balanceContainer}>
         <Text style={styles.balanceText}>{languages[selectedLanguage].yourBalance}</Text>
@@ -62,8 +95,8 @@ const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage
         ) : (
           <Text style={styles.balanceAmount}>
             {symbol === 'HUF'
-              ? Math.round(parseFloat(balance) * conversionRate)
-              : (parseFloat(balance) * conversionRate).toFixed(2)}{' '}{symbol}
+              ? `${Math.round(parseFloat(balance) * conversionRate)} ${symbol}`
+              : `${(parseFloat(balance) * conversionRate).toFixed(2)} ${symbol}`}
           </Text>
         )}
       </View>
@@ -78,8 +111,8 @@ const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage
           ) : (
             <Text style={styles.infoAmount}>
               {symbol === 'HUF'
-                ? Math.round(parseFloat(income) * conversionRate)
-                : (parseFloat(income) * conversionRate).toFixed(2)}{' '}{symbol}
+                ? Math.round(totalIncome * conversionRate)
+                : (totalIncome * conversionRate).toFixed(2)}{' '}{symbol}
             </Text>
           )}
           </View>
@@ -96,8 +129,8 @@ const YourBalance: React.FC<any> = ({ balance, income, expense, selectedLanguage
           ) : (
             <Text style={styles.infoAmount}>
               {symbol === 'HUF'
-                ? Math.round(parseFloat(expense) * conversionRate)
-                : (parseFloat(expense) * conversionRate).toFixed(2)}{' '}{symbol}
+                ? Math.round(totalExpense * conversionRate)
+                : (totalExpense * conversionRate).toFixed(2)}{' '}{symbol}
             </Text>
           )}
           </View>

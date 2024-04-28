@@ -45,7 +45,7 @@ const iconMapping: any = {
   Sport: require('../../assets/Sport.png'),
 };
 
-const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction, selectedLanguage, onClose, currency, conversionRate, onDeleteRecurringTransaction}) => {
+const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initialTransaction, selectedLanguage, onClose, currency, conversionRate, onDeleteRecurringTransaction, onDeleteIncome}) => {
   const [transactionName, setTransactionName] = useState('');
   const [transactionNotes, setTransactionNotes] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null as any);
@@ -108,7 +108,11 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
     }
   }, [initialTransaction]);
 
-  const addOrUpdateTransactionHandler = () => {
+  const addOrUpdateTransactionHandler = (activeTab: string) => {
+
+    if(activeTab == "Expense") {
+
+    
     if (!transactionName || !selectedCategory || !transactionValue) {
       console.log("Transactions: ", transactionName,selectedCategory, transactionValue  )
       console.warn('Please fill in all fields');
@@ -117,7 +121,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
 
     const transactionData: any = {
       name: transactionName,
-      category: selectedCategory,
+      category: "Income",
       value: conversionRate !== null ? (1 / conversionRate) * parseFloat(transactionValue) : parseFloat(transactionValue),
       date: selectedDate,
       notes: transactionNotes   
@@ -130,7 +134,31 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
     }
 
     onAddTransaction(transactionData);
+    // onAddIncome(transactionData)
+  } else { 
 
+    if (!transactionName || !transactionValue) {
+      console.log("Transactions: ", transactionName,selectedCategory, transactionValue  )
+      console.warn('Please fill in all fields');
+      return;
+    }
+
+    const transactionData: any = {
+      name: transactionName,
+      category: "Income",
+      value: conversionRate !== null ? (1 / conversionRate) * parseFloat(transactionValue) : parseFloat(transactionValue),
+      date: selectedDate,
+      notes: transactionNotes   
+
+    };
+
+    if (initialTransaction) {
+      // If it's an existing transaction, add id to the transactionData
+      transactionData.id = initialTransaction.id;
+    }
+
+    onAddIncomes(transactionData);
+  }
     // Clear fields after adding/updating
     setTransactionName('');
     setTransactionNotes('')
@@ -155,6 +183,8 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
     setModalProviderVisible(false);
     textInputRef.current?.blur(); // Ensure TextInput is blurred
   };
+
+  const today = new Date();
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -207,22 +237,25 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
   
         </View>
   
-        <View style={styles.divider} />
-  
-        <View style={styles.inputWrapper}>
-          <TouchableOpacity style={styles.inputContainer} onPress={() => setModalProviderVisible(true)}>
-            <View style={styles.iconContainer}>
-              {/* <Image source={selectProvider} style={styles.icon} /> */}
-              <Image
-                source={selectedCategory !== null ? iconMapping[selectedCategory] : selectCategoryIcon}
-                style={styles.icon}
-              /> 
-            </View>
-            <Text style={styles.inputText}>{selectedCategory ? selectedCategory : languages[selectedLanguage].selectCategory}</Text>
-            <Image source={require('../../assets/angle-right.png')} />
-          </TouchableOpacity>
-        </View>
-        
+        {activeTab === 'Expense' && (
+          <View style={styles.divider} />
+        )}
+        {activeTab === 'Expense' && (
+
+          <View style={styles.inputWrapper}>
+            <TouchableOpacity style={styles.inputContainer} onPress={() => setModalProviderVisible(true)}>
+              <View style={styles.iconContainer}>
+                {/* <Image source={selectProvider} style={styles.icon} /> */}
+                <Image
+                  source={selectedCategory !== null ? iconMapping[selectedCategory] : selectCategoryIcon}
+                  style={styles.icon}
+                /> 
+              </View>
+              <Text style={styles.inputText}>{selectedCategory ? selectedCategory : languages[selectedLanguage].selectCategory}</Text>
+              <Image source={require('../../assets/angle-right.png')} />
+            </TouchableOpacity>
+          </View> 
+        )}
         <View style={styles.divider} />
 
         <View style={styles.inputWrapper} >
@@ -336,7 +369,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
           transparent={true}
           animationType="slide"
           onRequestClose={() => setModalDateVisible(false)}
-           >
+        >
           <Pressable
             style={styles.modalBackground}
             onPress={() => setModalDateVisible(false)}
@@ -366,8 +399,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
             >
               <View style={styles.contentContainer}>
                 <View style={styles.inputWrapper}>
-                {/* <Text >Select a provider</Text> */}
-
                   <Text style={styles.modalDateTitle}>{languages[selectedLanguage].selectDate}</Text>
                   {Platform.OS === 'ios' ? (
                     <>
@@ -377,6 +408,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
                         display="spinner"
                         onChange={(event, date) => setSelectedDate(date || selectedDate)}
                         style={{ width: '100%' }}
+                        maximumDate={today}
                       />
                       <View style={styles.bottomButtonContainer}>
                         <TouchableOpacity
@@ -388,7 +420,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
                           <Text style={styles.bottomButtonText}>Select</Text>
                         </TouchableOpacity>
                       </View>
-
                     </>
                   ) : (
                     <>
@@ -405,6 +436,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
                             setSelectedDate(date || selectedDate);
                             setModalDateVisible(false);
                           }}
+                          maximumDate={today}
                         />
                       )}
                     </>
@@ -412,7 +444,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, initialTransaction,
                 </View>
               </View>
             </BottomSheet>
-
           </Pressable>
         </Modal>
   

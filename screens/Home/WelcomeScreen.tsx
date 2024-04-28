@@ -35,11 +35,13 @@ const languages: any = {
 };
 
 function WelcomeScreen() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const [userSettings, setUserSettings] = useState(null as any);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [incomes, setIncomes] = useState<any[]>([]);
   const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
   const [profilePicture, setProfilePicture] = useState(null as any);
   const authCtx: any = useContext(AuthContext);
@@ -47,6 +49,10 @@ function WelcomeScreen() {
   const [points, setPoints] = useState<any[]>([]);
   const [challanges, setChallanges] = useState<any[]>([]);
   const [userIncome, setUserIncome] = useState<any>([]);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
+  
   const [prevCurrency, setPrevCurrency] = useState<string | null>(null);
   const [conversionRate, setConversionRate] = useState<number | null>(null);
   const [symbol, setSymbol] = useState<any>('');
@@ -67,6 +73,7 @@ function WelcomeScreen() {
         const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
 
           if(isOnboarding == 'true'){
+            setIsLoading(false)
             console.log("IN ONBOARDING WITH THIS UID: ", userId)
             setShowOnboarding(true);
 
@@ -81,15 +88,19 @@ function WelcomeScreen() {
          
           setIsLoading(true);
           try {
-              const settings = await getUserSettings(userId);
-              console.log("SET THE USER SETTINGS TO THIS: DATA", settings)
-              setUserSettings(settings);
-              const [trans, recTrans,chall, points, income] = await Promise.all([
+              // const settings = await getUserSettings(userId);
+              // console.log("SET THE USER SETTINGS TO THIS: DATA", settings)
+              // setUserSettings(settings);
+              const [trans, recTrans, chall, points, income, incomes, balance, settings] = await Promise.all([
                   fetchTransactions(userId),
                   fetchRecurringTransactions(userId),
                   fetchChallanges(userId),
                   fetchPoints(userId),
                   fetchIncome(userId),
+                  fetchIncomes(userId),
+                  fetchBalance(userId),
+                  getUserSettings(userId),
+
                   // fetchLanguage(),
                   await fetchLanguage(),
                   await fetchCurrency(),
@@ -102,7 +113,9 @@ function WelcomeScreen() {
               setChallanges(chall);
               setPoints(points);
               setUserIncome(income);
-
+              setIncomes(incomes as any);
+              setBalance(balance as any);
+              setUserSettings(settings)
               // setIsLoading(false);
 
           } catch (error) {
@@ -115,20 +128,6 @@ function WelcomeScreen() {
       }
       fetchData();
   }, [userId,isOnboardingComplete]);
-
-
-//   useEffect(() => {
-//     async function fetchData() {
-//       const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
-
-//       if(isOnboarding == 'true'){
-//         console.log("IN ONBOARDING WITH THIS UID: ", userId)
-//         setShowOnboarding(true);
-//         return; // Exit the function early to prevent further execution
-//       }
-//     }
-//     fetchData();
-// }, []);
 
   const isFocused = useIsFocused();
 
@@ -147,7 +146,9 @@ function WelcomeScreen() {
         await fetchCurrency();
   
         const isTransactionChanged = await AsyncStorage.getItem('transactionsChanged');
-        
+        const isIncomesChanged = await AsyncStorage.getItem('incomesChanged');
+        const isprofileChanged = await AsyncStorage.getItem('profileChanged');
+
         console.log("TEST")
 
         if (isTransactionChanged == "true") {
@@ -163,6 +164,31 @@ function WelcomeScreen() {
           setIsTransactionsLoading(false)
 
         }
+
+        if (isIncomesChanged == "true") {
+          // Handle the condition when the transaction has changed
+          console.log("THERE IS A NEW INCOME, LOAD IT")
+          // setIsTransactionsLoading(true)  - DONT LOAD INCOMES YET
+
+          await AsyncStorage.setItem('incomesChanged', 'false');
+          const newIncomes = await fetchIncomes(userId);
+          await setIncomes(newIncomes)
+          // You might want to fetch or update the transactions here
+          console.log("transactions in welcome page:", transactions.length); // Check current local time
+          // setIsTransactionsLoading(false) - DONT LOAD INCOMES YET
+
+        }
+
+        if (isprofileChanged == "true") {
+          setIsProfileLoading(true)
+
+          await AsyncStorage.setItem('profileChanged', 'false');
+          const newProfile = await getUserSettings(userId);
+          await setUserSettings(newProfile);
+          setIsProfileLoading(false)
+
+        }
+
       }
     };
   
@@ -180,6 +206,7 @@ function WelcomeScreen() {
         // Assuming only one document will match, return the first one
         const userSettings = querySnapshot?.docs[0]?.data();
         console.log("User settings exist:", userSettings);
+        setIsProfileLoading(false)
         return userSettings;
     } else {
         // If no document exists, create default settings
@@ -195,6 +222,16 @@ function WelcomeScreen() {
       const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', uid));
       const snapshot = await getDocs(transactionsQuery);
       setIsTransactionsLoading(false)
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));  
+    }
+
+    async function fetchIncomes(uid: any) {
+      const incomesQuery = query(collection(db, 'incomes'), where('uid', '==', uid));
+      const snapshot = await getDocs(incomesQuery);
+      // setIsIncomeLoading(false)
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -231,6 +268,16 @@ function WelcomeScreen() {
     const recurringQuery = query(collection(db, 'income'), where('uid', '==', uid));
     const snapshot = await getDocs(recurringQuery);
     return snapshot.docs[0]?.data().income ? snapshot.docs[0]?.data().income : 0
+    }
+
+    async function fetchBalance(uid: string) {
+      const balanceQuery = query(collection(db, 'balance'), where('uid', '==', uid));
+      const snapshot = await getDocs(balanceQuery);
+      return snapshot.docs[0]?.data()?.balance ? snapshot.docs[0]?.data().balance : 0;
+      // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      // console.log("BALANCE ", balance)
+
+      // setBalance(balance);  // Convert balance o number if it exists
     }
   
   const getSelectedLanguage = async () => {
@@ -367,6 +414,16 @@ function WelcomeScreen() {
     });
   };
   
+  // if () {
+  //   // authCtx.logout()
+  //   console.log("NO USER ID")
+  //   return <ActivityIndicator size="large" color="#0000ff" />
+  // } ;
+
+  // if (!userId || isLoading) {
+  //     return <ActivityIndicator size="large" color="#0000ff" />;
+  // }
+
   if (!userId) {
     // authCtx.logout()
     console.log("NO USER ID")
@@ -374,11 +431,12 @@ function WelcomeScreen() {
   } ;
 
   if (isLoading) {
+      console.log("APP IS LOADING")
       return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   if (showOnboarding) {
-    console.log("IN ONBOARDING CASE")
+    console.log("IN ONBOARDING CASE, SHOWING THE MODAL")
     return <OnboardingModal
     isVisible={showOnboarding}
     onComplete={async (data) => {
@@ -423,16 +481,11 @@ function WelcomeScreen() {
   />
 }
 
-  // if (!transactions || transactions.length === 0) {
-  //   return <Text>No transactions available.</Text>;
-  // }
-  
-
   return (
 
     <View style={styles.container}>
        <CustomHeader
-        authCtx={authCtx} updateProfilePicture={updateProfilePicture} profile={userSettings}
+        authCtx={authCtx} updateProfilePicture={updateProfilePicture} profile={userSettings} isLoading={isProfileLoading}
       />
 
       <View style={styles.tabBarContainer}>
@@ -495,9 +548,17 @@ function WelcomeScreen() {
       >
             
 
-        {activeTab === 'overview' && (
-          <YourBalance balance={300} income={600} expense={300} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} loading={isLoading}/>
-        )}
+            {activeTab === 'overview' && balance !== null && incomes && transactions && (
+              <YourBalance
+                balance={balance}
+                incomes={incomes}
+                transactions={transactions}
+                selectedLanguage={selectedLanguage}
+                symbol={symbol}
+                conversionRate={conversionRate}
+                loading={isLoading}
+              />
+            )}
 
         {activeTab === 'overview' && userSettings && !userSettings.isPremiumUser && (
           <WelcomeCard 
@@ -507,13 +568,12 @@ function WelcomeScreen() {
           />
         )}
 
-        {/* Flatlist delete */}
         {activeTab === 'overview' && userSettings && (
            transactions && <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency} isLoading={isTransactionsLoading}/>
         )}
 
         {activeTab === 'overview' && userSettings && (
-          <MonthlyIncome income={userIncome} updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
+         <MonthlyIncome income={userIncome} updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
         )}
 
         {activeTab === 'overview' && (

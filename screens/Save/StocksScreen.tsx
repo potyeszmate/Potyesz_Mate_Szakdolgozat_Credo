@@ -153,7 +153,7 @@ const StockScreen = () => {
   const handleCardPress = (name: any, symbol: any) => {
     console.log("symbol before nav: ", symbol)
     // @ts-ignore
-    navigation.navigate("Stock Details", {name: name, symbol: symbol});
+    navigation.navigate("Stock Details", {name: name, symbol: symbol, onGoBack: fetchStocks});
   };
 
   const updateSearch = (searchText: any) => {

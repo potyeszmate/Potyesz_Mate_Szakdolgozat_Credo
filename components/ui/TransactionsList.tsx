@@ -50,6 +50,7 @@ const TransactionsList: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<any | null>(0);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [incomes, setIncomes] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -129,12 +130,86 @@ const TransactionsList: React.FC = () => {
       const docRef = doc(db, 'transactions', id);
       await updateDoc(docRef, editedData);
       fetchTransactions();
+      await AsyncStorage.setItem('transactionsChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
       setEditModalVisible(false);
     } catch (error: any) {
       console.error('Error editing transaction:', error.message);
       setEditModalVisible(false);
     }
   };
+
+
+  const fetchIncomes = async () => {
+    try {
+      const transactionsQuery = query(collection(db, 'incomes'), where('uid', '==', userId));
+      const querySnapshot = await getDocs(transactionsQuery);
+      const fetchedTransactions = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as any[];
+
+      setIncomes(fetchedTransactions);
+    } catch (error: any) {
+      console.error('Error fetching transactions:', error.message);
+    }
+  };
+
+  const addIncomesHandler = async (newTransaction: any) => {
+    console.log("newTransaction in add: ",newTransaction)
+    try {
+      await addDoc(collection(db, 'incomes'), {
+        ...newTransaction,
+        category: "Income",
+        uid: userId,
+      });
+
+      fetchIncomes();
+      //set trigger so last transactions cna be fetched as well.
+      await AsyncStorage.setItem('incomesChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
+
+      setModalVisible(false);
+    } catch (error: any) {
+      console.error('Error adding transaction:', error.message);
+      setModalVisible(false);
+    }
+  };
+
+  const deleteIncomesHandler = async (transactionId: string | null) => {
+    try {
+      if (!transactionId) return;
+
+      const docRef = doc(db, 'incomes', transactionId);
+      await deleteDoc(docRef);
+
+      const updatedTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
+      setIncomes(updatedTransactions);
+      await AsyncStorage.setItem('incomesChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
+      setDeleteModalVisible(false);
+    } catch (error: any) {
+      console.error('Error deleting transaction:', error.message);
+    }
+  };
+
+  const editIncomesHandler = async (editedTransaction: any) => {
+    console.log("editedTransaction in edit: ",editedTransaction)
+
+    try {
+      const { id, ...editedData } = editedTransaction;
+      const docRef = doc(db, 'incomes', id);
+      await updateDoc(docRef, editedData);
+      fetchIncomes();
+      await AsyncStorage.setItem('incomesChanged', 'true');
+      console.log("ADDED NEW TRANSACTION")
+      setEditModalVisible(false);
+    } catch (error: any) {
+      console.error('Error editing transaction:', error.message);
+      setEditModalVisible(false);
+    }
+  };
+
 
   // const groupTransactionsByDate = (transactions: any) => {
   //   const grouped: any = {};
@@ -157,7 +232,8 @@ const TransactionsList: React.FC = () => {
   //Not in userId change
   useEffect(() => {
     fetchTransactions();
-  }, [userId]);
+    fetchIncomes()
+  }, []);
 
   // useEffect(() => {
   //   const groupedTransactions = groupTransactionsByDate(transactions);
@@ -381,10 +457,12 @@ const TransactionsList: React.FC = () => {
               <TransactionInput
                 initialTransaction={selectedTransaction}
                 onAddTransaction={editTransactionHandler}
+                onAddIncomes={editIncomesHandler}
                 selectedLanguage={selectedLanguage}
                 onClose={() => setEditModalVisible(false)}
                 currency={currency}
                 onDeleteRecurringTransaction={deleteTransactionHandler}
+                onDeleteIncome={deleteIncomesHandler}
                 conversionRate={conversionRate}
               />
             </View>
@@ -420,10 +498,12 @@ const TransactionsList: React.FC = () => {
             <View style={styles.contentContainer}>
               <TransactionInput
                 onAddTransaction={addTransactionHandler}
+                onAddIncomes={addIncomesHandler}
                 selectedLanguage={selectedLanguage}
                 onClose={() => setModalVisible(false)}
                 currency={currency}
                 onDeleteRecurringTransaction={deleteTransactionHandler}
+                onDeleteIncome={deleteIncomesHandler}
                 conversionRate={conversionRate}
               />
             </View>

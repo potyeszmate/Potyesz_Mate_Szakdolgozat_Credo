@@ -1,12 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { getCryptoChartData } from '../../util/crypto';
-import moment from 'moment';
+import { getStockChartData } from '../../util/stocks';
 
-const CryptoChart = ({ symbol }) => {
+import moment from 'moment';
+import { getCryptoChartData } from '../../util/crypto';
+
+const TimeframeButtons = ({ activeInterval, onSelectInterval }) => {
+  return (
+    <View style={styles.timeframeButtonContainer}>
+      {['1 DAY', '1 WEEK', '1 MONTH', '1 YEAR'].map((interval) => (
+        <TouchableOpacity
+          key={interval}
+          style={[
+            styles.timeframeButton,
+            activeInterval === interval ? styles.activeTimeframe : null,
+          ]}
+          onPress={() => onSelectInterval(interval)}
+        >
+          <Text
+            style={[
+              styles.timeframeButtonText,
+              activeInterval === interval ? styles.activeText : null,
+            ]}
+          >
+            {interval}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const StockChart = ({ symbol }) => {
   const [chartData, setChartData] = useState(null);
-  const [selectedInterval, setSelectedInterval] = useState('1year');
+  const [selectedInterval, setSelectedInterval] = useState('1 YEAR');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,6 +65,7 @@ const CryptoChart = ({ symbol }) => {
     fetchData();
   }, [symbol]);
 
+
   if (!chartData) {
     return <Text>Loading chart...</Text>;
   }
@@ -51,6 +80,7 @@ const CryptoChart = ({ symbol }) => {
     style: {
       borderRadius: 16,
       marginHorizontal: 16, // Adjust for more space on the sides
+      marginLeft: -4
     },
     propsForDots: {
       r: '0', // Hide the dots by setting radius to 0
@@ -62,7 +92,9 @@ const CryptoChart = ({ symbol }) => {
   };
 
   return (
+    
     <View>
+
       <LineChart
         data={chartData}
         width={Dimensions.get('window').width - 32} // Adjust for more space on the sides
@@ -78,12 +110,69 @@ const CryptoChart = ({ symbol }) => {
         }}
         formatYLabel={(y) => Number(y) > 10 ? `${parseFloat(y).toFixed(0)}` : `${parseFloat(y).toFixed(3)}`} // Format y-axis labels to show currency
       />
+
+    <TimeframeButtons
+      activeInterval={selectedInterval}
+      onSelectInterval={(interval) => setSelectedInterval(interval)}
+    />
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-  // Your styles go here
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    // other container styles
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  timeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 4,
+    borderRadius: 20,
+  },
+  activeButton: {
+    backgroundColor: '#35BA52',
+  },
+  inactiveButton: {
+    backgroundColor: '#ddd',
+  },
+  timeButtonText: {
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  timeframeButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    // backgroundColor: 'white', // Set the background color to match the page
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  timeframeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 4,
+    borderRadius: 20,
+    backgroundColor: '#ddd', // Non-active button background
+  },
+  activeTimeframe: {
+    backgroundColor: '#35BA52', // Active button background
+  },
+  timeframeButtonText: {
+    color: '#000', // Non-active text color
+  },
+  activeText: {
+    color: 'white', // Active text color
+  },
+  // other styles
 });
-
-export default CryptoChart;
+export default StockChart;

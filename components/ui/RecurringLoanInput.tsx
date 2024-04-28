@@ -63,7 +63,6 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
   const bottomSheetRef = useRef<any>(null);
 
   const [openProvider, setOpenProvider] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const [modalProviderVisible, setModalProviderVisible] = useState(false);
@@ -163,6 +162,12 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
   useEffect(() => {
     console.log('Current Category:', activeTab);
   }, [activeTab]);
+
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const [selectedDate, setSelectedDate] = useState(tomorrow);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -330,12 +335,12 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
         </Modal>
 
         {/* date Modal */}
-        <Modal
+         <Modal
           visible={modalDateVisible}
           transparent={true}
           animationType="slide"
           onRequestClose={() => setModalDateVisible(false)}
-           >
+        >
           <Pressable
             style={styles.modalBackground}
             onPress={() => setModalDateVisible(false)}
@@ -345,18 +350,14 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
               index={0}
               snapPoints={snapPointsDateModal}
               enablePanDownToClose
-              onClose={() => {
-                setModalDateVisible(false);
-              }}
+              onClose={() => setModalDateVisible(false)}
               backdropComponent={(props) => (
-                <BottomSheetBackdrop 
+                <BottomSheetBackdrop
                   {...props}
                   appearsOnIndex={0}
                   disappearsOnIndex={-1}
                   opacity={0.5} // Adjust the opacity to your liking
-                  onPress={() => {
-                    textInputRef.current?.blur(); // Blur text input when tapping outside the bottom sheet
-                  }}
+                  onPress={() => textInputRef.current?.blur()} // Blur text input when tapping outside the bottom sheet
                 />
               )}
               backgroundComponent={({ style }) => (
@@ -365,8 +366,6 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
             >
               <View style={styles.contentContainer}>
                 <View style={styles.inputWrapper}>
-                {/* <Text >Select a provider</Text> */}
-
                   <Text style={styles.modalDateTitle}>{languages[selectedLanguage].selectDate}</Text>
                   {Platform.OS === 'ios' ? (
                     <>
@@ -376,18 +375,16 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
                         display="spinner"
                         onChange={(event, date) => setSelectedDate(date || selectedDate)}
                         style={{ width: '100%' }}
+                        minimumDate={tomorrow}
                       />
                       <View style={styles.bottomButtonContainer}>
                         <TouchableOpacity
                           style={styles.bottomButton}
-                          onPress={() => {
-                            setModalDateVisible(false);
-                          }}
+                          onPress={() => setModalDateVisible(false)}
                         >
                           <Text style={styles.bottomButtonText}>Select</Text>
                         </TouchableOpacity>
                       </View>
-
                     </>
                   ) : (
                     <>
@@ -404,6 +401,7 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
                             setSelectedDate(date || selectedDate);
                             setModalDateVisible(false);
                           }}
+                          minimumDate={tomorrow}
                         />
                       )}
                     </>
@@ -411,7 +409,6 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
                 </View>
               </View>
             </BottomSheet>
-
           </Pressable>
         </Modal>
   

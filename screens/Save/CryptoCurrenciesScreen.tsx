@@ -97,7 +97,7 @@ const CryptoCurrenciesScreen = () => {
 
   const handleCardPress = (id: any, name: any, symbol: any) => {
     // @ts-ignore
-    navigation.navigate("Crypto Details", { id: id, name: name, symbol: symbol});
+    navigation.navigate("Crypto Details", { id: id, name: name, symbol: symbol, onGoBack: fetchCryptos});
   };
 
   const updateSearch = (searchText) => {

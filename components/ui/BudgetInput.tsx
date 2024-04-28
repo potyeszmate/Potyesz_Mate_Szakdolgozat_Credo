@@ -112,9 +112,9 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
         {filteredCategories.length > 1 && !openCategory && (
           <View style={styles.addButton}>
           <Button
-            title={initialBudget ? 'Update Transaction' : 'Add Transaction'}
+            title={initialBudget ? 'Update Budget' : 'Add Budget'}
             onPress={addOrUpdateBudgetHandler}
-            color="blue"
+            color="#FFFFFF"
           />
         </View>
         
@@ -145,12 +145,15 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   addButton: {
-    backgroundColor: '#1A1A2C',
-    borderRadius: 8,
-    paddingVertical: 14,
+    backgroundColor: '#35BA52',
+    borderRadius: 14,
+    paddingVertical: 10,
     alignItems: 'center',
-    flexDirection: 'row', 
+    // marginTop: 250,
+    flexDirection: 'row',
     justifyContent: 'center',
+    bottom: -90
+    // marginTop: 300
   },
   input: {
     borderBottomWidth: 1,
