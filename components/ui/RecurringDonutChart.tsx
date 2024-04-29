@@ -47,7 +47,7 @@ const RecurringDonutChart = ({ data, total, recurringType }) => {
   const chartData = data.map(item => ({
     name: item.name,
     value: item.value,
-    color: colorMapping[item.name] || '#999', // Default color if no mapping exists
+    color: colorMapping[item.name] || '#999',
     legendFontColor: '#7F7F7F',
     legendFontSize: 15
   }));
@@ -56,7 +56,7 @@ const RecurringDonutChart = ({ data, total, recurringType }) => {
     backgroundColor: '#1cc910',
     backgroundGradientFrom: '#eff3ff',
     backgroundGradientTo: '#efefef',
-    decimalPlaces: 2, // optional, defaults to 2dp
+    decimalPlaces: 2,
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   };
 
@@ -72,13 +72,12 @@ const RecurringDonutChart = ({ data, total, recurringType }) => {
 
           <PieChart
             data={chartData}
-            width={screenWidth - 40}  // Adjust width to fit your screen
+            width={screenWidth - 40}  
             height={220}
             chartConfig={chartConfig}
             accessor="value"
             backgroundColor="transparent"
             paddingLeft="15"
-            // center={[0, 0]}
             hasLegend={true}
             absolute={false}
 
@@ -110,8 +109,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 20,
     padding: 1,
-    elevation: 3, // This adds a subtle shadow on Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 3, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -120,18 +119,18 @@ const styles = StyleSheet.create({
   cardStyle: {
     borderRadius: 8,
     padding: 20,
-    elevation: 3, // This adds a subtle shadow on Android
-    shadowColor: '#000', // Shadow for iOS
+    elevation: 3, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   totalValue: {
-    marginTop: 10, // Adjust as needed
+    marginTop: 10,
     fontSize: 18,
     color: '#000',
     fontWeight: 'bold',
-    textAlign: 'center', // Ensure it's centered under the chart
+    textAlign: 'center', 
   },
   percentagesList: {
     marginTop: 20,
@@ -139,9 +138,8 @@ const styles = StyleSheet.create({
   itemPercentage: {
     fontSize: 16,
     color: '#7F7F7F',
-    textAlign: 'center', // Center the items' percentages
+    textAlign: 'center', 
   },
-  // Additional styles if needed
 });
 
 export default RecurringDonutChart;

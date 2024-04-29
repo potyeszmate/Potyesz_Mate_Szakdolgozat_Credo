@@ -18,7 +18,6 @@ const iconMapping: any = {
 
 const TransactionList: React.FC<any> = ({ transactions, currency, conversionRate, symbol, isLoading }) => {
 
-  // console.log("transactions in TransactionList: ", transactions)
   if (isLoading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
 }
@@ -66,7 +65,6 @@ const TransactionList: React.FC<any> = ({ transactions, currency, conversionRate
 
 const styles = StyleSheet.create({
   listContainer: {
-    // marginTop: 5,
   },
   iconImage: {
     width: 35,
@@ -77,10 +75,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    // padding: 15,
     paddingBottom: 12,
     paddingTop: 12,
-    // marginBottom: 10,
     borderRadius: 8,
     elevation: 2,
     width: '100%',
@@ -88,11 +84,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: '#EEEEEE',
-    // marginLeft: 5, // Adjust this value to align with the transactionInfo
-    // marginRight: 5, // Add a bigger right margin
-    // marginBottom: 2, // Add a bigger right margin
-    // marginTop: 2, // Add a bigger right margin
-    // marginVertical: 18,
+    
   },
   transactionIcon: {
     marginRight: 10,

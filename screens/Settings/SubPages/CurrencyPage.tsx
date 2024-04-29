@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Radio from './Radio';
-import { AuthContext } from '../../store/auth-context';
+import { AuthContext } from '../../../store/auth-context';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { convertCurrencyToCurrency } from '../../util/conversion';
+import { convertCurrencyToCurrency } from '../../../util/conversion';
+import Radio from '../../../components/ui/Radio';
 
 const CurrencyPage = () => {
   const authCtx = useContext(AuthContext) as any;

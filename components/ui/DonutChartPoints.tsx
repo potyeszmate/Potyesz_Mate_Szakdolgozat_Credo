@@ -7,10 +7,10 @@ const DonutChartPoints = ({ progress, size, strokeWidth, color }) => {
       style={{ height: size, width: size }}
       progress={progress}
       progressColor={color}
-      backgroundColor="#fff" // Background color of the unfilled part
+      backgroundColor="#fff" 
       strokeWidth={strokeWidth}
-      startAngle={-Math.PI * 0.5} // Starts from the top
-      endAngle={Math.PI * 1.5} // Ends after one full circle
+      startAngle={-Math.PI * 0.5} 
+      endAngle={Math.PI * 1.5} 
     />
   );
 };

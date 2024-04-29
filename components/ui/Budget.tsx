@@ -16,12 +16,7 @@ const iconMapping: any = {
 };
 
 const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate, symbol, onDelete, onEdit }) => {
-  const navigation = useNavigation(); // Hook for navigation
-
-  // const navigateToDetail = () => {
-  //   // @ts-ignore
-  //   navigation.navigate('BudgetDetail', { budgetId: budget.id });
-  // };
+  const navigation = useNavigation(); 
 
   const navigateToBudgetDetails = (budgetId: any) => {
     // @ts-ignore
@@ -32,12 +27,12 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
     navigateToBudgetDetails(budgetId);
   };
   
-  const currentMonth = new Date().getMonth(); // January is 0!
+  const currentMonth = new Date().getMonth(); 
   const currentYear = new Date().getFullYear();
 
   const spentAmount = transactions
     .filter((transaction: any) => {
-      const transactionDate = new Date(transaction.date.seconds * 1000); // Convert Firestore Timestamp to Date object
+      const transactionDate = new Date(transaction.date.seconds * 1000); 
       return transaction.category === budget.Category && 
              transactionDate.getMonth() === currentMonth &&
              transactionDate.getFullYear() === currentYear;
@@ -53,9 +48,8 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
     parseFloat(budget.Total_ammount) * conversionRate;
 
   const remainingAmount = totalAmount - spentAmount;
-  const remainingColor = remainingAmount < 0 ? '#ff0000' : '#1A1A2C'; // Red color for negative, default color for positive or zero
+  const remainingColor = remainingAmount < 0 ? '#ff0000' : '#1A1A2C'; 
 
-  console.log("transactions: ", transactions)
 
   return (
     <View style={styles.cardContainer}>
@@ -65,18 +59,18 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
           <Text style={styles.categoryText}>{budget.Category}</Text>
           <Text style={styles.amountText}>
             <Text style={styles.amountValueText}>
-              {spentAmount.toFixed(0)}{symbol}  {/* Rounded and converted spent amount */}
+              {spentAmount.toFixed(0)}{symbol}  
             </Text>
             <Text style={styles.amountOutOfText}>out of </Text>
             <Text style={styles.Total_ammountText}>
-              {totalAmount.toFixed(0)} {symbol} {/* Rounded and converted total budget */}
+              {totalAmount.toFixed(0)} {symbol} 
             </Text>
           </Text>
         </View>
         <View style={styles.rightSection}>
           <Text style={styles.leftText}>
             <Text style={[styles.leftValueText, {color: remainingColor}]}>
-              {remainingAmount.toFixed(0)}{symbol}  {/* Rounded and converted remaining amount displayed in dynamic color */}
+              {remainingAmount.toFixed(0)}{symbol} 
             </Text>
             <Text style={styles.leftOutOfText}>left</Text>
           </Text>
@@ -99,11 +93,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingTop: 13,
     paddingBottom: 13,
-    marginHorizontal: 10, // Reduced margin for a wider card
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.2,
-    // elevation: 2,
+    marginHorizontal: 10, 
+
     },
     leftSection: {
       flexDirection: 'row',
@@ -118,18 +109,15 @@ const styles = StyleSheet.create({
     categoryText: {
       fontSize: 15,
       fontWeight: 'bold',
-      // marginLeft: 1,
       marginBottom: 5,
-      flexWrap: 'nowrap', // Prevent wrapping
+      flexWrap: 'nowrap', 
     },
     amountText: {
       color: '#1A1A2C',
-      // marginLeft: 1,
       flexDirection: 'row',
     },
     amountValueText: {
       color: '#1A1A2C',
-      // marginLeft: 40
     },
     amountOutOfText: {
       color: '#7E8086',
@@ -140,7 +128,6 @@ const styles = StyleSheet.create({
     rightSection: {
       flex: 1,
       alignItems: 'flex-end',
-      // marginLeft: -140
     },
     leftText: {
       fontSize: 16,
@@ -150,39 +137,15 @@ const styles = StyleSheet.create({
     },
     leftValueText: {
       color: '#1A1A2C',
-      // marginRight: -10
     },
       leftOutOfText: {
       color: '#7E8086',
     },
-    // New styles for Delete and Edit buttons
     buttonRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: 10,
     },
-    // deleteIconContainer: {
-    //   backgroundColor: '#fff',
-    //   borderRadius: 22,
-    //   borderWidth: 1,
-    //   borderColor: '#1A1A2C',
-    //   marginRight: 4,
-    //   width: '48%', 
-    //   height: 45,
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    // },
-    // editIconContainer: {
-    //   backgroundColor: '#fff',
-    //   borderRadius: 22,
-    //   borderWidth: 1,
-    //   borderColor: '#1A1A2C',
-    //   marginLeft: 4,
-    //   width: '48%', 
-    //   height: 45,
-    //   alignItems: 'center',
-    //   justifyContent: 'center',
-    // },
     textContainer: {
       paddingLeft: 10
     },

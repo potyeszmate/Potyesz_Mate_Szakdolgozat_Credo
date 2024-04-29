@@ -16,12 +16,6 @@ const languages: any = {
   German: de,
   Hungarian: hu,
 };
-// interface GoalData {
-//   id?: string;
-//   Name: string;
-//   Total_Ammount: number;
-//   Date: Date;
-// }
 
 const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedLanguage }) => {
   const [goalName, setGoalName] = useState('');

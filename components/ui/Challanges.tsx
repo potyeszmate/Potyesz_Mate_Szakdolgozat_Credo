@@ -21,7 +21,7 @@ const Challanges = () => {
   const [activeTab, setActiveTab] = useState<any>('active');
   const [challenges, setChallenges] = useState<any[]>([]);
   const [joinedChallenges, setJoinedChallenges] = useState<any[]>([]);
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English'); 
 
 
   const authCtx = useContext(AuthContext);
@@ -38,7 +38,6 @@ const Challanges = () => {
       }));
 
       setJoinedChallenges(fetchedJoinedChallenges);
-      console.log('Fetched challenges:', fetchedJoinedChallenges);
     } catch (error: any) {
       console.error('Error fetching challenges:', error.message);
     }
@@ -55,7 +54,6 @@ const Challanges = () => {
       }));
 
       setChallenges(fetchedChallenges);
-      console.log('Fetched challenges:', fetchedChallenges);
     } catch (error: any) {
       console.error('Error fetching challenges:', error.message);
     }
@@ -84,7 +82,6 @@ const Challanges = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -94,7 +91,6 @@ const Challanges = () => {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
@@ -103,7 +99,6 @@ const Challanges = () => {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
-      console.log("In useEffect")
     }
   }, [isFocused]);
   
@@ -229,7 +224,6 @@ const styles = StyleSheet.create({
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    // fontFamily: 'Inter', // Make sure you have the Inter font available
   },
   activeTabButton: {
     backgroundColor: '#149E53',
@@ -254,10 +248,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   challengeItemContainer: {
-    marginBottom: 12, // Add marginBottom to create a gap between challenge cards
+    marginBottom: 12, 
   },
   challengeItemSpacing: {
-    marginBottom: 0, // No marginBottom for the last challenge card
+    marginBottom: 0,
   },
   });
 

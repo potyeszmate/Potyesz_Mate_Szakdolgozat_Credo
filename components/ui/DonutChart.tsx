@@ -1,10 +1,9 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 
-const categoryColors: any = { // Predefined colors for categories
+const categoryColors: any = { 
   Food: "#4793AF",
   Entertainment: "#FFC470",
   Grocieries: "#DD5746",
@@ -13,18 +12,15 @@ const categoryColors: any = { // Predefined colors for categories
   Transportation: "#C4E4FF",
   Housing: "#121481"
 
-  // add more categories with distinct colors as needed
 };
 
 const DonutChart = ({ data }: { data: any[] }) => {
   if (!data || data.length === 0) {
-    // Display a message when there are no transactions
     return <Text style={styles.noDataText}>No data available</Text>;
   }
   
   const screenWidth = Dimensions.get('window').width;
 
-  // Aggregate values for the same category
   const aggregatedData = data.reduce((acc: any[], transaction: any) => {
     const existingCategory = acc.find((item: any) => item.name === transaction.category);
 
@@ -43,14 +39,13 @@ const DonutChart = ({ data }: { data: any[] }) => {
     name: category.name,
     value: category.value,
     percentage: ((category.value / totalAmount) * 100).toFixed(2),
-    color: categoryColors[category.name] || '#999999', // Default color if category is not found
+    color: categoryColors[category.name] || '#999999', 
   }));
 
   return (
     <View style={styles.chartContainer}>
       
       <View style={styles.card}>
-      {/* <Text style={styles.cardTitle}>Category Statistic</Text> */}
 
         <PieChart
           data={chartData}
@@ -67,7 +62,7 @@ const DonutChart = ({ data }: { data: any[] }) => {
           backgroundColor="transparent"
           paddingLeft="70"
           absolute
-          hasLegend={false} // Disable the default legend
+          hasLegend={false} 
 
         />
         <Text style={styles.totalAmountText}>Total Amount: ${totalAmount.toFixed(2)}</Text>
@@ -86,7 +81,6 @@ const DonutChart = ({ data }: { data: any[] }) => {
 
 const styles = StyleSheet.create({
   chartContainer: {
-    // marginTop: 20,
     alignItems: 'center',
   },
   card: {
@@ -94,7 +88,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     elevation: 5,
-    // marginTop: 10,
     alignItems: 'center',
   },
   cardTitle: {
@@ -112,29 +105,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-evenly',
-    width: '100%', // Ensure the container takes full width
-    marginBottom: 10, // Add space between legend and chart
-    // marginLeft: -40,
+    width: '100%',
+    marginBottom: 10, 
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    // margin: 10, // Add some margin to space out items
-    // marginLeft: 10,
     marginRight: 40,
     marginBottom: 10
   },
   noDataText: {
     fontSize: 16,
   },
-  // legendContainer: {
-  //   marginTop: 10,
-  // },
-  // legendItem: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   marginBottom: 5,
-  // },
+ 
   legendColor: {
     width: 16,
     height: 16,

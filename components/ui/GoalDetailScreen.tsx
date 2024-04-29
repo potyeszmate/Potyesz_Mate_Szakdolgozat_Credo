@@ -29,11 +29,9 @@ const GoalDetailScreen = ({ route, navigation }) => {
       return;
     }
   
-    // Start a batched write to ensure both operations succeed or fail together
     const batch = writeBatch(db);
   
     try {
-      // Record the fund addition in goalFunds
       const goalFundsRef = collection(db, 'goalFunds');
       const newFundDocRef = doc(goalFundsRef);
       batch.set(newFundDocRef, {
@@ -43,17 +41,15 @@ const GoalDetailScreen = ({ route, navigation }) => {
         dateAdded: Timestamp.now(),
       });
   
-      // Update the goal's Current_Ammount
       const goalRef = doc(db, 'goals', goal.id);
       batch.update(goalRef, {
         Current_Ammount: updatedAmount
       });
   
-      // Commit the batch
       await batch.commit();
   
       Alert.alert("Success", "Funds have been added to your goal.");
-      navigation.goBack(); // Navigate back to the previous screen
+      navigation.goBack(); 
     } catch (error) {
       console.error("Error adding funds to goal:", error);
       Alert.alert("Error", "There was an error adding funds to the goal.");

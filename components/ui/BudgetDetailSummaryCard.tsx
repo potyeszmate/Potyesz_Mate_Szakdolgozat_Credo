@@ -4,11 +4,10 @@ import * as Progress from 'react-native-progress';
 import { Feather } from '@expo/vector-icons';
 
 const BudgetDetailsSummaryCard = ({ currentMonth, totalAmount, spentPercentage, spentAmount, remainingAmount, onEditPress, conversionRate, symbol }) => {
-  // Determine the color based on spent percentage
   const getColor = (percentage) => {
-    if (percentage > 100) return '#FF6347'; // Red
-    if (percentage > 50) return '#FFA500'; // Orange
-    return '#32CD32'; // Green
+    if (percentage > 100) return '#FF6347';
+    if (percentage > 50) return '#FFA500'; 
+    return '#32CD32'; 
   };
 
   return (
@@ -35,8 +34,8 @@ const BudgetDetailsSummaryCard = ({ currentMonth, totalAmount, spentPercentage, 
       <View style={{ marginVertical: 4 }}>
         <Progress.Bar
           progress={spentPercentage / 100}
-          width={320} // Increased width
-          height={20} // Increased height
+          width={320} 
+          height={20} 
           color={getColor(spentPercentage)}
           borderRadius={10}
           borderColor='#FFFFFF'

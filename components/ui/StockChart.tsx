@@ -37,13 +37,11 @@ const StockChart = ({ symbol }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Date range for the last 12 months
-      const endDate = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+      const endDate = new Date().toISOString().split('T')[0]; 
       const startDate = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
 
       try {
         const data = await getStockChartData(symbol, startDate, endDate, '1month');
-        // Reverse the array to get ascending dates
         const valuesReversed = data.values.slice().reverse();
         const formattedData = {
           labels: valuesReversed.map((value, index) =>
@@ -72,18 +70,17 @@ const StockChart = ({ symbol }) => {
     backgroundColor: '#35BA52',
     backgroundGradientFrom: '#35BA52',
     backgroundGradientTo: '#35BA52',
-    decimalPlaces: 2, // specify the number of decimal places
+    decimalPlaces: 2, 
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
       borderRadius: 16,
-      marginHorizontal: 16, // Adjust for more space on the sides
+      marginHorizontal: 16, 
     },
     propsForDots: {
-      r: '0', // Hide the dots by setting radius to 0
+      r: '0', 
     },
     propsForLabels: {
-        // this will adjust y-axis label position
         dx: 1,
       },
   };
@@ -94,18 +91,17 @@ const StockChart = ({ symbol }) => {
 
       <LineChart
         data={chartData}
-        width={Dimensions.get('window').width - 32} // Adjust for more space on the sides
+        width={Dimensions.get('window').width - 32} 
         height={220}
         yAxisLabel="$"
-        yAxisInterval={1} // Display one label from each dataset
+        yAxisInterval={1} 
         chartConfig={chartConfig}
         bezier
         style={{
           marginVertical: 8,
-        //   borderRadius: 16,
-          ...chartConfig.style, // Spread in custom styles from the config
+          ...chartConfig.style, 
         }}
-        formatYLabel={(y) => Number(y) > 10 ? `${parseFloat(y).toFixed(0)}` : `${parseFloat(y).toFixed(3)}`} // Format y-axis labels to show currency
+        formatYLabel={(y) => Number(y) > 10 ? `${parseFloat(y).toFixed(0)}` : `${parseFloat(y).toFixed(3)}`} 
       />
 
     <TimeframeButtons
@@ -119,7 +115,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    // other container styles
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -147,7 +142,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 10,
-    // backgroundColor: 'white', // Set the background color to match the page
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
@@ -159,17 +153,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginHorizontal: 4,
     borderRadius: 20,
-    backgroundColor: '#ddd', // Non-active button background
+    backgroundColor: '#ddd', 
   },
   activeTimeframe: {
-    backgroundColor: '#35BA52', // Active button background
+    backgroundColor: '#35BA52', 
   },
   timeframeButtonText: {
-    color: '#000', // Non-active text color
+    color: '#000', 
   },
   activeText: {
-    color: 'white', // Active text color
+    color: 'white', 
   },
-  // other styles
 });
 export default StockChart;

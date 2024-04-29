@@ -22,7 +22,7 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
     navigation.navigate('Challenges');
   };
 
-  const maxLength = 50; // Maximum length of the text
+  const maxLength = 50; 
   let truncatedText = challanges.desc;
 
   if (truncatedText.length > maxLength) {
@@ -31,7 +31,6 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
 
   return (
     <View style={styles.cardContainer}>
-      {/* 1st Row */}
       <View style={styles.firstRow}>
         <Text style={styles.challangesText}>{languages[selectedLanguage].challenges}</Text>
         <TouchableOpacity onPress={handleChallangesOnClick}>
@@ -39,7 +38,6 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
         </TouchableOpacity>
       </View>
 
-      {/* 2nd Row */}
       <View style={styles.secondRow}>
         <View style={styles.leftPart}>
           <Text style={styles.challangeName}>{challanges.name}</Text>
@@ -47,7 +45,6 @@ const JoinedChallanges: React.FC<any> = ({ challanges, selectedLanguage }) => {
         </View>
         <View style={styles.rightPart}>
           <TouchableOpacity style={styles.joinedButton}>
-            {/* <Image source={require('../../assets/check.png')} style={styles.iconImage} /> */}
             <Text style={styles.joinedText}>{languages[selectedLanguage].joined}</Text>
           </TouchableOpacity>
         </View>
@@ -62,26 +59,16 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       padding: 16,
       elevation: 2,
-      // shadowColor: '#000',
-      // shadowOffset: { width: 0, height: 1 },
-      // shadowOpacity: 0.2,
+ 
       width: '90%',
       alignSelf: 'center',
       marginTop: 20,
       
-      // backgroundColor: '#FFFFFF',
-      // borderRadius: 22,
-      // padding: 16,
-      // marginTop: 20,
-      // width: '90%',
-      // alignSelf: 'center',
-      // elevation: 4, // Shadow for Android
-      shadowColor: '#000', // Shadow for iOS
-      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-      shadowOpacity: 0.1, // Shadow for iOS
-      shadowRadius: 4, // Shadow for iOS
-      borderColor: '#E0E0E0', // A slightly darker shade for the border
-      // flexDirection: 'row',
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      shadowOpacity: 0.1, 
+      shadowRadius: 4, 
+      borderColor: '#E0E0E0', 
 
     },
     firstRow: {
@@ -92,10 +79,7 @@ const styles = StyleSheet.create({
       fontSize: 18,
       color: '#1A1A2C',
     },
-    // arrowIcon: {
-    //   fontSize: 16,
-    //   color: '#149E53',
-    // },
+
     secondRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -121,20 +105,16 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFFFFF',
       borderRadius: 24,
       borderWidth: 1, 
-      borderColor: '#149E53', // Border color
+      borderColor: '#149E53', 
       height: 35,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      // padding: 10
       width: '80%',
       marginTop: 12,
       marginLeft: 20
     },
-    // iconImage: {
-    //     marginRight: 15,
-    //     color: '#149E53',
-    //   },
+
     joinedText: {
       color: '#149E53',
     },

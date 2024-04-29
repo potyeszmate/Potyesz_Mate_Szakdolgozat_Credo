@@ -374,7 +374,6 @@ function Home() {
         [
           {
             text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
             style: "cancel"
           },
           {

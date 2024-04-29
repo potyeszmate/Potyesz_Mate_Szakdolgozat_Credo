@@ -25,34 +25,15 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
   const [modalVisible, setModalVisible] = useState<any>(false);
   const [budgets, setBudgets] = useState<any[]>([]);
   const bottomSheetRef = useRef<any>(null);
-  const [isLoading, setIsLoading] = useState(true); // New state to track loading status
+  const [isLoading, setIsLoading] = useState(true); 
 
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
   
-  // Helper function to format income
-  // const formatIncome = (income) => {
-  //   return symbol === 'HUF'
-  //     ? Math.round(parseFloat(income) * conversionRate).toString()
-  //     : (parseFloat(income) * conversionRate).toFixed(2).toString();
-  // };
-
-  // useEffect(() => {
-  //   // Update newIncome when modal opens or income changes
-  //   if (editModalVisible || income) {
-  //     setNewIncome(formatIncome(income));
-  //   }
-  // }, [editModalVisible, income, conversionRate, symbol]);
-
-  // const handleUpdate = async () => {
-  //   await updateIncome(newIncome);
-  //   setEditModalVisible(false);
-  // };
-
   const fetchBudgets = async () => {
     try {
-      setIsLoading(true); // Start loading
+      setIsLoading(true); 
 
       const budgetsQuery = query(collection(db, 'budgets'), where('uid', '==', userId));
       const querySnapshot = await getDocs(budgetsQuery);
@@ -64,24 +45,22 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
     } catch (error: any) {
       console.error('Error fetching budgets:', error.message);
     }
-    setIsLoading(false); // Start loading
+    setIsLoading(false); 
 
   };
 
   useEffect(() => {
     fetchBudgets();
-  }, []); // empty dependency array means this effect runs once on component mount
+  }, []); 
   
 
   const addBudgetHandler = async (newBudget: any) => {
     try {
-      console.log('ADDING THIS NEW BUDGET: ', newBudget);
       await addDoc(collection(db, 'budgets'), {
         ...newBudget,
         uid: userId,
       });
       fetchBudgets();
-      // console.log(budgets)
       setModalVisible(false);
     } catch (error: any) {
       console.error('Error adding budget:', error.message);
@@ -99,7 +78,6 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
     (category: any) => !existingCategories.includes(category.label)
   );
 
-  //TODO: TRIGGER THE BUDGET SUMMARY HERE
   return (
     <View style={styles.cardContainer}>
       <View style={styles.leftSide}>
@@ -107,7 +85,6 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
         {isLoading ? (
           <Text style={styles.incomeText}>
         </Text>
-        // <ActivityIndicator size="small" color="#0000ff" /> // Add a loading spinner when data is loading
         ) : (
             <Text style={styles.incomeText}>
                 {availableCategories.length} more categories left
@@ -129,9 +106,7 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
                 <Pressable
                   style={styles.modalBackground}
                   onPress={() => {
-                    // Close both the modal and BottomSheet when clicking outside
-                    // setModalVisible(false);
-                    // bottomSheetRef.current?.close();
+
                   }}
                 >
                   <BottomSheet
@@ -164,12 +139,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '90%',
     alignSelf: 'center',
-    elevation: 4, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-    shadowOpacity: 0.1, // Shadow for iOS
-    shadowRadius: 4, // Shadow for iOS
-    borderColor: '#E0E0E0', // A slightly darker shade for the border
+    elevation: 4, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    borderColor: '#E0E0E0', 
     flexDirection: 'row',
   },
   leftSide: {
@@ -183,14 +158,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     fontWeight: 'bold'
-    // fontFamily: 'Inter',
   },
   incomeText: {
     fontSize: 14,
     color: '#7E8086',
-    // fontFamily: 'Inter',
     marginTop: 4,
-    // fontWeight: 'bold'
   },
   editButton: {
     borderWidth: 1,
@@ -200,14 +172,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#FFF',
     height: 35,
-    // width: 66,
     alignItems: 'center',
     justifyContent: 'center',
   },
   editButtonText: {
     color: '#149E53',
     fontSize: 14,
-    // fontFamily: 'Inter',
   },
   modalBackground: {
     flex: 1,
@@ -246,7 +216,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   closeButton: {
-    // Style for close button
   },
   updateButtonTouchable: {
     backgroundColor: '#35BA52',

@@ -1,8 +1,6 @@
-/* eslint-disable react/react-in-jsx-scope */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View,Image} from 'react-native';
 import { Colors } from '../../commonConstants/styles';
-// import FacebookIcon from '../../assets/facebook.png';
 const FacebookIcon = require('../../assets/facebook.png');
 
 const FacebookButton: React.FC<any> = ({ children, onPress }) => {

@@ -31,9 +31,7 @@ const Gamification: React.FC = () => {
 
     fetchUserData();
 
-    // Cleanup function if needed
     return () => {
-      // Any cleanup would go here.
     };
   }, []);
 
@@ -44,7 +42,6 @@ const Gamification: React.FC = () => {
     if (userData) {
       setUserSettings(userData);
     } else {
-      console.log('No user settings found.');
     }
   };
 
@@ -55,7 +52,6 @@ const Gamification: React.FC = () => {
     if (userData) {
       setUserGamification(userData);
     } else {
-      console.log('No gamification data found.');
     }
   };
 
@@ -70,7 +66,6 @@ const Gamification: React.FC = () => {
       }));
 
       setJoinedChallenges(fetchedJoinedChallenges);
-      console.log('Fetched challenges:', fetchedJoinedChallenges);
     } catch (error: any) {
       console.error('Error fetching challenges:', error.message);
     }
@@ -93,7 +88,7 @@ const Gamification: React.FC = () => {
         profilePicUrl: userSettings.profilePicture
       }} />
       <BadgesList badges={{
-        bronzeBadgeNumber: userGamification.bronzeBadgeNumber, // userGamification.silverBadgeNumber
+        bronzeBadgeNumber: userGamification.bronzeBadgeNumber, 
         silverBadgeNumber: userGamification.silverBadgeNumber,
         goldBadgeNumber: userGamification.goldBadgeNumber,
         platinumBadgeNumber: userGamification.platinumBadgeNumber

@@ -50,7 +50,6 @@ const StockScreen = () => {
       const infoResponse = await getCompanyInfo(symbol);
       const priceInfo = await getStockPrice(symbol);
 
-      console.log("priceInfo for" + stockSymbols + " : " , priceInfo)
 
       const info = infoResponse.results;
       const companyLogo = `${info.branding?.icon_url}?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8`;

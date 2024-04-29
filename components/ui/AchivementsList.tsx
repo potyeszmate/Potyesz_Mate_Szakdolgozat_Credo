@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   challengesContainer: {
-    maxHeight: 500, // Reduced maxHeight for better scrolling experience
+    maxHeight: 500,
   },
   header: {
     fontSize: 18,
@@ -66,14 +66,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    backgroundColor: 'transparent', // Removing card background
+    backgroundColor: 'transparent', 
   },
   challengeIcon: {
     width: 55,
     height: 55,
     marginRight: 15,
-    backgroundColor: '#e0e0e0', // Light grey background for icons
-    borderRadius: 30, // Circular background
+    backgroundColor: '#e0e0e0',
+    borderRadius: 30, 
     padding: 5,
   },
   challengeInfo: {

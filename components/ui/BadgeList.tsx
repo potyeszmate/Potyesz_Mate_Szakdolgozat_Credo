@@ -75,18 +75,15 @@ const styles = StyleSheet.create({
   badgeIcon: {
     width: 50,
     height: 50,
-    // marginBottom: 2,
   },
   badgeName: {
     fontSize: 16,
-    // fontWeight: 'bold',
-    color: '#000000', // Changed to white for better visibility
+    color: '#000000', 
     marginBottom: 5,
   },
   badgeCount: {
     fontSize: 14,
-    // fontWeight: 'bold',
-    color: '#ffffff', // Changed to white for better visibility
+    color: '#ffffff',
   }
 });
 

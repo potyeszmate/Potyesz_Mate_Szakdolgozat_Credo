@@ -7,7 +7,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
       <View style={styles.labelContainer}>
         <Text style={styles.label}>{label}</Text>
         <Text style={styles.amount}>
-          {amount.toLocaleString('hu-HU', { style: 'currency', currency: 'HUF' })}
+          {amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
         </Text>
       </View>
       <View style={styles.progressBarBackground}>
@@ -16,7 +16,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
     </View>
   );
 
-// Add this inside your SpendingAnalytics component
 const CashFlowSummary = ({ totalIncome, totalExpenses, netCashFlow }) => {
     const total = totalIncome + totalExpenses;
     const incomePercentage = (totalIncome / total) * 100;
@@ -29,7 +28,7 @@ const CashFlowSummary = ({ totalIncome, totalExpenses, netCashFlow }) => {
         <Text style={styles.subtitle}>Kevesebbet költök, mint amennyit keresek?</Text>
         <View style={styles.netCashFlowContainer}>
           <Text style={styles.netCashFlow}>
-            {netCashFlow.toLocaleString('hu-HU', { style: 'currency', currency: 'HUF' })}
+            {netCashFlow.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
           </Text>
           {netCashFlow < 0 && (
             <MaterialIcons name="warning" size={24} color="red" style={styles.warningIcon} />
@@ -42,79 +41,71 @@ const CashFlowSummary = ({ totalIncome, totalExpenses, netCashFlow }) => {
   };
   
 const styles = StyleSheet.create({
-    // ... other styles ...
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      // Add other styling to match the provided design
     },
     incomeLabel: {
       fontSize: 18,
       color: 'green',
-      // Add other styling to match the provided design
     },
     incomeValue: {
       fontSize: 18,
-      // Add other styling to match the provided design
     },
     title: {
       fontSize: 20,
       fontWeight: 'bold',
       color: 'black',
-      textAlign: 'left', // Align to the left
-      alignSelf: 'flex-start', // Ensures alignment to the left within a flex container
+      textAlign: 'left', 
+      alignSelf: 'flex-start', 
       marginBottom: 5,
 
     },
     subtitle: {
       fontSize: 16,
       color: 'gray',
-      textAlign: 'left', // Align to the left
-      alignSelf: 'flex-start', // Ensures alignment to the left within a flex container
+      textAlign: 'left',
+      alignSelf: 'flex-start', 
       marginBottom: 10,
     },
     netCashFlowContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'flex-start', // Align the children to the start (left)
-      width: '100%', // Take full width to align children properly
+      justifyContent: 'flex-start', 
+      width: '100%', 
       marginBottom: 20
     },
     netCashFlow: {
       fontSize: 28,
       fontWeight: 'bold',
       color: 'black',
-      textAlign: 'left', // Align to the left
+      textAlign: 'left', 
     },
     warningIcon: {
-      marginLeft: 8, // Space between the warning icon and the net cash flow text
+      marginLeft: 8,
     },
     expensesLabel: {
       fontSize: 18,
       color: 'red',
       textAlign: 'left',
-
-      // Add other styling to match the provided design
     },
     expensesValue: {
       fontSize: 18,
       textAlign: 'left',
-
-      // Add other styling to match the provided design
     },
       label: {
         fontSize: 18,
         fontWeight: 'bold',
       },
       bar: {
-        flex: 1, // Take up all available width
-        height: 20, // Set fixed height for bars
-        borderRadius: 10, // Rounded corners
-        justifyContent: 'center', // Center text vertically
-        paddingHorizontal: 5, // Padding on the sides
+        flex: 1, 
+        height: 20, 
+        borderRadius: 10,
+        justifyContent: 'center',
+        paddingHorizontal: 5, 
       },
       barText: {
-        color: '#ffffff', // Text color inside the bar
+        color: '#ffffff', 
         fontWeight: 'bold',
       },
       card: {
@@ -126,34 +117,29 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 6,
         shadowOpacity: 0.1,
-        elevation: 3, // for Android
+        elevation: 3, 
         marginTop: 20,
-        marginHorizontal: 20, // Add horizontal margin for spacing from screen edges
+        marginHorizontal: 20, 
       },
-      // netCashFlowContainer: {
-      //   flexDirection: 'row',
-      //   alignItems: 'center',
-      //   marginBottom: 20, // Space between the net cash flow and progress bars
-      // },
   progressContainer: {
-    width: '100%', // Make sure the progress bar takes the full width of the card
-    marginBottom: 10, // Spacing between each progress bar
+    width: '100%', 
+    marginBottom: 10, 
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 5, // Spacing between label/amount and progress bar
+    marginBottom: 5, 
   },
   amount: {
     fontWeight: 'bold',
-    color: '#000', // Color for the text amount
+    color: '#000', 
   },
   progressBarBackground: {
     width: '100%',
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#e0e0e0', // Background color of the progress bar
+    backgroundColor: '#e0e0e0', 
   },
   progressBarFill: {
     height: '100%',

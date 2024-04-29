@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -33,22 +32,18 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
   return (
     // @ts-ignore
     <TouchableOpacity style={styles.cardContainer} onPress={() => navigation.navigate('Goal Detail', { goal })}>
-      {/* First Row */}
       <View style={styles.rowContainer}>
         <Text style={styles.goalName}>{goal.Name}</Text>
         <View style={styles.iconContainer}>
-          {/* Edit Icon */}
           <TouchableOpacity onPress={() => onEdit(goal)}>
             <Feather name="edit" size={24} color="#1A1A2C" style={styles.icon} />
           </TouchableOpacity>
-          {/* Delete Icon */}
           <TouchableOpacity onPress={() => onDelete(goal)}>
             <Feather name="trash-2" size={24} color="#FF5733" style={styles.icon} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Second Row */}
       <View style={styles.progressBarContainer}>
         <View style={styles.rowContainer}>
           <Text style={[styles.amountTextCurrent, { color: '#1A1A2C' }]}>${goal.Current_Ammount}</Text>
@@ -69,7 +64,7 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
           borderRadius={10}
           borderColor='#FFFFFF'
           animationType='decay'   
-          unfilledColor='#F3F4F7' // Add this prop to set the background color   
+          unfilledColor='#F3F4F7'  
           />
         </View>
 
@@ -78,12 +73,7 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
       <View style={styles.monthlySpentRowContainer}>
         <Text style={[styles.amountTextCurrent, { color: '#35BA52' }]}>$200</Text> 
         <Text style={[styles.remainingAmount, { color: '#7E8086', marginRight: 4 }]}>this month</Text> 
-      {/* ... rest of the rightPart */}
       </View>
-
-      {/* Third Row */}
-    
-
     </TouchableOpacity>
   );
 };
@@ -98,8 +88,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressBarWrapper: {
-    borderRadius: 20, // Sets the border radius for the entire progress bar including the filled portion
-    overflow: 'hidden', // Ensures that the filled portion respects the border radius
+    borderRadius: 20, 
+    overflow: 'hidden', 
   },
   cardContainer: {
     flex: 1,
@@ -122,7 +112,6 @@ const styles = StyleSheet.create({
   },
   monthlySpentRowContainer: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
     gap: 6

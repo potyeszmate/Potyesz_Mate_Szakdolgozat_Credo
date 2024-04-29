@@ -10,7 +10,6 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
 
   const screenWidth = Dimensions.get('window').width;
 
-  // Aggregate values for the same category
   const sumsByCategory = data.reduce((acc, transaction) => {
     const category = transaction.category;
     if (!acc[category]) {
@@ -29,13 +28,12 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`,   //    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, // Bar color
+    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`,  
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    // ... more config
     barPercentage: 0.7,
-    fillShadowGradientOpacity: 0.4, // Ensure bars are fully filled with color
+    fillShadowGradientOpacity: 0.4, 
     strokeWidth: 10,
-    paddingLeft: 25, // Try increasing this if labels are still cut off
+    paddingLeft: 25, 
 
 
   };
@@ -46,7 +44,7 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
     labels: chartLabels,
     datasets: [
       {
-        data: chartValues.map(value => parseFloat(value)), // Make sure values are numbers
+        data: chartValues.map(value => parseFloat(value)),
       }
     ]
   };
@@ -55,22 +53,19 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
     <View style={styles.chartContainer}>
     <View style={styles.card}>
 
-      {/* <Text style={styles.cardTitle}>Category Statistic</Text> */}
 
       <BarChart
         data={chartData}
         width={screenWidth - 70}
         height={500}
         yAxisLabel="$"
-        yAxisSuffix="k" // If no suffix is needed, set it to an empty string
+        yAxisSuffix="k" 
         chartConfig={chartConfig}
         verticalLabelRotation={67}
         fromZero={true}
         showBarTops={true}
-        // showValuesOnTopOfBars={true}
         withInnerLines={true}
         segments={5}
-        // horizontalLabelRotation={1}
 
       />
     </View>
@@ -87,12 +82,12 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1, // Takes full height of the container
+    flex: 1, 
   },
   barChartStyle: {
     marginVertical: 8,
     marginRight: 20,
-    marginLeft: 20, // This gives space on the left side of the chart
+    marginLeft: 20, 
   },
   cardTitle: {
     fontSize: 20,
@@ -105,11 +100,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     elevation: 5,
-    // marginTop: 10,
     alignItems: 'center',
     marginTop: 20
   },
-  // Add any additional styles you need
 });
 
 export default BarChartSpending;

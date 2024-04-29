@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Modal } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
+import { FontAwesome } from '@expo/vector-icons'; 
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
@@ -37,14 +37,13 @@ const ChallengeItem: React.FC<{ challenge: Challenge, showActive?: boolean, onJo
 
   const handleJoin = () => {
     if (!showActive && onJoin) {
-      console.log("Add challenge")
-      toggleModal(); // Open the modal when Join button is clicked
+      toggleModal(); 
     }
   };
 
   const handleJoinConfirmed = () => {
-    toggleModal(); // Close the modal
-    onJoin && onJoin(); // Join the challenge
+    toggleModal(); 
+    onJoin && onJoin(); 
   };
 
   return (
@@ -54,7 +53,6 @@ const ChallengeItem: React.FC<{ challenge: Challenge, showActive?: boolean, onJo
       </View>
 
       <View style={styles.imageContainer}>
-        {/* Replace the image source with your actual image */}
         <Image source={require('../../assets/challengeBackground.png')} style={styles.image} />
       </View>
       <View style={styles.detailsContainer}>
@@ -136,12 +134,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1, // Ensure the badge appears above other elements
+    zIndex: 1, 
   },
   imageContainer: {
     height: '40%',
-    backgroundColor: 'gray', // Replace with your image's background color
-    zIndex: 0, // Lower the zIndex to ensure the badge appears above the image
+    backgroundColor: 'gray', 
+    zIndex: 0, 
   },
   badgeText: {
     fontSize: 16,
@@ -161,7 +159,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   detailCard: {
-    width: 70, // Adjust the width here
+    width: 70, 
     marginRight: 5,
     backgroundColor: '#F5F7F9',
     height: 27,
@@ -174,7 +172,7 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     flexDirection: 'row',
-    alignItems: 'center', // Center items vertically
+    alignItems: 'center', 
   },
   leftDescription: {
     flex: 3,
@@ -188,16 +186,16 @@ const styles = StyleSheet.create({
   desc: {
     fontSize: 14,
     color: '#7E8086',
-    marginBottom: 5, // Add marginBottom to create space between name and description
+    marginBottom: 5, 
   },
   joinButton: {
-    width: '25%', // Adjust the width here
-    height: 33, // Adjust the height here
+    width: '25%', 
+    height: 33,
     backgroundColor: '#35BA52',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginLeft: 10, // Add marginLeft to create space between description and button
+    marginLeft: 10, 
     flexDirection: 'row',
   },
   activeJoinButton: {
@@ -206,20 +204,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   completedButton: {
-    width: '25%', // Adjust the width here
-    height: 33, // Adjust the height here
+    width: '25%', 
+    height: 33, 
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginLeft: 10, // Add marginLeft to create space between description and button
+    marginLeft: 10, 
     flexDirection: 'row',
     borderColor: '#CCCCCC',
     borderWidth: 1,
   },
   completedButtonText: {
     fontSize: 14,
-    color: '#CCCCCC', // Gray text color
+    color: '#CCCCCC', 
   },
   checkmarkIcon: {
     marginRight: 5,
@@ -235,7 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   modalContent: {
     backgroundColor: '#fff',
@@ -271,7 +269,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   cancelButton: {
-    backgroundColor: '#FF5733', // Different color for cancel button
+    backgroundColor: '#FF5733',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,

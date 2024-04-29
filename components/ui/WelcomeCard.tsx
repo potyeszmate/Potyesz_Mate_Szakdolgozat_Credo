@@ -36,7 +36,7 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
     cardContainer: {
         borderRadius: 20,
         overflow: 'hidden',
-        backgroundColor: '#26873B', // The darker color
+        backgroundColor: '#26873B', 
         padding: 15,
         position: 'relative',
         marginTop: 20,
@@ -48,8 +48,7 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
         left: 0,
         right: 0,
         height: '50%',
-        backgroundColor: '#35BA52', // The lighter color
-        // Blend the color by adjusting opacity
+        backgroundColor: '#35BA52', 
         opacity: 0.7,
       },
       gradientBottom: {
@@ -58,34 +57,33 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
         left: 0,
         right: 0,
         height: '50%',
-        backgroundColor: '#26873B', // The darker color
-        // You don't necessarily need to set opacity here if it's the solid color
+        backgroundColor: '#26873B', 
       },
     cardGradient: {
-      padding: 15, // Adjust based on your spacing needs
-      justifyContent: 'space-between', // Distributes children evenly
-      alignItems: 'flex-start', // Align children to the start of the cross axis
+      padding: 15, 
+      justifyContent: 'space-between', 
+      alignItems: 'flex-start', 
     },
     advisorText: {
       fontSize: 24,
       fontWeight: 'bold',
       color: '#FFFFFF',
-      marginBottom: 5, // Adjust the spacing based on your design
+      marginBottom: 5, 
     },
     descriptionText: {
       fontSize: 16,
       color: '#FFFFFF',
-      marginBottom: 15, // Adjust the spacing based on your design
+      marginBottom: 15, 
     },
     credoButton: {
       backgroundColor: '#FFFFFF',
       paddingVertical: 10,
       paddingHorizontal: 20,
-      alignSelf: 'flex-start', // Aligns the button to the start of the main axis
+      alignSelf: 'flex-start', 
       borderRadius: 20,
     },
     credoButtonText: {
-      color: '#1CB854', // The text color you specified
+      color: '#1CB854', 
       fontSize: 18,
       fontWeight: 'bold',
     },
@@ -93,9 +91,9 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
       position: 'absolute',
       bottom: 0,
       right: 0,
-      width: '30%', // Adjust size accordingly
-      height: '50%', // Adjust size accordingly
-      borderBottomLeftRadius: 200, // Use a large radius to create the semi-circle effect
+      width: '30%', 
+      height: '50%', 
+      borderBottomLeftRadius: 200, 
       backgroundColor: '#72E985',
     },
   });  

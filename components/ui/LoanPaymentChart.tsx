@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import moment from 'moment'; // Ensure moment is installed
+import moment from 'moment'; 
 
 const LoanPaymentChart = ({ loans }) => {
   const [dataPoints, setDataPoints] = useState({ labels: [], values: [] });
@@ -11,9 +11,9 @@ const LoanPaymentChart = ({ loans }) => {
     backgroundColor: 'white',
     backgroundGradientFrom: '#35BA52',
     backgroundGradientTo: '#35BA52',
-    decimalPlaces: 0, // no decimal places
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // optional
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, // optional
+    decimalPlaces: 0, 
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, 
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`, 
     style: {
       borderRadius: 16
     },
@@ -23,11 +23,10 @@ const LoanPaymentChart = ({ loans }) => {
       stroke: "#35BA52"
     },
     propsForBackgroundLines: {
-      strokeWidth: 1, // Set to 0 to hide grid lines
+      strokeWidth: 1, 
     },
-    // Setting the base value of the y-axis to 0
-    yAxisInterval: 1, // Optional: Interval of the y-axis
-    fromZero: true, // Ensures that y-axis starts at 0
+    yAxisInterval: 1, 
+    fromZero: true, 
   };
 
   const calculatePayments = () => {
@@ -58,12 +57,10 @@ const LoanPaymentChart = ({ loans }) => {
       currentDate.setMonth(currentDate.getMonth() + 1);
     }
 
-    // Reduce the number of data points
-    const sampleRate = Math.ceil(data.length / 10); // Adjust this to reduce more or less
+    const sampleRate = Math.ceil(data.length / 10); 
     const sampledData = data.filter((_, index) => index % sampleRate === 0);
 
     if (sampledData.length > 0) {
-      // Update label display logic as before if needed
       const labels = sampledData.map((point, index) => 
         (index % Math.ceil(sampledData.length / 5) === 0 ? point.date : '')
       );
@@ -108,26 +105,25 @@ const LoanPaymentChart = ({ loans }) => {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1, // Take up all available space
-      justifyContent: 'center', // Center vertically
-      alignItems: 'center', // Center horizontally
-      marginTop: 20, // Adds top margin
-    //   paddingHorizontal: 15, // Side padding makes chart centered within the screen width minus this padding
+      flex: 1, 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      marginTop: 20, 
     },
     chart: {
       marginVertical: 10,
-      borderRadius: 20, // Border radius for the chart
-      borderWidth: 1, // Optional: if you want to see the border
-      borderColor: 'transparent', // Border color set to transparent to keep the background visible
+      borderRadius: 20, 
+      borderWidth: 1, 
+      borderColor: 'transparent', 
     },
     chartTitle: {
       textAlign: 'center',
       fontSize: 18,
-      marginBottom: 10, // Margin at the bottom of the title
+      marginBottom: 10, 
       marginTop: 16
     },
     noDataText: {
-      marginTop: 20, // Margin at the top if no data is available
+      marginTop: 20, 
     },
     innerChartContainer: {
         position: 'relative',
@@ -135,8 +131,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         borderRadius: 20,
         padding: 1,
-        elevation: 3, // This adds a subtle shadow on Android
-        shadowColor: '#000', // Shadow for iOS
+        elevation: 3, 
+        shadowColor: '#000', 
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,

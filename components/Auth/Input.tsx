@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 import { Colors } from '../../commonConstants/styles';
@@ -15,9 +14,7 @@ const Input: React.FC<any> = ({
 }) => {
   return (
     <View style={styles.inputContainer}>
-      {/* <Text style={[styles.label, isInvalid && styles.labelInvalid]}>
-        // {label}
-      </Text> */}
+
       <TextInput
         placeholderTextColor="#8B8B8B"
         style={[styles.input, isInvalid && styles.inputInvalid]}
@@ -51,8 +48,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F0F0F0',
     backgroundColor: '#F6F6F6',
-    paddingHorizontal: 16, // Adjusted for internal spacing
-    fontSize: 16, // Optional, for placeholder text size
+    paddingHorizontal: 16,
+    fontSize: 16, 
   },
   inputInvalid: {
     backgroundColor: Colors.error100,

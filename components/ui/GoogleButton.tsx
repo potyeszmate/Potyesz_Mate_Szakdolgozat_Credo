@@ -1,8 +1,6 @@
-/* eslint-disable react/react-in-jsx-scope */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import { Colors } from '../../commonConstants/styles';
-// import GoogleIcon from '../../assets/google.png'; 
 const GoogleIcon = require('../../assets/google.png');
 
 const GoogleButton: React.FC<any> = ({ children, onPress }) => {
@@ -28,7 +26,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 14,
-        // padding: 15,
         borderColor: '#EEEEEE',
         borderWidth: 1
       },

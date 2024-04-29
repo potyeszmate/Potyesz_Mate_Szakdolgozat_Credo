@@ -64,26 +64,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 16,
-    // elevation: 2,
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.2,
     marginTop: 16,
     width: '90%',
     alignSelf: 'center',
-
-    // flexDirection: 'row',
-    // backgroundColor: '#FFFFFF',
-    // padding: 16,
-    // marginTop: 20,
-    // width: '90%',
-    // alignSelf: 'center',
-    elevation: 4, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-    shadowOpacity: 0.1, // Shadow for iOS
-    shadowRadius: 4, // Shadow for iOS
-    borderColor: '#E0E0E0', // A slightly darker shade for the border
+    elevation: 4, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    borderColor: '#E0E0E0', 
   },
   leftContainer: {
     flexDirection: 'row',

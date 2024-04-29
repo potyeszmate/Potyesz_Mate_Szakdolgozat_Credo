@@ -36,7 +36,7 @@ const CryptoDetails = () => {
     percent_change_24h: 0,
     logo: '',
     description: '',
-    loading: true, //true
+    loading: true, 
   });
 
   const authCtx = useContext(AuthContext);
@@ -45,7 +45,6 @@ const CryptoDetails = () => {
   useEffect(() => {
     const fetchCryptoData = async () => {
       try {
-        console.log("id:", id)
         const infoResponse = await getCryptoInfo(id);
         const valuesResponse = await getCryptoValues(id);
         
@@ -82,7 +81,7 @@ const CryptoDetails = () => {
       const querySnapshot: any = await getDocs(q);
       if (!querySnapshot.empty) {
         setIsInWatchlist(true);
-        watchlistDocRef.current = querySnapshot.docs[0].ref; // Save the document reference for later use
+        watchlistDocRef.current = querySnapshot.docs[0].ref;
       }
     };
 
@@ -108,10 +107,10 @@ const CryptoDetails = () => {
                 id: id,
                 uid: userId,
               });
-              cryptoWatchlistDocRef.current = docRef; // Save the document reference
-              setIsInWatchlist(true); // Set state to true
+              cryptoWatchlistDocRef.current = docRef; 
+              setIsInWatchlist(true); 
               Alert.alert('Added to watchlist');
-              route.params?.onGoBack?.(); // Call the passed function to refresh data
+              route.params?.onGoBack?.(); 
             } catch (error) {
               console.error('Error adding to watchlist:', error.message);
             }
@@ -134,9 +133,9 @@ const CryptoDetails = () => {
               if (!querySnapshot.empty) {
                 const docRef = querySnapshot.docs[0].ref;
                 await deleteDoc(docRef);
-                setIsInWatchlist(false); // Set state to false
+                setIsInWatchlist(false); 
                 Alert.alert('Removed from watchlist');
-                route.params?.onGoBack?.(); // Call the passed function to refresh data
+                route.params?.onGoBack?.(); 
               }
             } catch (error) {
               console.error('Error removing from watchlist:', error.message);
@@ -149,22 +148,6 @@ const CryptoDetails = () => {
     }
   };
 
-  // const addOwnedCryptosHandler = async () => {
-  //   const amount = amountOwned / cryptoDetails.price;
-  //   try {
-  //     await addDoc(collection(db, 'cryptocurrencies'), {
-  //       id,
-  //       name,
-  //       amount,
-  //       uid: userId,
-  //     });
-  //     setModalVisible(false);
-  //     // Optionally update state or show feedback
-  //   } catch (error) {
-  //     console.error('Error adding owned crypto:', error.message);
-  //   }
-  // };
-
   const addOwnedCryptoHandler = async () => {
     const amount = parseFloat(amountOwned);
     const addedAmount = amount  / cryptoDetails.price 
@@ -175,26 +158,23 @@ const CryptoDetails = () => {
     }
   
     try {
-      // Query to check if the user already owns the stock
       const q = query(collection(db, 'cryptocurrencies'), where('id', '==', id), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
-        // User does not own the stock, add it
         await addDoc(collection(db, 'stockDetails'), {
           id,
-          addedAmount,  //amountOwned / cryptoDetails.price;
+          addedAmount,  
           name,
           uid: userId,
         });
       } else {
-        // User already owns the stock, update the amount
         const stockDoc = querySnapshot.docs[0];
         await updateDoc(stockDoc.ref, {
-          amount: increment(addedAmount), // This uses Firestore's increment to add the new amount to the existing amount
+          amount: increment(addedAmount),
         });
       }
-      route.params?.onGoBack?.(); // Call the passed fetchCryptos function
+      route.params?.onGoBack?.(); 
       setModalVisible(false);
       Alert.alert('Added crypto');
 
@@ -210,7 +190,6 @@ const CryptoDetails = () => {
       return;
     }
   
-    // Fetch the current stock value, which you might already have from your stockDetails state
     const stockValue = cryptoDetails.price;
   
     const amountToSell = inputAmount / stockValue;
@@ -239,14 +218,12 @@ const CryptoDetails = () => {
             text: "OK", onPress: async () => {
                 try {
                   await updateDoc(stockDoc.ref, {
-                    amount: increment(-amountToSell), // Subtract the sell amount from the owned amount
+                    amount: increment(-amountToSell), 
                   });
-                  // Close the sell modal after the operation
-                  route.params?.onGoBack?.(); // Call the passed fetchCryptos function
+                  route.params?.onGoBack?.(); 
 
                   setSellModalVisible(false);
                   Alert.alert("Sold from crypto");
-                  // Clear the input field after the operation
                   setAmountOwned('');
                 } catch (error) {
                   console.error('Error selling stock:', error.message);
@@ -265,7 +242,6 @@ const CryptoDetails = () => {
   };
 
   const toggleModal = () => {
-    console.log('Toggling modal visibility');
     setModalVisible(prev => !prev);
   };
   
@@ -362,8 +338,8 @@ const CryptoDetails = () => {
               value={amountOwned}
               placeholder="Amount in USD"
               keyboardType="numeric"
-              placeholderTextColor="#aaa" // Change placeholder text color for visibility
-              clearButtonMode="while-editing" // iOS only - shows clear button while editing
+              placeholderTextColor="#aaa" 
+              clearButtonMode="while-editing"
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={addOwnedCryptoHandler} style={[styles.button, styles.modalButton]}>
@@ -391,8 +367,8 @@ const CryptoDetails = () => {
               value={amountOwned}
               placeholder="Amount in USD"
               keyboardType="numeric"
-              placeholderTextColor="#aaa" // Change placeholder text color for visibility
-              clearButtonMode="while-editing" // iOS only - shows clear button while editing
+              placeholderTextColor="#aaa" 
+              clearButtonMode="while-editing" 
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={sellCryptoHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
@@ -424,7 +400,7 @@ const styles = StyleSheet.create({
     logo: {
       width: 60,
       height: 60,
-      borderRadius: 40, // To create a rounded image
+      borderRadius: 40, 
     },
     headerText: {
       alignItems: "center",
@@ -432,7 +408,7 @@ const styles = StyleSheet.create({
     },
     sellButton: {
       backgroundColor: '#FF4136',
-      marginTop: 10, // To provide spacing from the Add to Portfolio button
+      marginTop: 10, 
     },
     name: {
       fontSize: 20,
@@ -446,7 +422,6 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       justifyContent: "space-between",
       marginBottom: 10,
-      // marginTop: 50,
       paddingHorizontal: 10,
     },
     label: {
@@ -469,7 +444,7 @@ const styles = StyleSheet.create({
       backgroundColor: "#f2f2f2",
       borderRadius: 10,
       padding: 15,
-      height: 80, // Smaller fixed height for collapsed description
+      height: 80, 
       overflow: "hidden",
     },
     expandedDescription: {
@@ -496,13 +471,12 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignItems: "center",
       marginTop: 22,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
     },
     chartPlaceholder: {
-      // backgroundColor: '#f2f2f2',
       alignItems: 'center',
       justifyContent: 'center',
-      height: 200, // Adjust height as needed
+      height: 200, 
       borderRadius: 10,
       marginTop: 50,
       marginBottom: 40
@@ -524,14 +498,14 @@ const styles = StyleSheet.create({
     },
     button: {
       flexDirection: 'row',
-      alignItems: 'center', // Center the icon and text vertically in the button
-      justifyContent: 'center', // Center the icon and text horizontally in the button
-      paddingVertical: 8, // Reduced padding for a smaller button
-      paddingHorizontal: 16, // Reduced padding for a smaller button
-      borderRadius: 20, // Adjusted for aesthetics
-      marginBottom: 10, // Space between buttons
-      width: '100%', // Adjust the width of the button
-      alignSelf: 'center', // Ensure the button is centered in the container
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      paddingVertical: 8, 
+      paddingHorizontal: 16, 
+      borderRadius: 20, 
+      marginBottom: 10, 
+      width: '100%', 
+      alignSelf: 'center', 
       shadowOpacity: 0.1,
       elevation: 3,
     },
@@ -546,7 +520,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       flex: 1,
-      textAlign: 'center', // Center text
+      textAlign: 'center', 
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -570,8 +544,8 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5,
-      width: '80%', // Adjust width as necessary
-      maxWidth: 350, // Ensure the modal is not excessively wide on large devices
+      width: '80%', 
+      maxWidth: 350, 
     },
     modalTitle: {
       fontSize: 20,
@@ -585,41 +559,39 @@ const styles = StyleSheet.create({
       paddingHorizontal: 15,
       borderRadius: 25,
       marginVertical: 5,
-      width: '90%', // Set a fixed width for all buttons
-      alignSelf: 'center', // Center buttons in the view
+      width: '90%', 
+      alignSelf: 'center', 
       elevation: 3,
     },
 
     input: {
-      // ... (rest of your input styles)
     },
     modalButtonGroup: {
       flexDirection: 'row',
-      justifyContent: 'center', // Center the buttons horizontally
-      width: '100%', // Take up full width of modal content area
+      justifyContent: 'center', 
+      width: '100%', 
     },
     modalButton: {
-      flex: 1, // Each button will take up an equal amount of space
+      flex: 1, 
       paddingVertical: 12,
       paddingHorizontal: 10,
-      marginHorizontal: 5, // Add some horizontal space between buttons
+      marginHorizontal: 5, 
       borderRadius: 25,
-      backgroundColor: '#35BA52', // Default button color
-      // ... other button styles ...
+      backgroundColor: '#35BA52', 
     },
     modalCancelButton: {
       backgroundColor: '#ccc',
     },
     modalInput: {
-      width: '100%', // Full width of the modal
+      width: '100%', 
       borderWidth: 1,
-      borderColor: '#ddd', // Light border for subtle distinction
+      borderColor: '#ddd', 
       borderRadius: 10,
-      padding: 15, // Comfortable padding
-      fontSize: 16, // Readable text size
-      color: '#000', // Text color for visibility
-      backgroundColor: '#fff', // Background color for visibility
-      marginBottom: 20, // Spacing below the input field
+      padding: 15, 
+      fontSize: 16,
+      color: '#000', 
+      backgroundColor: '#fff', 
+      marginBottom: 20, 
       paddingVertical: 15,
 
     },
@@ -633,7 +605,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 12,
-    // marginTop: 1, // Adjust as needed to fit just below the header
     backgroundColor: 'white',
     borderRadius: 20,
     shadowColor: '#000',
@@ -648,7 +619,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333', // Or any color that fits the app theme
+    color: '#333', 
   },
     changeContainer: {
       flexDirection: 'row',

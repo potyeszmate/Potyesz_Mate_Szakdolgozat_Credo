@@ -24,13 +24,6 @@ import AuthContextProvider, { AuthContext } from './store/auth-context';
 import TransactionInput from './components/ui/TransactionInput';
 import SettingsPage from './screens/Settings/SettingsPage';
 import ProfilePage from './screens/Profile/ProfilePage';
-import CurrencyPage from './components/ui/CurrencyPage';
-import LanguagePage from './components/ui/LanguagePage';
-import NotificationsPage from './components/ui/NotificationsPage';
-import ThemePage from './components/ui/ThemePage';
-import BugReport from './components/ui/BugReport';
-import ConnectPage from './components/ui/ConnectPage';
-import FaqPage from './components/ui/FaqPage';
 import LoansAndDebt from './screens/Expenses/SubPages/LoansAndDebt';
 import Bills from './screens/Expenses/SubPages/Bills';
 import en from './languages/en.json';
@@ -53,6 +46,12 @@ import CashFlowAnalytics from './screens/Analytics/SubPages/CashFlowAnalytics';
 import BalanceAnalytics from './screens/Analytics/SubPages/BalanceAnalytics';
 import StocksAndCryptoAnalytics from './screens/Analytics/SubPages/StocksAndCryptoAnalytics';
 import Home from './screens/Home/Home';
+import CurrencyPage from './screens/Settings/SubPages/CurrencyPage';
+import LanguagePage from './screens/Settings/SubPages/LanguagePage';
+import NotificationsPage from './screens/Settings/SubPages/NotificationsPage';
+import BugReport from './screens/Settings/SubPages/BugReport';
+import ConnectPage from './screens/Settings/SubPages/ConnectPage';
+import FaqPage from './screens/Settings/SubPages/FaqPage';
 
 
 const languages: any = {
@@ -103,7 +102,6 @@ function TabNavigator() {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -121,7 +119,6 @@ function TabNavigator() {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
-      console.log("In app.tsx useffect")
     }
   }, []);
   

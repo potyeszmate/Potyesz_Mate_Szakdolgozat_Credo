@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
-function LoadingOverlay() { // Use the defined interface
+function LoadingOverlay() { 
   return (
     <ImageBackground
       source={require('../../assets/Gradient.png')} 
@@ -10,7 +10,6 @@ function LoadingOverlay() { // Use the defined interface
     >
       <View>
         <Text style={styles.message}>Credo</Text>
-        {/* <ActivityIndicator size="large" color="#1CB854" /> */}
       </View>
     </ImageBackground>
   );
@@ -28,6 +27,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 12,
-    color: '#FFFFFF', // Text color
+    color: '#FFFFFF', 
   },
 });

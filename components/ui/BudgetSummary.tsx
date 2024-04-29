@@ -1,9 +1,6 @@
-/* eslint-disable react/prop-types */
-// BudgetSummary.js
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-// import { ProgressCircle } from 'react-native-progress';
 import Budget from './Budget';
 import BudgetItem from './BudgetItem';
 import * as Progress from 'react-native-progress';
@@ -15,7 +12,7 @@ import { query, collection, where, getDocs, addDoc,deleteDoc,updateDoc, doc } fr
 import { AuthContext } from '../../store/auth-context';
 import { Feather } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
+import { Ionicons } from '@expo/vector-icons';
 
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
@@ -80,12 +77,11 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         console.error("THERE IS NO SELECTED Budget");
         return;
       }
-      console.log("Before deleting this budget: ", selectedBudget.id)
       const docRef = doc(db, 'budgets', selectedBudget.id);
       await deleteDoc(docRef);
       fetchBudgets();
       hideDeleteModal()
-      setDeleteModalVisible(false); // Close the delete modal
+      setDeleteModalVisible(false); 
     } catch (error: any) {
       console.error('Error deleting budget:', error.message);
     }
@@ -115,20 +111,17 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
 
   useEffect(() => {
     if (!loading && budgets.length > 0) {
-      console.log('Calculating progress bar...');
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
   
       const newTotalAmount = budgets.reduce((acc, budget) => acc + budget.Total_ammount, 0);
       
-      console.log(`Current month/year: ${currentMonth}/${currentYear}`);
 
       const newSpentAmount = transactions
       ? transactions
           .filter((transaction: any) => {
-            const transactionDate = transaction.date.toDate(); // If transaction.date is a Firestore Timestamp
+            const transactionDate = transaction.date.toDate(); 
 
-            // const transactionDate = new Date(transaction.date.seconds * 1000); // Convert Firestore Timestamp to Date object
             return transactionDate.getMonth() === currentMonth &&
                    transactionDate.getFullYear() === currentYear;
           })
@@ -149,16 +142,13 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   }, [loading, budgets, transactions]);
   
   useEffect(() => {
-    console.log('spentAmount:', spentAmount);
-    console.log('totalAmount:', totalAmount);
-    console.log('spentPercentage:', spentPercentage);
+   
   }, [spentAmount, totalAmount, spentPercentage]);
 
   const snapPoints = useMemo(() => ['20%', '45%'], []);
 
   const addBudgetHandler = async (newBudget: any) => {
     try {
-      console.log('ADDING THIS NEW BUDGET: ', newBudget);
       await addDoc(collection(db, 'budgets'), {
         ...newBudget,
         uid: userId,
@@ -171,7 +161,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   };
 
   const showDeleteModal = (budget: any) => {
-    console.log("Delete this budget: ", budget)
     setSelectedBudget(budget);
     setDeleteModalVisible(true);
   };
@@ -182,7 +171,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   };
 
   const showEditModal = (budget: any) => {
-    console.log("Edit this budget: ", budget)
     setSelectedBudget(budget);
     setEditModalVisible(true);
   };
@@ -192,11 +180,11 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     setSelectedBudget(null);
   };
 
-  let progressBarColor = '#35BA52'; // Default green color
+  let progressBarColor = '#35BA52'; 
   if (spentPercentage / 100 >= 0.8) {
-    progressBarColor = '#FF5733'; // Red color for high expenditure
+    progressBarColor = '#FF5733'; 
   } else if (spentPercentage / 100 >= 0.5) {
-    progressBarColor = '#FFA500'; // Orange color for moderate expenditure
+    progressBarColor = '#FFA500';
   }
 
   return (
@@ -206,17 +194,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
       <View style={styles.summaryContainer}>
         <View>
           <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
-          {/* <View style={styles.monthSelectorContainer}>
-            <View style={styles.monthSelectorCard}>
-              <RNPickerSelect
-                value={selectedMonth}
-                onValueChange={(value) => setSelectedMonth(value)}
-                items={months.map(month => ({ label: month.label, value: month.value }))}
-                style={{ inputIOS: styles.monthSelector }}
-              />
-              <Ionicons name="caret-down" size={20} style={styles.monthSelectorIcon} />
-            </View>
-          </View> */}
         </View>
         <Text style={styles.amountLeftText}>
           {currency === 'HUF' ? 
@@ -280,15 +257,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
           </View>
         ))}
 
-      {/* {!loading && (
-        <View style={styles.addButtonContainer}>
-          <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-            <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
-            <Text style={styles.addButtonText}>Create new</Text>
-          </TouchableOpacity>
-        </View>
-       )} */}
-
       <Modal
         visible={deleteModalVisible}
         transparent={true}
@@ -318,9 +286,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         <Pressable
           style={styles.modalBackground}
           onPress={() => {
-            // Close both the modal and BottomSheet when clicking outside
-            // setModalVisible(false);
-            // bottomSheetRef.current?.close();
           }}
         >
           <BottomSheet
@@ -329,7 +294,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
             snapPoints={snapPoints}
             enablePanDownToClose
             onClose={() => {
-              console.log('BottomSheet closed');
               setEditModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
@@ -359,17 +323,14 @@ const styles = StyleSheet.create({
       marginTop: 10,
       width: '90%',
       alignSelf: 'center',
-      elevation: 4, // Shadow for Android
-      shadowColor: '#000', // Shadow for iOS
-      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-      shadowOpacity: 0.1, // Shadow for iOS
-      shadowRadius: 4, // Shadow for iOS
-      borderColor: '#E0E0E0', // A slightly darker shade for the border
+      elevation: 4, 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      shadowOpacity: 0.1,
+      shadowRadius: 4, 
+      borderColor: '#E0E0E0', 
     },
     summaryContainer: {
-      // marginLeft: 5,
-      // marginRight: 5,
-      // marginTop: 5
     },
     expenseSummaryText: {
       fontSize: 16,
@@ -386,7 +347,6 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: 10,
-      // marginLeft: 4,
       marginBottom: 20
     },
     spentText: {
@@ -417,10 +377,8 @@ const styles = StyleSheet.create({
       separator: {
         height: 1,
         backgroundColor: '#EEEEEE',
-        // marginLeft: 5, // Adjust this value to align with the transactionInfo
-        // marginRight: 5, // Add a bigger right margin
-        marginBottom: 2, // Add a bigger right margin
-        marginTop: 2, // Add a bigger right margin
+        marginBottom: 2, 
+        marginTop: 2, 
       },
       editButton: {
         flexDirection: 'row',
@@ -430,7 +388,7 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         borderWidth: 1,
         borderColor: '#1A1A2C',
-        marginRight: 4, // Updated right margin for spacing
+        marginRight: 4, 
         width: '50%', 
         height: 45,
       },      
@@ -511,7 +469,7 @@ const styles = StyleSheet.create({
     monthSelector: {
       flex: 1,
       color: '#000000',
-      paddingRight: 30, // To account for the icon
+      paddingRight: 30,
     },
     monthSelectorIcon: {
       position: 'absolute',

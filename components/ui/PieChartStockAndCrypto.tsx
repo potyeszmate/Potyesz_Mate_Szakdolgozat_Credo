@@ -1,23 +1,20 @@
-// PieChartComponent.js
 import React from 'react';
 import { View, Text, Dimensions, StyleSheet } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 
 const PieChartStockAndCrypto = ({ data }) => {
-  const chartWidth = Dimensions.get('window').width - 50; // Adjusted for padding
+  const chartWidth = Dimensions.get('window').width - 50; 
   const totalValue = data.reduce((sum, item) => sum + item.ownedValue, 0);
   const totalOwnedValue = data.reduce((sum, item) => sum + item.ownedValue, 0);
 
   const chartData = data.map(item => ({
     name: item.name,
-    value: parseFloat(item.ownedValue.toFixed(2)), // Parse the string as a float
+    value: parseFloat(item.ownedValue.toFixed(2)), 
     color: item.color,
     legendFontColor: "#7F7F7F",
     legendFontSize: 15,
   }));
   
-  console.log("data: ", data)
-
   if(data.length <= 0) {
     return(
       <View style={styles.card}>
@@ -119,7 +116,6 @@ const styles = StyleSheet.create({
   },
   totalValueText: {
     fontSize: 22,
-    // fontWeight: 'bold',
     color: '#000000',
     marginBottom: 10,
   },
@@ -172,22 +168,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginBottom: 4,
   },
-  // progressBarBackground: {
-  //   height: 20,
-  //   flexDirection: 'row',
-  //   backgroundColor: '#e0e0e0',
-  //   borderRadius: 10,
-  //   overflow: 'hidden',
-  //   marginTop: 8,
-  // },
+
   progressBarBackground: {
     backgroundColor: '#e0e0e0',
     borderRadius: 10,
     height: 10,
-    flex: 1, // Flex is used to expand the background to fill the space
-    // marginRight: 10, // Margin right for spacing between bar and percentage
+    flex: 1, 
     width: '100%'
   },
   labelRow: {
@@ -196,12 +183,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressItem: {
-    // marginBottom: 5,
     marginRight:40
   },
-  // progressBarFill: {
-  //   height: '100%',
-  // },
+
   progressContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -209,14 +193,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   labelAndValueContainer: {
-    flexDirection: 'column', // Stack name and value on top of each other
+    flexDirection: 'column', 
     justifyContent: 'flex-start',
-    flex: 1, // Take up full width minus space for percentage
+    flex: 1,
   },
   labelContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    width: '70%', // Adjust the width here to give space for the percentage
+    width: '70%', 
   },
   label: {
     fontSize: 14,
@@ -234,20 +218,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     borderRadius: 10,
     height: 10,
-    width: '100%', // Progress bar takes the full width of its container
+    width: '100%', 
   },
-  // progressBarBackground: {
-  //   height: 10,
-  //   borderRadius: 10,
-  //   backgroundColor: '#e0e0e0',
-  //   flex: 5, // Give more space to progress bar than text
-  //   marginHorizontal: 5, // Space between label/value and progress bar
-  // },
-  // percentageText: {
-  //   color: '#A9A9A9', // Grey color
-  //   fontSize: 14,
-  //   paddingLeft: 10, // Space out the text a little from the bar
-  // },
+
   progressBarFill: {
     borderRadius: 10,
     height: '100%',

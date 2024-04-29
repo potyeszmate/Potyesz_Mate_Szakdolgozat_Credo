@@ -25,30 +25,24 @@ const iconMapping: any = {
   };
 
   const UpcomingRecurring: React.FC<any> = ({ recurringTransactions }) => {
-    console.log("IN UpcomingRecurring")
     const navigation = useNavigation();
     const currentDate = new Date();
 
     const authCtx: any = useContext(AuthContext);
     const { userId} = authCtx as any;  
 
-    // console.log("recurringTransactions: ", recurringTransactions)
-    // Filter recurring transactions with dates not earlier than the current date
     const upcomingRecurring = recurringTransactions
-      .map((item: any) => ({ ...item, Date: item.Date.toDate() })) // Ensure Date is a Date object
+      .map((item: any) => ({ ...item, Date: item.Date.toDate() })) 
       .filter((item: any) => {
         const transactionDate = new Date(item.Date);
-        transactionDate.setHours(0, 0, 0, 0); // Normalize transaction date
+        transactionDate.setHours(0, 0, 0, 0); 
         return transactionDate >= currentDate;
       })
       .sort((a: any, b: any) => a.Date - b.Date);
 
-      // console.log("Filtered Upcoming Recurring: ", upcomingRecurring);
 
   
     if (upcomingRecurring.length === 0) {
-      console.log("THERE IS NO UPCOMING RECURRING")
-      // Return null or any placeholder if there are no upcoming recurring transactions
       return null;
     }
   
@@ -77,7 +71,6 @@ const iconMapping: any = {
   
     const handleRecurringPaymentsClick = () => {
       // @ts-ignore
-      // navigation.navigate('RecurringPayments');
       navigation.navigate('Recurrings', { userId: userId });
 
     };
@@ -123,12 +116,12 @@ const iconMapping: any = {
       marginTop: 20,
       width: '90%',
       alignSelf: 'center',
-      elevation: 4, // Shadow for Android
-      shadowColor: '#000', // Shadow for iOS
-      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-      shadowOpacity: 0.1, // Shadow for iOS
-      shadowRadius: 4, // Shadow for iOS
-      borderColor: '#E0E0E0', // A slightly darker shade for the border
+      elevation: 4, 
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 }, 
+      shadowOpacity: 0.1, 
+      shadowRadius: 4, 
+      borderColor: '#E0E0E0', 
     },
     header: {
       flexDirection: 'row',

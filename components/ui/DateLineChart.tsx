@@ -8,12 +8,10 @@ const DateLineChart: React.FC<any> = ({ data }) => {
     return <Text style={styles.noDataText}></Text>;
   }
 
-  // Sort transactions by date
   const sortedData = data
     .filter((transaction) => transaction.date && transaction.value)
     .sort((a, b) => a.date - b.date);
 
-  // Aggregate values by month
   const aggregatedData: { [key: string]: number } = sortedData.reduce((result, transaction) => {
     const monthKey = format(transaction.date, 'MMMM');
 
@@ -26,7 +24,6 @@ const DateLineChart: React.FC<any> = ({ data }) => {
     return result;
   }, {});
 
-  // Create chart data, grouping months two by two
   const chartData: any = Object.entries(aggregatedData).reduce((result: any, [month, value], index, array) => {
     const label = month.substring(0, 3);
 
@@ -45,9 +42,6 @@ const DateLineChart: React.FC<any> = ({ data }) => {
 
     return result;
   }, []);
-
-  // Output sorted months for debugging
-  console.log('Sorted Months:', sortedData.map(transaction => format(transaction.date, 'MMMM')));
 
   if (chartData.length === 0) {
     return <Text style={styles.noDataText}></Text>;

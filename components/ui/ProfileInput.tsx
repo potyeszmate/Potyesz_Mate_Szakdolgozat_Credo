@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect } from 'react';
 import {
   TextInput,
@@ -45,7 +44,6 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
     const isValidDate = initialProfile && initialProfile.birthday && !isNaN(initialProfile.birthday.toDate());
 
     if (initialProfile) {
-      console.log("Edited profile: ", initialProfile);
 
       setProfileFirstName(initialProfile.firstName || '');
       setProfileLastName(initialProfile.lastName || '');
@@ -103,7 +101,6 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
             ref={valueInputRef}
             placeholder="Enter your firstname"
             style={styles.input}
-            // keyboardType="numeric"
             value={profileFirstName}
             onChangeText={(text) => setProfileFirstName(text)}
         />
@@ -118,7 +115,6 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
               ref={valueInputRef}
               placeholder="Enter your lastname"
               style={styles.input}
-            //   keyboardType="text"
               value={profileLastName}
               onChangeText={(text) => setProfileLastName(text)}
             />
@@ -140,8 +136,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
             style={styles.pickerContainer}
             containerStyle={styles.pickerContainer}
             placeholder={languages[selectedLanguage].selectGender}
-            // dropDownStyle={styles.dropDownStyle}
-            // placeholderValue={null}
+    
           />
         </View>
 
@@ -167,7 +162,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
               <DateTimePicker
                 value={selectedDate}
                 mode="date"
-                display="spinner"  //Check for better
+                display="spinner"  
                 onChange={(event, date) => setSelectedDate(date || selectedDate)}
                 style={{ width: '100%' }}
               />
@@ -230,7 +225,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'grey',
     marginTop: -60
-    // marginTop: Platform.OS === 'ios' && showDatePicker ? -60 : 0,
   },
   inputWrapper: {
     marginBottom: 20,

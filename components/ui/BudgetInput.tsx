@@ -22,7 +22,6 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
   const [filteredCategories, setFilteredCategories] = useState<{ label: string; value: number }[]>([]);
 
   useEffect(() => {
-    console.log("existingCategories: ", existingCategories)
     
     const availableCategories = allCategories.filter(
       (category) => !existingCategories.includes(category.label)
@@ -31,10 +30,7 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
   }, [existingCategories]);
   
   useEffect(() => {
-    // If initialTransaction is provided, populate fields with its data
     if (initialBudget) {
-      console.log("Edited category: ", initialBudget.Category)
-      console.log("Edited totalAmount: ", initialBudget.Total_ammount)
   
       setSelectedCategory(allCategories.findIndex((cat: any) => cat.label === initialBudget.Category) + 1);
       setBudgetTotalAmount(initialBudget && initialBudget.Total_ammount ? initialBudget.Total_ammount.toString() : '');
@@ -47,8 +43,6 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
       return;
     }
   
-    console.log("budgetTotalAmount: ", budgetTotalAmount);
-    console.log("selectedCategory: ", selectedCategory);
   
     const selectedCategoryLabel = filteredCategories.find((category) => category.value === selectedCategory)?.label;
   
@@ -57,13 +51,11 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
       Total_ammount: parseFloat(budgetTotalAmount || '0'),
     };
 
-    console.log("budgetData: ", budgetData)
   
     if (initialBudget) {
       budgetData.id = initialBudget.id;
     }
   
-    console.log("Budget data before adding: ", initialBudget);
   
     onAddBudget(budgetData); 
   
@@ -149,11 +141,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 10,
     alignItems: 'center',
-    // marginTop: 250,
     flexDirection: 'row',
     justifyContent: 'center',
     bottom: -90
-    // marginTop: 300
   },
   input: {
     borderBottomWidth: 1,
@@ -167,7 +157,6 @@ const styles = StyleSheet.create({
     paddingTop: -40,
     textAlign: 'center',
     color: 'grey',
-    // marginTop: Platform.OS === 'ios' && showDatePicker ? -60 : 0,
   },
   dropDownStyle: {
     backgroundColor: '#fafafa',

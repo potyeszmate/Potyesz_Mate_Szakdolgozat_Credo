@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -26,7 +25,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordContainer: {
     marginBottom: 5,
-    alignSelf: 'flex-end', // Align to the right
+    alignSelf: 'flex-end',
   },
   forgotPassword: {
     fontSize: 15,

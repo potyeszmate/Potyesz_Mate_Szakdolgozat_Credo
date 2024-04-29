@@ -12,13 +12,12 @@ import Separator from '../ui/Separator';
 import FlatButton from '../ui/FlatButton';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
-import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo
+import { Ionicons } from '@expo/vector-icons'; 
 
 
 
 const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   const [enteredEmail, setEnteredEmail] = useState('');
-  // const [enteredConfirmEmail, setEnteredConfirmEmail] = useState('');
   const [enteredPassword, setEnteredPassword] = useState('');
   const [enteredConfirmPassword, setEnteredConfirmPassword] = useState('');
   const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] = useState(false);
@@ -26,7 +25,6 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
 
   const {
     email: emailIsInvalid,
-    // confirmEmail: emailsDontMatch,
     password: passwordIsInvalid,
     confirmPassword: passwordsDontMatch,
   } = credentialsInvalid;
@@ -36,9 +34,6 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
       case 'email':
         setEnteredEmail(enteredValue);
         break;
-      // case 'confirmEmail':
-      //   setEnteredConfirmEmail(enteredValue);
-      //   break;
       case 'password':
         setEnteredPassword(enteredValue);
         break;
@@ -51,7 +46,6 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   function submitHandler() {
     onSubmit({
       email: enteredEmail,
-      // confirmEmail: enteredConfirmEmail,
       password: enteredPassword,
       confirmPassword: enteredConfirmPassword,
     });
@@ -62,7 +56,6 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   };
 
   const forgotPassword = (email: any) => {
-    // Make sure to handle empty email scenario before calling this function
     if (!email) {
       Alert.alert('Please enter your email address.');
       return;
@@ -167,18 +160,11 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
           </GoogleButton>
         </View>
 
-        
-        {/* <View style={styles.buttonContainer} >
-          <IOSButton>
-            {'Continute with Apple'}
-          </IOSButton>
-        </View> */}
-
         <Modal
           visible={isResetPasswordModalVisible}
           animationType="slide"
-          presentationStyle="overFullScreen" // Try using overFullScreen for a full-screen modal
-          transparent={true} // Ensure the background is transparent
+          presentationStyle="overFullScreen" 
+          transparent={true} 
           onRequestClose={closeModalHandler}
         >
           <KeyboardAvoidingView 
@@ -214,7 +200,7 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
             </Text>
             <Button
               title="Cancel"
-              onPress={closeModalHandler} // Use the same handler for closing
+              onPress={closeModalHandler} 
             />
           </View>
           </KeyboardAvoidingView>
@@ -236,22 +222,18 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   content: {
-  //  backgroundColor: "#FAFAFA"
   },
   headerText: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    // marginVertical: 5,
-    color: '#333', // Or any other color you prefer
+    color: '#333', 
     marginBottom: 20,
     marginTop: 30
 
   },
   button: {
     color: 'black',
-    // fontWeight: 'bold',
-    // marginBottom: 10
   },
   buttonText: {
     color: 'black',
@@ -267,12 +249,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalCloseButton: {
-    alignSelf: 'flex-end', // Aligns the button to the right
-    padding: 10, // Makes it easier to tap
+    alignSelf: 'flex-end', 
+    padding: 10, 
   },
   forgotPasswordContainer: {
     marginBottom: 5,
-    alignSelf: 'flex-end', // Align to the right
+    alignSelf: 'flex-end', 
   },
   forgotPassword: {
     fontSize: 15,
@@ -280,7 +262,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   modalView: {
-    marginTop: 'auto', // Aligns the modal to the bottom of the screen
+    marginTop: 'auto', 
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,

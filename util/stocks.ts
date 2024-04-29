@@ -2,7 +2,6 @@ const apiKey = '20pxfp55CRF4QFeF0P1uQXdppypX7nk8';
 
   export const getStocks = async () => {
       try {
-        console.log("CALLED THE getStocks API with IDS: ")
         const apiUrl = `https://api.polygon.io/v3/reference/tickers?active=true&limit=20&apiKey=${apiKey}`;
     
         const response = await fetch(apiUrl, {
@@ -43,8 +42,6 @@ const apiKey = '20pxfp55CRF4QFeF0P1uQXdppypX7nk8';
   export const getStockPrice = async (stock: string) => {
     try {
     
-      console.log("stock: ", stock)
-
       const apiUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${stock}?apiKey=${apiKey}`;
   
       const response = await fetch(apiUrl, {
@@ -57,7 +54,6 @@ const apiKey = '20pxfp55CRF4QFeF0P1uQXdppypX7nk8';
   
       const data: any = await response.json();
 
-      console.log("response data: ", data.ticker.day.c)
       return data;
     } catch (error: any) {
       console.error(error);

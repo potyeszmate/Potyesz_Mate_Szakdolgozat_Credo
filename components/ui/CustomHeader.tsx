@@ -11,8 +11,7 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
   const { userId } = authCtx;
   const navigation = useNavigation();
 
-  // const [profile, setProfile] = useState<any>();
-  const [isProfileFetched, setIsProfileFetched] = useState(false); // State to track if profile data is fetched
+  const [isProfileFetched, setIsProfileFetched] = useState(false); 
 
   const handleSettingsPage = () => {
     // @ts-ignore
@@ -21,7 +20,6 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
 
   const handleChatBotsPage = () => {
     // @ts-ignore
-    // navigation.navigate('ChatBot');
   };
 
   const handleProfilePage = () => {
@@ -29,23 +27,14 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
     navigation.navigate('Profile');
   };
 
-  // const handleChatbot = () => {
-  //   // @ts-ignore
-  //   navigation.navigate('Chatbot');
-  // };
-
-  // Function to handle navigation based on user's premium status
 const handleNavigation = () => {
   if (profile && profile.isPremiumUser) {
-    // Navigate to Chatbot page for premium users
     navigation.navigate('Chatbot');
   } else {
-    // Navigate to Payment page for non-premium users
     navigation.navigate('Payment');
   }
 };
 
-// TouchableOpacity that navigates based on the user's subscription status
 <TouchableOpacity onPress={handleNavigation}>
   <Image
     source={require('../../assets/chatBot.png')}
@@ -54,39 +43,11 @@ const handleNavigation = () => {
 </TouchableOpacity>
 
 
-
-  console.log("profile: ", profile)// const fetchProfile = async () => {
-
   if (isLoading || !profile) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   if(profile){
-    console.log("profile: ", profile)// const fetchProfile = async () => {
-  //   console.log("userId: ", userId)
-  //   try {
-  //     const profileQuery = query(collection(db, 'users'),  where('uid', '==', userId));
-  //     const querySnapshot = await getDocs(profileQuery);
-  //     const fetchedProfiles = querySnapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-
-  //     setProfile(fetchedProfiles);
-  //     console.log("fetchedProfiles", fetchedProfiles)
-  //     setIsProfileFetched(true); // Update state to indicate profile data is fetched
-  //   } catch (error: any) {
-  //     console.error('Error fetching profile:', error.message);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchProfile();
-  // }, []);
-
-  // useEffect(() => {
-  //   // fetchProfile();
-  // }, [userId]); // Include userId in the dependency array
   }
 
   return (
@@ -127,7 +88,7 @@ const handleNavigation = () => {
     />
   </TouchableOpacity>
 
-  {profile && ( // Corrected syntax
+  {profile && ( 
     <TouchableOpacity onPress={handleNavigation}>
       <Image
         source={require('../../assets/chatBot.png')}
@@ -148,7 +109,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: 'transparent',
     paddingHorizontal: 16,
     paddingTop: 50, 
     height: 100,

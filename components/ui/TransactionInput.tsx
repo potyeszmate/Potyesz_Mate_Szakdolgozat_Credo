@@ -53,12 +53,11 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [openProvider, setOpenProvider] = useState(false);
-  // const [transactionValue, setTansactionValue] = useState('');
-  // const [selectedProvider, setSelectedProvider] = useState(null as any);
+
   const [activeTab, setActiveTab] = useState('Expense');
   const bottomSheetRef = useRef<any>(null);
   const valueInputRef = useRef<TextInput>(null);
-  const textInputRef = useRef<TextInput>(null); // Explicitly type the ref as a TextInput ref
+  const textInputRef = useRef<TextInput>(null); 
   const [searchQuery, setSearchQuery] = useState('');
   const [modalProviderVisible, setModalProviderVisible] = useState(false);
   const [modalDateVisible, setModalDateVisible] = useState(false);
@@ -79,17 +78,14 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
   const snapPointsDateModal = useMemo(() => ['50%'], []);
 
   useEffect(() => {
-    // const isValidDate = initialTransaction && initialTransaction.date && !isNaN(initialTransaction.date.getTime());
     const isValidDate = initialTransaction && initialTransaction.date && !isNaN(initialTransaction.date.toDate());
 
     if (initialTransaction) {
-      console.log("Edited category: ", initialTransaction.category);
 
       setTransactionName(initialTransaction.name || '');
       setSelectedCategory(initialTransaction.category ? initialTransaction.category : '');
       setTransactionNotes(initialTransaction.notes || '')
 
-      console.log("conversionRate", conversionRate)
 
       const formattedValue =
       initialTransaction.value !== undefined &&
@@ -99,29 +95,28 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
           : (parseFloat(initialTransaction.value) * conversionRate).toFixed(2).toString()
         : '';
 
-      console.log("formattedValue", formattedValue)
 
       setTransactionValue(formattedValue);
-      // setSelectedDate(isValidDate ? new Date(initialTransaction.date) : new Date());
       setSelectedDate(isValidDate ? new Date(initialTransaction.date.toDate()) : new Date());
 
     }
   }, [initialTransaction]);
 
-  const addOrUpdateTransactionHandler = (activeTab: string) => {
-
+  const addOrUpdateTransactionHandler = () => {
+    console.log("activeTab: ", activeTab)
+    console.log( "In addOrUpdateTransactionHandler")
     if(activeTab == "Expense") {
 
-    
+      console.log( "In EXPENSE")
+
     if (!transactionName || !selectedCategory || !transactionValue) {
-      console.log("Transactions: ", transactionName,selectedCategory, transactionValue  )
       console.warn('Please fill in all fields');
       return;
     }
 
     const transactionData: any = {
       name: transactionName,
-      category: "Income",
+      category: selectedCategory,
       value: conversionRate !== null ? (1 / conversionRate) * parseFloat(transactionValue) : parseFloat(transactionValue),
       date: selectedDate,
       notes: transactionNotes   
@@ -129,16 +124,14 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
     };
 
     if (initialTransaction) {
-      // If it's an existing transaction, add id to the transactionData
       transactionData.id = initialTransaction.id;
     }
 
     onAddTransaction(transactionData);
-    // onAddIncome(transactionData)
   } else { 
+    console.log( "In ELSE")
 
     if (!transactionName || !transactionValue) {
-      console.log("Transactions: ", transactionName,selectedCategory, transactionValue  )
       console.warn('Please fill in all fields');
       return;
     }
@@ -153,13 +146,11 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
     };
 
     if (initialTransaction) {
-      // If it's an existing transaction, add id to the transactionData
       transactionData.id = initialTransaction.id;
     }
 
     onAddIncomes(transactionData);
   }
-    // Clear fields after adding/updating
     setTransactionName('');
     setTransactionNotes('')
     setSelectedCategory(null);
@@ -168,20 +159,19 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
   };
 
   const handleSheetChanges = (index: any) => {
-    if (index === -1) { // -1 when bottomSheet is fully closed
+    if (index === -1) { 
       setModalProviderVisible(false);
-      textInputRef.current?.blur(); // Ensure TextInput is blurred when BottomSheet is closed
+      textInputRef.current?.blur(); 
     }
   };
 
   const handleDeleteIconClick = (recurringTransactionId: string) => {
-    // setSelectedRecurringTransactionId(recurringTransactionId);
     onDeleteRecurringTransaction && onDeleteRecurringTransaction(recurringTransactionId);
   };
 
   const handleClose = () => {
     setModalProviderVisible(false);
-    textInputRef.current?.blur(); // Ensure TextInput is blurred
+    textInputRef.current?.blur(); 
   };
 
   const today = new Date();
@@ -295,9 +285,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
         </TouchableOpacity>
         )}
 
-        {/* <View style={styles.divider} /> */}
 
-        {/* provider Modal */}
         <Modal
           visible={modalProviderVisible}
           transparent={true}
@@ -315,10 +303,9 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
               enablePanDownToClose
               onClose={handleClose}
               onChange={handleSheetChanges}
-              // backgroundComponent={RenderBackground}
               backdropComponent={(props) => (
                 <BottomSheetBackdrop {...props} onPress={() => {
-                  textInputRef.current?.blur(); // Blur text input when tapping outside the bottom sheet
+                  textInputRef.current?.blur(); 
                 }} />
               )}
               backgroundComponent={({ style }) => (
@@ -363,7 +350,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
           </Pressable>
         </Modal>
 
-        {/* date Modal */}
         <Modal
           visible={modalDateVisible}
           transparent={true}
@@ -387,9 +373,9 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
                   {...props}
                   appearsOnIndex={0}
                   disappearsOnIndex={-1}
-                  opacity={0.5} // Adjust the opacity to your liking
+                  opacity={0.5} 
                   onPress={() => {
-                    textInputRef.current?.blur(); // Blur text input when tapping outside the bottom sheet
+                    textInputRef.current?.blur(); 
                   }}
                 />
               )}
@@ -566,41 +552,30 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: '#fff',
     borderRadius: 20,
-    // elevation: 5,
     width: '80%',
     alignSelf: 'center',
-    // marginTop: 10,
   },
   container: {
-    // flex: 1,
-    // justifyContent: 'space-between',
-    // paddingBottom: 20, // Add padding at the bottom to separate button from content
+  
   },
-  // modalTitle: {
-  //   fontSize: 18,
-  //   fontWeight: 'bold',
-  //   marginBottom: 40,
-  //   textAlign: 'center',
-  //   color: 'grey',
-  // },
+
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: 'grey',
-    flex: 1, // Allow text to take as much space as it can
-    textAlign: 'center', // Center text in the available space
+    flex: 1, 
+    textAlign: 'center', 
   },
   headerTitleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 10,
-    paddingRight: 20, // Increase right padding to push the close icon further right
+    paddingRight: 20, 
     paddingLeft: 10,
   },
   closeIcon: {
-    // If additional positioning is needed
-    marginRight: -40, // Optional: Adjust if you want to move the icon even closer to the edge
+    marginRight: -40, 
   },
   modalDateTitle: {
     fontSize: 18,
@@ -610,14 +585,12 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
   inputWrapper: {
-    marginBottom: 10, // Reduce margin for smaller gap
-    marginTop: 10, // Reduce margin for smaller gap
+    marginBottom: 10, 
+    marginTop: 10, 
 
   },
   contentContainer: {
-    // flex: 1,
-    // alignItems: 'center',
-    paddingTop: 20, // Adjust as needed
+    paddingTop: 20, 
     marginLeft: 40,
     marginRight: 40
   },
@@ -637,28 +610,14 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 10,
     alignItems: 'center',
-    // marginTop: 250,
     flexDirection: 'row',
     justifyContent: 'center',
     bottom: -90
-    // marginTop: 300
   },
   providerList: {
     flexGrow: 1,
   },
-  // searchInput: {
-  //   marginBottom: 16,
-  //   paddingHorizontal: 12,
-  //   paddingVertical: 8,
-  //   borderWidth: 1,
-  //   borderColor: '#ccc',
-  //   borderRadius: 8,
-  // },
-  // providerItem: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   paddingVertical: 8,
-  // },
+
   deleteModalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -701,7 +660,6 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    // paddingTop: 20,
     fontSize: 32,
     color: '#333',
   },
@@ -710,12 +668,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    // marginTop: 20,
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 20, // Reduce padding for smaller gap
+    paddingBottom: 20, 
   },
   tabButton: {
     width: '48%',
@@ -727,10 +684,9 @@ const styles = StyleSheet.create({
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    // fontFamily: 'Inter',
   },
   scrollViewContent: {
-    paddingBottom: 100, // Adjust as needed
+    paddingBottom: 100, 
   },
   activeTabButton: {
     backgroundColor: '#1A1A2C',
@@ -742,16 +698,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    // Expanding the container's size slightly might help
-    overflow: 'hidden', // Ensure that children do not overlap the rounded corners
-    elevation: 5, // Add elevation for Android
+    overflow: 'hidden', 
+    elevation: 5, 
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowColor: 'black',
     shadowOffset: { height: -3, width: 0 },
   },
   deleteButton: {
-    backgroundColor: '#FF5733', // Red color
+    backgroundColor: '#FF5733', 
     borderRadius: 8,
     padding: 10,
     alignItems: 'center',
@@ -759,13 +714,13 @@ const styles = StyleSheet.create({
 
   },
   deleteButtonText: {
-    color: '#FFFFFF', // White color
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
   },
   pickerContainer: {
     height: 40,
-    marginBottom: 1, // Reduce margin for smaller gap
+    marginBottom: 1, 
   },
   dropDownStyle: {
     backgroundColor: '#fafafa',
@@ -777,7 +732,6 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   debug: {
-    // marginTop: -240
   },
   inputContainer: {
     flexDirection: 'row',
@@ -801,58 +755,54 @@ const styles = StyleSheet.create({
     marginLeft: -20,
     marginTop: 5,
     marginBottom: 5
-    // marginVertical: 5, // Smaller vertical margin
-    // marginHorizontal: 10, // Smaller horizontal margin
+    
   },
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
   },
-  // bottomSheetBackground: {
-  //   backgroundColor: 'white',
-  //   flex: 1,
-  // },
+
   modalTitleContainer: {
-    alignItems: 'center', // Center the text horizontally
-    marginTop: 10, // Add top margin
+    alignItems: 'center', 
+    marginTop: 10, 
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20, // Rounded corners
-    backgroundColor: '#F6F6F6', // Background color
-    paddingHorizontal: 15, // Horizontal padding
-    marginBottom: 15, // Add bottom margin
+    borderRadius: 20, 
+    backgroundColor: '#F6F6F6', 
+    paddingHorizontal: 15, 
+    marginBottom: 15, 
     marginLeft: 20,
     marginRight: 20,
     marginTop: -20
   },
   searchIcon: {
-    marginRight: 10, // Add right margin to the search icon
+    marginRight: 10,
   },
   searchInput: {
-    flex: 1, // Take remaining space
+    flex: 1, 
     fontSize: 16,
     color: '#333',
-    paddingVertical: 10, // Vertical padding
+    paddingVertical: 10, 
   },
   
   providerItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 20, // Increase vertical padding
+    paddingVertical: 20,
   },
   providerItemWithMargin: {
-    marginLeft: 30, // Add left margin
+    marginLeft: 30, 
   },
   bottomButtonContainer: {
     position: 'absolute',
-    bottom: -50, // Position the button at 20 pixels from the bottom of the BottomSheet
+    bottom: -50, 
     left: 0,
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1, // Ensure button is above other content
+    zIndex: 1, 
   },
   bottomButton: {
     backgroundColor: '#35BA52',
@@ -881,10 +831,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#35BA52',
     padding: 10,
     borderRadius: 5,
-    // marginLeft: 130,
-    // marginRight: 130,
     alignItems: 'center',
-    // width: '50%',
     marginLeft: 60,
     marginRight: 60
 
@@ -894,15 +841,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
   },
-  // providerIcon: {
-  //   width: 24,
-  //   height: 24,
-  //   marginRight: 8,
-  // },
-  // providerText: {
-  //   fontSize: 16,
-  //   color: '#333',
-  // },
 });
 
 export default TransactionInput;

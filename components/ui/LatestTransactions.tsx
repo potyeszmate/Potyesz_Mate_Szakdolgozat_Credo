@@ -1,4 +1,3 @@
-// LatestTransactions.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -28,25 +27,17 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
   };
   
   const now = new Date();
-  // console.log("Current time:", now.toString()); // Log the current time for debugging
-    console.log("transactions", transactions)
     
-  // Filter and sort transactions up to the current moment
   const sortedTransactions = transactions
     .filter((transaction: any) => {
       const transactionDate = new Date(transaction.date.toDate());
-      // console.log("Transaction time:", transactionDate.toString()); // Log each transaction time for debugging
       return transactionDate <= now;
     })
     .sort((a: any, b: any) => b.date.toDate() - a.date.toDate())
-    .slice(0, 3);  // Get the latest 3 transactions
+    .slice(0, 3);  
 
-    console.log("Current time:", now.toLocaleString()); // Check current local time
-    console.log("transactions:", transactions.length); // Check current local time
 
-    console.log("Filtered transactions:", transactions.map(t => new Date(t.date.seconds * 1000).toLocaleString()));
 
-    // console.log("transactions in LatestTransactions: ", transactions)
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -55,7 +46,6 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
           <Feather name="chevron-right" size={24} color="#333" />
         </TouchableOpacity>
       </View>
-      {/* Render your TransactionList component passing sortedTransactions */}
       <TransactionList transactions={sortedTransactions} currency={currency} conversionRate={conversionRate} symbol={symbol} isLoading= {isLoading} />
     </View>
   );
@@ -70,19 +60,18 @@ const styles = StyleSheet.create({
       marginTop: 20,
       width: '90%',
       alignSelf: 'center',
-      elevation: 4, // Shadow for Android
-      shadowColor: '#000', // Shadow for iOS
-      shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-      shadowOpacity: 0.1, // Shadow for iOS
-      shadowRadius: 4, // Shadow for iOS
-      borderColor: '#E0E0E0', // A slightly darker shade for the border
+      elevation: 4, 
+      shadowColor: '#000', 
+      shadowOffset: { width: 0, height: 2 }, 
+      shadowOpacity: 0.1, 
+      shadowRadius: 4, 
+      borderColor: '#E0E0E0', 
       paddingBottom: 5
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginBottom: 5,
   },
   title: {
     fontSize: 16,

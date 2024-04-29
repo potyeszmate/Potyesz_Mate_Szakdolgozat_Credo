@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16,
-    width: '100%', // Button takes full width
+    width: '100%', 
   },
   editIcon: {
     marginRight: 10,

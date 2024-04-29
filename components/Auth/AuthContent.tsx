@@ -16,13 +16,6 @@ const AuthContent: React.FC<any> = ({ isLogin, onAuthenticate }) => {
     confirmPassword: false,
   });
 
-  // const switchAuthModeHandler = () => {
-  //   if (isLogin) {
-  //     navigation.navigate('Signup');
-  //   } else {
-  //     navigation.navigate('Login');
-  //   }
-  // };
 
   const submitHandler = (credentials: {
     email: string;
@@ -70,35 +63,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     padding: 16,
     borderRadius: 8,
-    // backgroundColor: Colors.primary800,
-    // elevation: 2,
-    // shadowColor: 'black',
-    // shadowOffset: { width: 1, height: 1 },
-    // shadowOpacity: 0.35,
-    // shadowRadius: 4,
+    
   },
-  // buttons: {
-  //   // marginTop: 40,
-  // },
-  // forgotPassword: {
-  //   fontSize: 15,
-  //   color: '#149E53',
-  //   textAlign: 'right',
-  //   // marginBottom: 20,
-  // },
-  // separatorContainer: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   marginTop: 12,
-  // },
-  // separatorText: {
-  //   flex: 1,
-  //   height: 1.3,
-  //   backgroundColor: '#CFCFD3',
-  //   marginHorizontal: 8,
-  // },
-  // separatorOrText: {
-  //   color: '#CFCFD3',
-  //   // fontWeight: 'bold',
-  // },
+ 
 });

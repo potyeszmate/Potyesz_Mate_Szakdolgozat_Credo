@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import Icon from 'react-native-vector-icons/FontAwesome5'; // Updated to FontAwesome5
+import Icon from 'react-native-vector-icons/FontAwesome5'; 
 
 const ImportanceBarChart = ({ data }) => {
   if (!data || data.length === 0) {
@@ -9,7 +9,7 @@ const ImportanceBarChart = ({ data }) => {
   }
 
   const screenWidth = Dimensions.get('window').width;
-  const chartWidth = screenWidth - 40; // Reduced side padding
+  const chartWidth = screenWidth - 40; 
   const importanceCounts = { mandatory: 0, necessary: 0, neutral: 0, negligible: 0 };
 
   data.forEach(item => {
@@ -20,7 +20,7 @@ const ImportanceBarChart = ({ data }) => {
     labels: Object.keys(importanceCounts),
     datasets: [{
       data: Object.values(importanceCounts),
-      colors: [ // Colors function for each bar
+      colors: [ 
         (opacity = 1) => 'green',
         (opacity = 1) => 'blue',
         (opacity = 1) => 'orange',
@@ -33,13 +33,12 @@ const ImportanceBarChart = ({ data }) => {
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 0,
-    color: (opacity = 0.6) => `rgba(53, 186, 82, ${opacity})`,   //    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, // Bar color
+    color: (opacity = 0.6) => `rgba(53, 186, 82, ${opacity})`, 
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,    
     borderRadius: 1,
-    fillShadowGradientOpacity: 0.2, // Ensure bars are fully filled with color
-    // strokeWidth: 30,
+    fillShadowGradientOpacity: 0.2, 
     barPercentage: 0.9,
-    useShadowColorFromDataset: false // Indicate whether to use color from dataset
+    useShadowColorFromDataset: false 
   };
 
   const mostNegligible = importanceCounts.negligible > Math.max(importanceCounts.mandatory, importanceCounts.necessary, importanceCounts.neutral);
@@ -61,7 +60,6 @@ const ImportanceBarChart = ({ data }) => {
           style={{
             marginVertical: 8,
             marginHorizontal: -10,
-            // borderRadius: 16,
           }}
         />
         {mostNegligible && (
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
   },
   cardStyle: {
     borderRadius: 20,
-    padding: 10, // Reduced overall padding
+    padding: 10, 
     margin: 20,
     backgroundColor: '#ffffff',
     shadowColor: '#000',
@@ -112,7 +110,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFA500',
   },
-  // ... Existing styles ...
 });
 
 export default ImportanceBarChart;

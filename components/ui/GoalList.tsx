@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     width: '80%',
     marginLeft: 'auto',
     marginRight: 'auto',
-    maxHeight: 250, // Set the maximum height
+    maxHeight: 250, 
   },
   listContentContainer: {
     alignItems: 'center',

@@ -2,8 +2,8 @@ import { useRoute } from '@react-navigation/native';
 import { collection, getDocs, updateDoc } from 'firebase/firestore';
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
-import { db } from '../../firebaseConfig';
-import { AuthContext } from '../../store/auth-context';
+import { db } from '../../../firebaseConfig';
+import { AuthContext } from '../../../store/auth-context';
 
 const ThemeSettingsPage = () => {
     
@@ -15,7 +15,8 @@ const ThemeSettingsPage = () => {
 
   const [darkModeEnabled, setDarkModeEnabled] = useState(defaultMode);
 
-  const updateTheme = async (newTheme: boolean) => {  
+  const updateTheme = async (newTheme: boolean) => {
+  
     try {
       const querySnapshot = await getDocs(collection(db, 'users'));
   

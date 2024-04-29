@@ -49,7 +49,7 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
 
   const handleBack = () => {
     if (step === 2) {
-      setStep(step - 1); // Go back to personal details
+      setStep(step - 1); 
     }
   };
 
@@ -111,12 +111,8 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.onboardingContainer}>
-            {/* <Text style={styles.welcomeText}>Welcome to Credo!</Text>
-            <Text style={styles.instructionsText}>
-              Let's add some information about you.
-            </Text> */}
+       
             {renderHeader()}
-            {/* {renderSubmitButton()} */}
 
             {step === 1 && (
               <>
@@ -219,7 +215,7 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                     ]}
                     onPress={handleSubmit}
                     disabled={!isFinancialFormValid()}
-                    activeOpacity={0.8} // Slight opacity feedback on touch
+                    activeOpacity={0.8} 
                   >
                    
                   <FontAwesome name="check" size={24} color="white" />
@@ -234,9 +230,6 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
   );
 };
 
-// styles remain the same as provided previously
-
-
 const styles = StyleSheet.create({
   flexOne: {
     flex: 1,
@@ -245,11 +238,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 20, // Added margins for the overall modal container
+    marginHorizontal: 20, 
     backgroundColor: 'white',
-    borderRadius: 25, // Smoothed corners for modal popup
-    padding: 20, // Internal padding for modal content
-    shadowColor: '#000', // Shadow for a slight depth effect
+    borderRadius: 25, 
+    padding: 20, 
+    shadowColor: '#000', 
     shadowOffset: {
       width: 0,
       height: 2,
@@ -259,34 +252,33 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   textContainer: {
-    alignItems: 'center', // Center text horizontally
-    justifyContent: 'center', // Center text vertically
-    width: '100%', // Take the full width of the container
-    marginBottom: 16, // Add some space before the first input field
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    width: '100%', 
+    marginBottom: 16, 
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: '600',
     color: '#35BA52',
-    // marginTop: -50,
-    marginBottom: 15, // Add space between the welcome text and instructions text
-    textAlign: 'center', // Center text
+    marginBottom: 15, 
+    textAlign: 'center',
   },
   instructionsText: {
     fontSize: 16,
     color: '#666',
-    textAlign: 'center', // Center text
+    textAlign: 'center', 
   },
   formGroup: {
     width: '100%',
-    alignItems: 'center', // Center align form group contents
+    alignItems: 'center', 
     marginBottom: 16,
   },
   inputLabel: {
     alignSelf: 'flex-start',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#555', // A darker shade of grey for subtlety
+    color: '#555', 
     marginBottom: 8,
   },
 
@@ -299,12 +291,11 @@ const styles = StyleSheet.create({
   input: {
     width: '90%',
     borderWidth: 1,
-    borderColor: '#ddd', // Lighter border color
-    borderRadius: 10, // Rounded corners
-    padding: 15, // Larger padding for a touch-friendly interface
-    marginBottom: 20, // More space between inputs
+    borderColor: '#ddd', 
+    borderRadius: 10, 
+    padding: 15, 
+    marginBottom: 20, 
     backgroundColor: '#f7f7f7',
-    // height: '2%'
     },
     picker: {
       width: '90%',
@@ -312,10 +303,9 @@ const styles = StyleSheet.create({
       backgroundColor: '#f7f7f7',
       borderColor: '#ddd',
       borderRadius: 10,
-      // marginBottom: 20,
       paddingHorizontal: 10,
       marginBottom: 70,
-      zIndex: 1000, // Ensure the dropdown appears on top of all other components
+      zIndex: 1000, 
     },
     datePicker: {
       width: '90%',
@@ -327,7 +317,6 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#ddd',
       backgroundColor: '#f7f7f7',
-      // height: '20%'
     },
     backButton: {
       position: 'absolute',
@@ -336,11 +325,10 @@ const styles = StyleSheet.create({
       paddingHorizontal: 20,
       paddingVertical: 10,
     },
-    // Modify the button style to accommodate the icon next to the text
     button: {
       flexDirection: 'row',
-      justifyContent: 'center', // Center button contents horizontally
-      alignItems: 'center', // Center button contents vertically
+      justifyContent: 'center', 
+      alignItems: 'center', 
       paddingVertical: 12,
       paddingHorizontal: 30,
       borderRadius: 25,
@@ -351,18 +339,18 @@ const styles = StyleSheet.create({
       shadowRadius: 6,
       shadowOpacity: 0.1,
       elevation: 5,
-      width: '90%', // Set width according to your design preference
-      alignSelf: 'center', // Center button in the parent view
+      width: '90%', 
+      alignSelf: 'center', 
     },
     buttonIcon: {
-      marginRight: 8, // Add space between the icon and text
+      marginRight: 8, 
     },
     buttonText: {
       color: '#fff',
       fontWeight: 'bold',
       fontSize: 16,
-      textAlign: 'center', // Ensure text is centered if there's no icon
-      flex: 1, // Take available space to push the text to center
+      textAlign: 'center', 
+      flex: 1, 
     },
 });
 

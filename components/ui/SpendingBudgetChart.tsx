@@ -9,22 +9,18 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
     return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
   };
 
-  // This function will generate the cumulative sum of spending per day
   const processData = (transactions) => {
-    // Start with an array filled with zeros for each day of the month
     const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
     const cumulativeSpending = Array(daysInMonth).fill(0);
 
-    // Convert transactions to dates and sort
     transactions.forEach(transaction => {
       const date = convertTimestampToDate(transaction.date);
-      const dayIndex = date.getDate() - 1; // -1 as the array is zero-indexed
+      const dayIndex = date.getDate() - 1; 
       cumulativeSpending[dayIndex] += Number(transaction.value);
     });
 
-    // Calculate the cumulative sum for the graph
     for (let i = 1; i < cumulativeSpending.length; i++) {
-      cumulativeSpending[i]  += (cumulativeSpending[i - 1] * conversionRate);  //cumulativeData
+      cumulativeSpending[i]  += (cumulativeSpending[i - 1] * conversionRate); 
     }
     
     return cumulativeSpending;
@@ -41,30 +37,26 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
     return days;
   };
 
-  // Create the labels for the x-axis
   const xLabels = generateMonthDays(new Date());
 
-  // Process the transaction data to get cumulative values
   const cumulativeData = processData(transactions);
 
-  // Setup the chart data
   const chartData = {
     labels: xLabels,
     datasets: [{
       data: xLabels.map(label => {
-        const day = parseInt(label.split('.')[1], 10) - 1; // -1 as the array is zero-indexed
+        const day = parseInt(label.split('.')[1], 10) - 1; 
         return cumulativeData[day];
       })
     }]
   };
 
-  // Setup the chart configuration
   const chartConfig = {
     backgroundColor: '#ffffff',
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, // Line color
+    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, 
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     style: {
       borderRadius: 16
@@ -75,7 +67,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
       stroke: '#35BA52'
     },
     propsForBackgroundLines: {
-      stroke: '#35BA52' // Color for the background lines
+      stroke: '#35BA52' 
     },
   };
 
@@ -84,7 +76,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
       <Text style={{ fontSize: 16, marginBottom: 8 }}>Spending Over Time</Text>
       <LineChart
         data={chartData}
-        width={screenWidth - 32} // Apply a padding of 16 on each side
+        width={screenWidth - 32} 
         height={220}
         chartConfig={chartConfig}
         bezier
@@ -95,7 +87,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
         yAxisLabel={symbol}
         yLabelsOffset={1}
         xLabelsOffset={-10}
-        yAxisInterval={1} // This will space out the Y-axis labels according to the data.
+        yAxisInterval={1} 
         verticalLabelRotation={30}
         formatYLabel={(value) => `${Number(value).toFixed(2)}`}
       />

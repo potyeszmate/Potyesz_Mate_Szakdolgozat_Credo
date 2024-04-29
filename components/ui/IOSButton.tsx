@@ -1,9 +1,7 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import React from 'react';
 import { Colors } from '../../commonConstants/styles';
 
-// Import the image using a relative path
 const AppleIcon = require('../../assets/apple.png');
 
 const IOSButton: React.FC<any> = ({ children, onPress }) => {
@@ -13,7 +11,6 @@ const IOSButton: React.FC<any> = ({ children, onPress }) => {
       onPress={onPress}
     >
       <View style={styles.buttonContent}>
-        {/* Use the imported image directly */}
         <Image source={AppleIcon} style={styles.icon} resizeMode="contain" />
         <Text style={styles.buttonText}>{children}</Text>
       </View>

@@ -16,13 +16,13 @@ const UserProfileCard = ({ userData }) => {
 
   const getColor = (percentage: any) => {
     if (percentage < 0.25) {
-      return '#FF0000'; // Red for low progress
+      return '#FF0000'; 
     } else if (percentage < 0.50) {
-      return '#FFA500'; // Orange for moderate progress
+      return '#FFA500'; 
     } else if (percentage < 0.75) {
-      return '#FFFF00'; // Yellow for fair progress
+      return '#FFFF00'; 
     } else {
-      return '#008000'; // Green for high progress
+      return '#008000'; 
     }
   };
 

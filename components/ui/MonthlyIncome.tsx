@@ -8,7 +8,6 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
   const [newIncome, setNewIncome] = useState('');
   const [textInputFocused, setTextInputFocused] = useState(false);
 
-  // Helper function to format income
   const formatIncome = (income) => {
     return symbol === 'HUF'
       ? Math.round(parseFloat(income) * conversionRate).toString()
@@ -16,7 +15,6 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
   };
 
   useEffect(() => {
-    // Update newIncome when modal opens or income changes
     if (editModalVisible || income) {
       setNewIncome(formatIncome(income));
     }
@@ -87,7 +85,6 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
                   value={newIncome}
                   onChangeText={setNewIncome}
                   keyboardType="numeric"
-                //   onFocus={() => setNewIncome('')}
                   onFocus={() => setTextInputFocused(true)}
                   onBlur={() => setTextInputFocused(false)}
                 />
@@ -112,12 +109,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '90%',
     alignSelf: 'center',
-    elevation: 4, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-    shadowOpacity: 0.1, // Shadow for iOS
-    shadowRadius: 4, // Shadow for iOS
-    borderColor: '#E0E0E0', // A slightly darker shade for the border
+    elevation: 4, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1,
+    shadowRadius: 4, 
+    borderColor: '#E0E0E0', 
     flexDirection: 'row',
   },
   leftSide: {
@@ -131,12 +128,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#7E8086',
     fontWeight: 'bold'
-    // fontFamily: 'Inter',
   },
   incomeText: {
     fontSize: 20,
     color: '#000',
-    // fontFamily: 'Inter',
     marginTop: 4,
     fontWeight: 'bold'
   },
@@ -155,7 +150,6 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#149E53',
     fontSize: 14,
-    // fontFamily: 'Inter',
   },
   modalBackground: {
     flex: 1,
@@ -194,7 +188,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   closeButton: {
-    // Style for close button
   },
   updateButtonTouchable: {
     backgroundColor: '#35BA52',

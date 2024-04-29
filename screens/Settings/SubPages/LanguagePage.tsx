@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Radio from './Radio';
-import { AuthContext } from '../../store/auth-context';
+import { AuthContext } from '../../../store/auth-context';
 import { collection, getDocs, updateDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Radio from '../../../components/ui/Radio';
 
 const LanguagePage = () => {
 

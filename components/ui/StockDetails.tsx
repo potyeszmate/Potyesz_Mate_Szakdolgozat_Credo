@@ -6,7 +6,6 @@ import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore';
 import { AuthContext } from "../../store/auth-context";
 import { Alert } from 'react-native';
-import CryptoChart from "./CryptoChart";  // Assuming it can be used or replaced with a similar StockChart
 import StockChart from "./StockChart";
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -46,16 +45,15 @@ const StockDetails = () => {
   useEffect(() => {
     const fetchStockData = async () => {
       try {
-        console.log("fetching with symbol: ", symbol)
         const infoResponse = await getCompanyInfo(symbol);
         const priceResponse = await getStockPrice(symbol);
 
         const info = infoResponse.results;
         const companyLogo = `${info.branding?.icon_url}?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8`
 
-        const logo = companyLogo;  // Ensure the correct path to logo
-        const description = info.description;  // Ensure the correct path to description
-        const price = priceResponse.ticker.min.c;   //priceResponse.ticker.day.c
+        const logo = companyLogo;  
+        const description = info.description;  
+        const price = priceResponse.ticker.min.c;  
         const percent_change_24h = priceResponse.ticker.todaysChangePerc;
 
         setStockDetails({
@@ -91,10 +89,10 @@ const StockDetails = () => {
                   symbol,
                   uid: userId,
                 });
-                watchlistDocRef.current = docRef; // Save the document reference
+                watchlistDocRef.current = docRef; 
                 Alert.alert('Added to watchlist');
-                setIsInWatchlist(true);  // Set the state to true upon successful addition
-                route.params?.onGoBack?.(); // Call the passed function to update the parent component
+                setIsInWatchlist(true);  
+                route.params?.onGoBack?.(); 
               } catch (error) {
                 console.error('Error adding to watchlist:', error.message);
               }
@@ -114,12 +112,10 @@ const StockDetails = () => {
     }
   
     try {
-      // Query to check if the user already owns the stock
       const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
-        // User does not own the stock, add it
         await addDoc(collection(db, 'stocks'), {
           symbol,
           addedAmount,
@@ -127,10 +123,9 @@ const StockDetails = () => {
           uid: userId,
         });
       } else {
-        // User already owns the stock, update the amount
         const stockDoc = querySnapshot.docs[0];
         await updateDoc(stockDoc.ref, {
-          amount: increment(addedAmount), // This uses Firestore's increment to add the new amount to the existing amount
+          amount: increment(addedAmount),
         });
       }
       route.params?.onGoBack?.();
@@ -149,7 +144,6 @@ const StockDetails = () => {
       return;
     }
   
-    // Fetch the current stock value, which you might already have from your stockDetails state
     const stockValue = stockDetails.price;
   
     const amountToSell = inputAmount / stockValue;
@@ -178,13 +172,11 @@ const StockDetails = () => {
             text: "OK", onPress: async () => {
                 try {
                   await updateDoc(stockDoc.ref, {
-                    amount: increment(-amountToSell), // Subtract the sell amount from the owned amount
+                    amount: increment(-amountToSell), 
                   });
                   route.params?.onGoBack?.();
-                  // Close the sell modal after the operation
                   setSellModalVisible(false);
                   Alert.alert("Sold from stock");
-                  // Clear the input field after the operation
                   setAmountOwned('');
                 } catch (error) {
                   console.error('Error selling stock:', error.message);
@@ -200,14 +192,12 @@ const StockDetails = () => {
   
   const handleWatchlistToggle = async () => {
     if (isInWatchlist) {
-      // Remove from watchlist
       Alert.alert("Confirm Removal", "Remove this stock from your watchlist?", [
         { text: "Cancel", style: "cancel" },
         {
           text: "Remove",
           onPress: async () => {
             try {
-              // Fetch the document reference again
               const q = query(collection(db, 'watchedStocks'), where('symbol', '==', symbol), where('uid', '==', userId));
               const querySnapshot = await getDocs(q);
               if (!querySnapshot.empty) {
@@ -224,7 +214,6 @@ const StockDetails = () => {
         },
       ]);
     } else {
-      // Add to watchlist
       addWatchedListHandler();
     }
   };
@@ -250,7 +239,7 @@ const StockDetails = () => {
       const querySnapshot: any = await getDocs(q);
       if (!querySnapshot.empty) {
         setIsInWatchlist(true);
-        watchlistDocRef.current = querySnapshot.docs[0].ref; // Save the document reference for later use
+        watchlistDocRef.current = querySnapshot.docs[0].ref; 
       }
     };
 
@@ -337,7 +326,6 @@ const StockDetails = () => {
         />
       </View>
 
-{/* Modal for adding to portfolio */}
     <Modal
       animationType="fade"
       transparent={true}
@@ -352,8 +340,8 @@ const StockDetails = () => {
             value={amountOwned}
             placeholder="Amount in USD"
             keyboardType="numeric"
-            placeholderTextColor="#aaa" // Change placeholder text color for visibility
-            clearButtonMode="while-editing" // iOS only - shows clear button while editing
+            placeholderTextColor="#aaa" 
+            clearButtonMode="while-editing" 
           />
           <View style={styles.modalButtonGroup}>
             <TouchableOpacity onPress={addOwnedStocksHandler} style={[styles.button, styles.modalButton]}>
@@ -381,8 +369,8 @@ const StockDetails = () => {
               value={amountOwned}
               placeholder="Amount in USD"
               keyboardType="numeric"
-              placeholderTextColor="#aaa" // Change placeholder text color for visibility
-             clearButtonMode="while-editing" // iOS only - shows clear button while editing
+              placeholderTextColor="#aaa" 
+             clearButtonMode="while-editing" 
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={sellStockHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
@@ -414,7 +402,7 @@ const styles = StyleSheet.create({
     logo: {
       width: 60,
       height: 60,
-      borderRadius: 40, // To create a rounded image
+      borderRadius: 40, 
     },
     headerText: {
       alignItems: "center",
@@ -422,7 +410,7 @@ const styles = StyleSheet.create({
     },
     sellButton: {
       backgroundColor: '#FF4136',
-      marginTop: 10, // To provide spacing from the Add to Portfolio button
+      marginTop: 10,
     },
     name: {
       fontSize: 20,
@@ -436,7 +424,6 @@ const styles = StyleSheet.create({
       flexDirection: "row",
       justifyContent: "space-between",
       marginBottom: 10,
-      // marginTop: 50,
       paddingHorizontal: 10,
     },
     label: {
@@ -459,7 +446,7 @@ const styles = StyleSheet.create({
       backgroundColor: "#f2f2f2",
       borderRadius: 10,
       padding: 15,
-      height: 80, // Smaller fixed height for collapsed description
+      height: 80, 
       overflow: "hidden",
     },
     expandedDescription: {
@@ -486,13 +473,12 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignItems: "center",
       marginTop: 22,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
     },
     chartPlaceholder: {
-      // backgroundColor: '#f2f2f2',
       alignItems: 'center',
       justifyContent: 'center',
-      height: 200, // Adjust height as needed
+      height: 200, 
       borderRadius: 10,
       marginTop: 50,
       marginBottom: 40
@@ -514,14 +500,14 @@ const styles = StyleSheet.create({
     },
     button: {
       flexDirection: 'row',
-      alignItems: 'center', // Center the icon and text vertically in the button
-      justifyContent: 'center', // Center the icon and text horizontally in the button
-      paddingVertical: 8, // Reduced padding for a smaller button
-      paddingHorizontal: 16, // Reduced padding for a smaller button
-      borderRadius: 20, // Adjusted for aesthetics
-      marginBottom: 10, // Space between buttons
-      width: '100%', // Adjust the width of the button
-      alignSelf: 'center', // Ensure the button is centered in the container
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      paddingVertical: 8, 
+      paddingHorizontal: 16, 
+      borderRadius: 20, 
+      marginBottom: 10, 
+      width: '100%', 
+      alignSelf: 'center', 
       shadowOpacity: 0.1,
       elevation: 3,
     },
@@ -536,7 +522,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       flex: 1,
-      textAlign: 'center', // Center text
+      textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -560,8 +546,8 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5,
-      width: '80%', // Adjust width as necessary
-      maxWidth: 350, // Ensure the modal is not excessively wide on large devices
+      width: '80%', 
+      maxWidth: 350, 
     },
     modalTitle: {
       fontSize: 20,
@@ -575,41 +561,39 @@ const styles = StyleSheet.create({
       paddingHorizontal: 15,
       borderRadius: 25,
       marginVertical: 5,
-      width: '90%', // Set a fixed width for all buttons
-      alignSelf: 'center', // Center buttons in the view
+      width: '90%', 
+      alignSelf: 'center', 
       elevation: 3,
     },
 
     input: {
-      // ... (rest of your input styles)
     },
     modalButtonGroup: {
       flexDirection: 'row',
-      justifyContent: 'center', // Center the buttons horizontally
-      width: '100%', // Take up full width of modal content area
+      justifyContent: 'center', 
+      width: '100%', 
     },
     modalButton: {
-      flex: 1, // Each button will take up an equal amount of space
+      flex: 1, 
       paddingVertical: 12,
       paddingHorizontal: 10,
-      marginHorizontal: 5, // Add some horizontal space between buttons
+      marginHorizontal: 5, 
       borderRadius: 25,
-      backgroundColor: '#35BA52', // Default button color
-      // ... other button styles ...
+      backgroundColor: '#35BA52', 
     },
     modalCancelButton: {
       backgroundColor: '#ccc',
     },
     modalInput: {
-      width: '100%', // Full width of the modal
+      width: '100%', 
       borderWidth: 1,
-      borderColor: '#ddd', // Light border for subtle distinction
+      borderColor: '#ddd', 
       borderRadius: 10,
-      padding: 15, // Comfortable padding
-      fontSize: 16, // Readable text size
-      color: '#000', // Text color for visibility
-      backgroundColor: '#fff', // Background color for visibility
-      marginBottom: 20, // Spacing below the input field
+      padding: 15, 
+      fontSize: 16, 
+      color: '#000', 
+      backgroundColor: '#fff', 
+      marginBottom: 20, 
       paddingVertical: 15,
 
     },
@@ -623,7 +607,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 12,
-    // marginTop: 1, // Adjust as needed to fit just below the header
+    
     backgroundColor: 'white',
     borderRadius: 20,
     shadowColor: '#000',
@@ -638,7 +622,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#333', // Or any color that fits the app theme
+    color: '#333', 
   },
     changeContainer: {
       flexDirection: 'row',

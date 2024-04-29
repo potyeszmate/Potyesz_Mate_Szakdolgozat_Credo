@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image  } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
@@ -46,7 +45,6 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
 
     const calculatedTotalIncome = incomes.reduce((acc, { date, value }) => {
       if (!date || value == null) {
-        console.log('Invalid income record:', { date, value });
         return acc;
       }
       const incomeDate = new Date(date.seconds * 1000);
@@ -58,7 +56,6 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
   
     const calculatedTotalExpense = transactions.reduce((acc, { date, value }) => {
       if (!date || value == null) {
-        console.log('Invalid transaction record:', { date, value });
         return acc;
       }
       const expenseDate = new Date(date.seconds * 1000);
@@ -81,7 +78,7 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
   }, [incomes, transactions, loading]);
  
   if (balance === null) {
-    return <Text>Loading balance...</Text>; // or any other appropriate fallback
+    return <Text>Loading balance...</Text>; 
   }
   
  
@@ -149,17 +146,17 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: '90%',
     alignSelf: 'center',
-    elevation: 4, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
-    shadowOpacity: 0.1, // Shadow for iOS
-    shadowRadius: 4, // Shadow for iOS
-    borderColor: '#E0E0E0', // A slightly darker shade for the border
+    elevation: 4,
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 4, 
+    borderColor: '#E0E0E0', 
   },
 
   loadingText: {
     fontSize: 16,
-    color: '#FFFFFF', // Example color
+    color: '#FFFFFF',
     fontStyle: 'italic',
   },  
   balanceContainer: {
@@ -170,7 +167,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingBottom: 5,
     fontWeight: 'bold',
-    // fontFamily: 'AvenirNextCondensed-Heavy',
   },
   balanceAmount: {
     fontSize: 29,
@@ -209,23 +205,21 @@ const styles = StyleSheet.create({
   rightBox: {
     marginLeft: 2
   },
-  // Style for the Income infoBox
   incomeInfoBox: {
     backgroundColor: '#35BA52',
     borderTopLeftRadius: 20,
     borderBottomLeftRadius: 20,
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    marginRight: 10, // Add margin to create gap
+    marginRight: 10, 
   },
-  // Style for the Expense infoBox
   expenseInfoBox: {
     backgroundColor: '#35BA52',
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
-    marginLeft: 10, // Add margin to create gap
+    marginLeft: 10, 
   },
   monthSelectorContainer: {
     position: 'absolute',
@@ -245,7 +239,7 @@ const styles = StyleSheet.create({
   monthSelector: {
     flex: 1,
     color: '#000000',
-    paddingRight: 30, // To account for the icon
+    paddingRight: 30, 
   },
   monthSelectorIcon: {
     position: 'absolute',

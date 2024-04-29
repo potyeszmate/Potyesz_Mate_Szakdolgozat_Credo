@@ -1,4 +1,3 @@
-// TransactionsList.js
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal,  FlatList,Pressable, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -7,7 +6,6 @@ import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } f
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
 import BottomSheet from '@gorhom/bottom-sheet';
-// import GoalInput from './TransactionsInput';
 import TransactionInput from './TransactionInput';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -63,7 +61,7 @@ const TransactionsList: React.FC = () => {
   const { userId } = authCtx as any;
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [filterType, setFilterType] = useState('monthly'); // 'monthly', 'weekly', 'yearly'
+  const [filterType, setFilterType] = useState('monthly');
   const [filterModalVisible, setFilterModalVisible] = useState(false);
 
   const route = useRoute<RouteProp<{ params: TransactionsListParams }>>();
@@ -86,17 +84,16 @@ const TransactionsList: React.FC = () => {
   };
 
   const addTransactionHandler = async (newTransaction: any) => {
-    console.log("newTransaction in add: ",newTransaction)
     try {
+
+      console.log("IN addtransaction, ", newTransaction)
       await addDoc(collection(db, 'transactions'), {
         ...newTransaction,
         uid: userId,
       });
 
       fetchTransactions();
-      //set trigger so last transactions cna be fetched as well.
       await AsyncStorage.setItem('transactionsChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
 
       setModalVisible(false);
     } catch (error: any) {
@@ -115,7 +112,6 @@ const TransactionsList: React.FC = () => {
       const updatedTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
       setTransactions(updatedTransactions);
       await AsyncStorage.setItem('transactionsChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
       setDeleteModalVisible(false);
     } catch (error: any) {
       console.error('Error deleting transaction:', error.message);
@@ -123,7 +119,6 @@ const TransactionsList: React.FC = () => {
   };
 
   const editTransactionHandler = async (editedTransaction: any) => {
-    console.log("editedTransaction in edit: ",editedTransaction)
 
     try {
       const { id, ...editedData } = editedTransaction;
@@ -131,7 +126,6 @@ const TransactionsList: React.FC = () => {
       await updateDoc(docRef, editedData);
       fetchTransactions();
       await AsyncStorage.setItem('transactionsChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
       setEditModalVisible(false);
     } catch (error: any) {
       console.error('Error editing transaction:', error.message);
@@ -156,7 +150,6 @@ const TransactionsList: React.FC = () => {
   };
 
   const addIncomesHandler = async (newTransaction: any) => {
-    console.log("newTransaction in add: ",newTransaction)
     try {
       await addDoc(collection(db, 'incomes'), {
         ...newTransaction,
@@ -165,9 +158,7 @@ const TransactionsList: React.FC = () => {
       });
 
       fetchIncomes();
-      //set trigger so last transactions cna be fetched as well.
       await AsyncStorage.setItem('incomesChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
 
       setModalVisible(false);
     } catch (error: any) {
@@ -186,7 +177,6 @@ const TransactionsList: React.FC = () => {
       const updatedTransactions = transactions.filter((transaction) => transaction.id !== transactionId);
       setIncomes(updatedTransactions);
       await AsyncStorage.setItem('incomesChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
       setDeleteModalVisible(false);
     } catch (error: any) {
       console.error('Error deleting transaction:', error.message);
@@ -194,7 +184,6 @@ const TransactionsList: React.FC = () => {
   };
 
   const editIncomesHandler = async (editedTransaction: any) => {
-    console.log("editedTransaction in edit: ",editedTransaction)
 
     try {
       const { id, ...editedData } = editedTransaction;
@@ -202,7 +191,6 @@ const TransactionsList: React.FC = () => {
       await updateDoc(docRef, editedData);
       fetchIncomes();
       await AsyncStorage.setItem('incomesChanged', 'true');
-      console.log("ADDED NEW TRANSACTION")
       setEditModalVisible(false);
     } catch (error: any) {
       console.error('Error editing transaction:', error.message);
@@ -210,36 +198,12 @@ const TransactionsList: React.FC = () => {
     }
   };
 
-
-  // const groupTransactionsByDate = (transactions: any) => {
-  //   const grouped: any = {};
-  
-  //   transactions.forEach((transaction: any) => {
-  //     const dateObj = transaction.date.toDate();
-  //     const dateStr = `${dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}.`; // "April 10."
-  //     if (!grouped[dateStr]) {
-  //       grouped[dateStr] = [];
-  //     }
-  //     grouped[dateStr].push(transaction);
-  //   });
-  
-  //   return Object.keys(grouped).map((date) => ({
-  //     date,
-  //     transactions: grouped[date]
-  //   }));
-  // };
-  
-  //Not in userId change
   useEffect(() => {
     fetchTransactions();
     fetchIncomes()
   }, []);
 
-  // useEffect(() => {
-  //   const groupedTransactions = groupTransactionsByDate(transactions);
-  //   setGroupedTransactions(groupedTransactions);
-  // }, [transactions, currentDate, filterType]);  // Make sure to recompute when these values change
-  
+
 
   const snapPoints = useMemo(() => ['20%', '70%', '85%'], []);
 
@@ -276,7 +240,6 @@ const TransactionsList: React.FC = () => {
     setCurrentDate(newDate);
   };
 
-  // Format date for display in the filter bar
   const formatDateDisplay = () => {
     switch (filterType) {
       case 'monthly':
@@ -296,7 +259,7 @@ const TransactionsList: React.FC = () => {
   const groupTransactionsByDate = () => {
     const grouped = transactions.reduce((acc, transaction) => {
       const transactionDate = transaction.date.toDate();
-      let key = transactionDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.';  //, year: 'numeric'
+      let key = transactionDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.'; 
       
       if (filterType === 'monthly' && transactionDate.getMonth() === currentDate.getMonth() &&
           transactionDate.getFullYear() === currentDate.getFullYear()) {
@@ -325,27 +288,11 @@ const TransactionsList: React.FC = () => {
     setGroupedTransactions(groupTransactionsByDate());
   }, [transactions, currentDate, filterType]);
   
-  // const groupedTransactions = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
 
 
   return (
     <View style={styles.container}>
-      {/* Month Picker */}
-      {/* <DropDownPicker
-        open={open}
-        value={selectedMonth}
-        items={months}
-        setOpen={setOpen}
-        setValue={(value) => {
-          setSelectedMonth(value);
-          setOpen(false);
-        }}
-        setItems={() => {}}
-        style={styles.pickerContainer}
-        containerStyle={styles.pickerContainer}
-        placeholder="Select a month"
-        // dropDownStyle={styles.dropDownStyle}
-      /> */}
+     
 
     <View style={styles.filterBar}>
       <TouchableOpacity onPress={() => navigateDate(-1)}>
@@ -406,7 +353,7 @@ const TransactionsList: React.FC = () => {
         visible={filterModalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setFilterModalVisible(false)}  // This allows pressing the hardware back button on Android to close the modal.
+        onRequestClose={() => setFilterModalVisible(false)}  
       >
         <View style={styles.modalContent}>
           <View style={styles.modalHeader}>
@@ -446,7 +393,6 @@ const TransactionsList: React.FC = () => {
             snapPoints={snapPoints}
             enablePanDownToClose
             onClose={() => {
-              console.log('BottomSheet closed');
               setEditModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
@@ -488,7 +434,6 @@ const TransactionsList: React.FC = () => {
             snapPoints={snapPoints}
             enablePanDownToClose
             onClose={() => {
-              console.log('BottomSheet closed');
               setModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
@@ -528,20 +473,11 @@ const styles = StyleSheet.create({
   dropDownStyle: {
     backgroundColor: '#fafafa',
   },
-  // transactionCard: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   alignItems: 'center',
-  //   backgroundColor: '#EDEDED',
-  //   borderRadius: 8,
-  //   padding: 16,
-  //   marginVertical: 8,
-  // },
+  
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // padding: 16,
 
   },
   modalHeaderText: {
@@ -551,7 +487,7 @@ const styles = StyleSheet.create({
     marginRight: 'auto'
   },
   closeButton: {
-    padding: 10,  // Padding makes it easier to tap
+    padding: 10,  
   },
   transactionIcon: {
     marginRight: 10,
@@ -559,7 +495,7 @@ const styles = StyleSheet.create({
   transactionInfo: {
     flex: 1,
     alignItems: 'flex-start',
-    marginRight: 8, // ensures spacing between name/category and amount/time
+    marginRight: 8, 
   },
   bottomSheetBackground: {
     backgroundColor: 'white',
@@ -573,7 +509,7 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   transactionAmount: {
-    width: 80, // fixed width to ensure alignment, adjust as needed
+    width: 80, 
     alignItems: 'flex-end',
   },
   transactionCategory: {
@@ -591,7 +527,6 @@ const styles = StyleSheet.create({
   },
   modalBackground: {
     flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   contentContainer: {
@@ -662,7 +597,7 @@ const styles = StyleSheet.create({
     color: '#1A1A2C',
   },
   groupedTransactionCard: {
-    backgroundColor: '#FFFFFF', // White background for the cards
+    backgroundColor: '#FFFFFF', 
     borderRadius: 10,
     padding: 16,
     marginVertical: 8,
@@ -673,22 +608,21 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 4, // Elevation for Android
-    borderWidth: 1, // Optional: If you want a border
-    borderColor: '#E0E0E0', // Light grey border
+    elevation: 4, 
+    borderWidth: 1, 
+    borderColor: '#E0E0E0', 
   },
   separator: {
     height: 1,
     backgroundColor: '#E0E0E0',
     marginLeft: 3,
-    // marginRight: 16,
     marginVertical: 8,
   },
   dateHeader: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#333', // Dark grey for better readability
+    color: '#333', 
   },
   transactionCard: {
     flexDirection: 'row',
@@ -740,13 +674,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
-    elevation: 5,  // For Android
+    elevation: 5,  
   },
-  // dateDisplay: {
-  //   fontSize: 18,
-  //   fontWeight: 'bold',
-  //   marginHorizontal: 20,
-  // },
+
 });
 
 export default TransactionsList;

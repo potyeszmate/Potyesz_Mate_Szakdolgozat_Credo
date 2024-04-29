@@ -19,18 +19,17 @@ const Button: React.FC<any> = ({ children, onPress, isFilled }) => {
   );
 };
 
-// Updated styles
 const styles = StyleSheet.create({
   signInButton: {
     height: 51,
-    backgroundColor: '#1CB854', // The green color
+    backgroundColor: '#1CB854', 
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 14,
     marginTop: 10
   },
   inactiveButton: {
-    backgroundColor: '#CCCCCC', // The gray color
+    backgroundColor: '#CCCCCC', 
   },
   buttonText: {
     color: 'white',

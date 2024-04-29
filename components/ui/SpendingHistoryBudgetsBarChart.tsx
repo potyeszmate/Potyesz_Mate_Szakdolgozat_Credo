@@ -40,7 +40,6 @@ const SpendingHistoryBudgetsBarChart = ({ budgetId, category, conversionRate, sy
         }
       }
 
-      // Convert to array for chart
       setSpendingData(Array.from(spendingByMonth, ([month, total]) => ({ month, total })).reverse());
       setIsLoading(false);
     };
@@ -59,7 +58,7 @@ const SpendingHistoryBudgetsBarChart = ({ budgetId, category, conversionRate, sy
     backgroundColor: '#fff',
     backgroundGradientFrom: '#fff',
     backgroundGradientTo: '#fff',
-    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, // Used for the fill color of the bars
+    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, 
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     barPercentage: 0.5,
   };
