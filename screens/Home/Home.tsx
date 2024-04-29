@@ -3,9 +3,6 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable,
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc, getDoc } from 'firebase/firestore';
-import TransactionList from '../../components/ui/TransactionList';
-// import RecurringTransactionList from '../components/ui/RecurringTransactionList';
-import GoalList from '../../components/ui/GoalList';
 import YourBalance from '../../components/ui/YourBalance';
 import UpcomingRecurring from '../../components/ui/UpcomingRecurring';
 import LatestTransactions from '../../components/ui/LatestTransactions';
@@ -18,14 +15,9 @@ import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import CustomHeader from '../../components/ui/CustomHeader';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { convertCurrencyToCurrency } from '../../util/conversion';
 import MonthlyIncome from '../../components/ui/MonthlyIncome';
-import Payment from '../Payment/Payment';
 import WelcomeCard from '../../components/ui/WelcomeCard';
 import AddBudget from '../../components/ui/AddBudget';
-import BottomSheet from '@gorhom/bottom-sheet';
-import BudgetInput from '../../components/ui/BudgetInput';
 import OnboardingModal from '../../components/ui/OnboardingModal';
 
 const languages: any = {
@@ -34,7 +26,8 @@ const languages: any = {
   Hungarian: hu,
 };
 
-function WelcomeScreen() {
+// TODO Refactor this main component, move out styles, common methods to helpers, constants, and types
+function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
@@ -63,34 +56,25 @@ function WelcomeScreen() {
 
   const [activeTab, setActiveTab] = useState('overview');
   const snapPoints = useMemo(() => ['30%', '50%'], []);
-  // authCtx.logout()
 
-  console.log("USERS ID: ",userId)
-
-  // Fetching initial data
   useEffect(() => {
       async function fetchData() {
         const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
 
           if(isOnboarding == 'true'){
             setIsLoading(false)
-            console.log("IN ONBOARDING WITH THIS UID: ", userId)
             setShowOnboarding(true);
 
-            return; // Exit the function early to prevent further execution
+            return; 
 
           }
 
           if (!userId) {
-            // authCtx.logout()
             return
           };
          
           setIsLoading(true);
           try {
-              // const settings = await getUserSettings(userId);
-              // console.log("SET THE USER SETTINGS TO THIS: DATA", settings)
-              // setUserSettings(settings);
               const [trans, recTrans, chall, points, income, incomes, balance, settings] = await Promise.all([
                   fetchTransactions(userId),
                   fetchRecurringTransactions(userId),
@@ -101,13 +85,11 @@ function WelcomeScreen() {
                   fetchBalance(userId),
                   getUserSettings(userId),
 
-                  // fetchLanguage(),
                   await fetchLanguage(),
                   await fetchCurrency(),
 
               ]);
 
-              console.log("transactionsList:", trans)
               setTransactions(trans as any);
               setRecurringTransactions(recTrans as any);
               setChallanges(chall);
@@ -116,7 +98,6 @@ function WelcomeScreen() {
               setIncomes(incomes as any);
               setBalance(balance as any);
               setUserSettings(settings)
-              // setIsLoading(false);
 
           } catch (error) {
               console.error('Failed to fetch initial data:', error);
@@ -136,8 +117,7 @@ function WelcomeScreen() {
       const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
 
         if(isOnboarding == 'true'){
-          console.log("IN ONBOARDING WITH THIS UID: ", userId)
-          return; // Exit the function early to prevent further execution
+          return; 
 
         }
 
@@ -149,34 +129,22 @@ function WelcomeScreen() {
         const isIncomesChanged = await AsyncStorage.getItem('incomesChanged');
         const isprofileChanged = await AsyncStorage.getItem('profileChanged');
 
-        console.log("TEST")
 
         if (isTransactionChanged == "true") {
-          // Handle the condition when the transaction has changed
-          console.log("THERE IS A NEW TRANSACTION, LOAD IT")
           setIsTransactionsLoading(true)
 
           await AsyncStorage.setItem('transactionsChanged', 'false');
           const newTransactions = await fetchTransactions(userId);
           await setTransactions(newTransactions)
-          // You might want to fetch or update the transactions here
-          console.log("transactions in welcome page:", transactions.length); // Check current local time
           setIsTransactionsLoading(false)
 
         }
 
         if (isIncomesChanged == "true") {
-          // Handle the condition when the transaction has changed
-          console.log("THERE IS A NEW INCOME, LOAD IT")
-          // setIsTransactionsLoading(true)  - DONT LOAD INCOMES YET
 
           await AsyncStorage.setItem('incomesChanged', 'false');
           const newIncomes = await fetchIncomes(userId);
           await setIncomes(newIncomes)
-          // You might want to fetch or update the transactions here
-          console.log("transactions in welcome page:", transactions.length); // Check current local time
-          // setIsTransactionsLoading(false) - DONT LOAD INCOMES YET
-
         }
 
         if (isprofileChanged == "true") {
@@ -192,29 +160,20 @@ function WelcomeScreen() {
       }
     };
   
-    checkDataAndUpdate(); // Immediately call the async function
-  }, [isFocused]);  // userId, isOnboardingComplete
+    checkDataAndUpdate(); 
+  }, [isFocused]); 
 
-
-  // Utility functions
   async function getUserSettings(uid: any) {
     const settingsRef = collection(db, 'users');
     const q = query(settingsRef, where("uid", "==", uid));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-        // Assuming only one document will match, return the first one
         const userSettings = querySnapshot?.docs[0]?.data();
-        console.log("User settings exist:", userSettings);
         setIsProfileLoading(false)
         return userSettings;
     } else {
-        // If no document exists, create default settings
-        // const defaultSettings = {currency: 'USD', uid: userId, language: "English" };
-        // const newDocRef = doc(settingsRef); // This creates a new document with a new auto-generated ID
-        // await setDoc(newDocRef, { ...defaultSettings, uid }); // Set uid to link this document to the user
-        // console.log("Default settings created for new user.");
-        // return defaultSettings;
+
     }
 }
 
@@ -231,7 +190,6 @@ function WelcomeScreen() {
     async function fetchIncomes(uid: any) {
       const incomesQuery = query(collection(db, 'incomes'), where('uid', '==', uid));
       const snapshot = await getDocs(incomesQuery);
-      // setIsIncomeLoading(false)
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -244,7 +202,8 @@ function WelcomeScreen() {
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-      }));  }
+      }));  
+    }
 
   async function fetchPoints(uid: any) {
     const recurringQuery = query(collection(db, 'points'), where('uid', '==', uid));
@@ -274,17 +233,13 @@ function WelcomeScreen() {
       const balanceQuery = query(collection(db, 'balance'), where('uid', '==', uid));
       const snapshot = await getDocs(balanceQuery);
       return snapshot.docs[0]?.data()?.balance ? snapshot.docs[0]?.data().balance : 0;
-      // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-      // console.log("BALANCE ", balance)
 
-      // setBalance(balance);  // Convert balance o number if it exists
     }
   
   const getSelectedLanguage = async () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -297,15 +252,12 @@ function WelcomeScreen() {
 
       const savedSymbol = await AsyncStorage.getItem('symbol');
       const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-      console.log("Saved Symbol: ", savedSymbol)
-      console.log("Saved conversionRate: ", savedConversionRate)
+
 
       if (savedSymbol && savedConversionRate !== null) {
-        console.log("savedSymbol and savedConversionRate: ", savedSymbol, savedConversionRate )
         setSymbol(savedSymbol);
         setConversionRate(savedConversionRate);
       } else {
-        console.log("User des not have saves curreny and symbol yet, we have to use the default. " )
 
         const defaultsavedSymbol= "$";
         const defaultConversionRate= 1;
@@ -328,7 +280,6 @@ function WelcomeScreen() {
 
   const fetchCurrency = async () => {
     await getSelectedCurrency();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const updateProfilePicture = (imageUrl: any) => {
@@ -343,11 +294,9 @@ function WelcomeScreen() {
   }
 
   const updateIncome = async (newIncome: string) => {
-    // console.log('Called updateIncome.');
   
     try {
       const querySnapshot = await getDocs(collection(db, 'income'));
-      // console.log('In try.');
   
       for (const doc of querySnapshot.docs) {
         const userData = doc.data();
@@ -356,7 +305,6 @@ function WelcomeScreen() {
 
         if (userData.uid === userId) {
           await updateDoc(doc.ref, { income: convertedIncome });
-          // console.log('Income updated.');
           await fetchIncome(userId);
         }
       }
@@ -366,7 +314,6 @@ function WelcomeScreen() {
   };
 
   const uploadUserData = async (data, userId) => {
-    // Destructure the data object
     const {
       firstName,
       lastName,
@@ -375,10 +322,7 @@ function WelcomeScreen() {
       estimatedBalance,
       monthlyIncome,
     } = data;
-  
-    // Set the user's settings
-    console.log("Received data for upload:", data);
-    
+      
     if (!userId) {
       throw new Error("User ID is null or undefined.");
     }
@@ -399,14 +343,12 @@ function WelcomeScreen() {
       isPremiumUser: false,
     });
   
-    // Set the user's balance
     const balanceRef = doc(db, 'balance', userId);
     await setDoc(balanceRef, {
       balance: estimatedBalance,
       uid: userId,
     });
   
-    // Set the user's income
     const incomeRef = doc(db, 'income', userId);
     await setDoc(incomeRef, {
       income: monthlyIncome,
@@ -414,33 +356,18 @@ function WelcomeScreen() {
     });
   };
   
-  // if () {
-  //   // authCtx.logout()
-  //   console.log("NO USER ID")
-  //   return <ActivityIndicator size="large" color="#0000ff" />
-  // } ;
-
-  // if (!userId || isLoading) {
-  //     return <ActivityIndicator size="large" color="#0000ff" />;
-  // }
-
   if (!userId) {
-    // authCtx.logout()
-    console.log("NO USER ID")
     return <ActivityIndicator size="large" color="#0000ff" />
   } ;
 
   if (isLoading) {
-      console.log("APP IS LOADING")
       return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   if (showOnboarding) {
-    console.log("IN ONBOARDING CASE, SHOWING THE MODAL")
     return <OnboardingModal
     isVisible={showOnboarding}
     onComplete={async (data) => {
-      // Show confirmation alert
       Alert.alert(
         "Confirm Details",
         "Are you sure you want to continue with these details?",
@@ -454,21 +381,16 @@ function WelcomeScreen() {
             text: "Yes",
             onPress: async () => {
               try {
-                // Upload the data to Firestore
                 await uploadUserData(data, userId);
     
-                // Set AsyncStorage item 'setOnboardingModal' to 'false'
                 await AsyncStorage.setItem('setOnboardingModal', 'false');
                 
-                // Update state to reflect that onboarding is complete
                 setIsOnboardingComplete(true);
                 setShowOnboarding(false);
 
-                // Alert the user that they can now start their journey
                 Alert.alert("Success", "You can now start your journey in the app!");
     
               } catch (error) {
-                // Handle any errors here
                 console.error("Error uploading onboarding data: ", error);
                 Alert.alert("Error", "There was a problem saving your details. Please try again.");
               }
@@ -542,7 +464,6 @@ function WelcomeScreen() {
         </View>
 
       <ScrollView
-        // style={styles.rootContainer}
         contentContainerStyle={styles.scrollContentContainer}
         showsVerticalScrollIndicator={false}
       >
@@ -618,8 +539,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // paddingVertical: 16,
-    // paddingHorizontal: 24,
     paddingTop: 35,
   },
   tabButton: {
@@ -630,7 +549,6 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     borderColor: '#149E53',
     borderWidth: 0.6
-    // backgroundColor: '#FAFAFA',
   },
   container: {
     flex: 1,
@@ -640,7 +558,6 @@ const styles = StyleSheet.create({
   tabBarContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // paddingVertical: 16
     marginBottom: 5,
     paddingHorizontal: 24,
     paddingTop: 10,
@@ -650,7 +567,6 @@ const styles = StyleSheet.create({
   tabButtonText: {
     color: '#1A1A2C',
     fontSize: 14,
-    // fontFamily: 'Inter', // Make sure you have the Inter font available
   },
   activeTabButton: {
     backgroundColor: '#35BA52',
@@ -687,4 +603,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default WelcomeScreen;
+export default Home;

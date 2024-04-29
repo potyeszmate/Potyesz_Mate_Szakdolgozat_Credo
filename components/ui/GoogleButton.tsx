@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
-import { Colors } from '../../constants/styles';
+import { Colors } from '../../commonConstants/styles';
 // import GoogleIcon from '../../assets/google.png'; 
 const GoogleIcon = require('../../assets/google.png');
 

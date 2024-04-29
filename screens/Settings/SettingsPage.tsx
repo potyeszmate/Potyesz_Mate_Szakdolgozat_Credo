@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, Button } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo icons library
+import { Ionicons } from '@expo/vector-icons'; 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
@@ -21,7 +21,7 @@ const languages: any = {
 const SettingsPage = () => {
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const [showModal, setShowModal] = useState(false);
   const [userSettings, setUserSettings] = useState<any[]>([]);
@@ -43,11 +43,6 @@ const SettingsPage = () => {
     navigation.navigate('Notifications');
   };
 
-  // const handleThemeClick = () => {
-  //   // @ts-ignore    
-  //   navigation.navigate('ThemePage', { defaultMode: userSettings.darkMode });
-  // };
-  
   const handleBugReportClick = () => {
     // @ts-ignore   
     navigation.navigate('Report');
@@ -84,12 +79,9 @@ const SettingsPage = () => {
         const userData = querySnapshot.docs[0]?.data(); 
         if (userData) {
           setUserSettings(userData as any);
-          console.log('Fetched settings:', userData);
         } else {
-          console.log('No user data found.');
         }
       } else {
-        console.log('No documents found.');
       }
     } catch (error: any) {
       console.error('Error fetching settings:', error.message);
@@ -113,7 +105,6 @@ const SettingsPage = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -123,7 +114,6 @@ const SettingsPage = () => {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
@@ -132,7 +122,6 @@ const SettingsPage = () => {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
-      console.log("In useEffect")
     }
   }, [isFocused]);
 
@@ -157,14 +146,6 @@ const SettingsPage = () => {
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{languages[selectedLanguage].appearance}</Text>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleThemeClick}>
-          <Ionicons name="color-palette-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].theme}</Text>
-          <Ionicons name="chevron-forward-outline" size={24} color="black" />
-        </TouchableOpacity>
-      </View> */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>{languages[selectedLanguage].support}</Text >
         <TouchableOpacity style={styles.optionContainer} onPress={handleBugReportClick}>
@@ -249,10 +230,6 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
-  // logoutOption: {
-  //   marginTop: 20,
-  //   paddingBottom: 20,
-  // },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',

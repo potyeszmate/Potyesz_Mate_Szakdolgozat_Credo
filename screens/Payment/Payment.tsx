@@ -10,6 +10,8 @@ import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/fire
 import { db } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Move string to consts, and some methods to helper. Add to language options
+
 const PaymentScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
@@ -17,14 +19,11 @@ const PaymentScreen = () => {
   const route: any = useRoute();
   const navigation = useNavigation();
 
-  const ngrokAPI = "https://0f2a-92-249-187-97.ngrok-free.app"
-  // const languages = ['English', 'German', 'Hungarian'];
+  const ngrokApiAddress = "https://0f2a-92-249-187-97.ngrok-free.app"
 
   const email = route.params?.email;
   const firstName = route.params?.firstName;
   const lastName = route.params?.firstName;
-  // const onGoBack  = route.params;
-
 
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
@@ -37,7 +36,6 @@ const PaymentScreen = () => {
         if (!querySnapshot.empty) {
             for (const doc of querySnapshot.docs) {
                 await updateDoc(doc.ref, { isPremiumUser: true });
-                console.log('user updated successfully.');
             }
         } else {
             console.error('No user document found.');
@@ -48,11 +46,6 @@ const PaymentScreen = () => {
 };
 
   const onCheckout = async () => {
-    console.log(4)
-
-    // 4. If payment ok -> create popup and say successful payment
-    console.log("Succesful payment")
-    // Alert.alert("Success", "Payment successful!");
     await updateUserRole();
     setSuccessModalVisible(true);
 
@@ -60,11 +53,7 @@ const PaymentScreen = () => {
   }
   
   const handleModalConfirm = () => {
-    // route.params?.onGoBack?.();
-
-    //set up asyn
     AsyncStorage.setItem('profileChanged', 'true');
-    console.log("fetch profile in other pages if this triggers")
     setSuccessModalVisible(false);
     // @ts-ignore
     navigation.navigate('Home');
@@ -73,10 +62,9 @@ const PaymentScreen = () => {
   const initializePaymentSheet = async () => {
     setLoading(true);
     try {
-      // Create a payment intent
-      const response = await axios.post(ngrokAPI+'/payments/intents', {
-        amount: 10 * 100, // Convert dollars to cents
-        email: email,  // Assuming 'email' is defined somewhere in your component
+      const response = await axios.post(ngrokApiAddress+'/payments/intents', {
+        amount: 10 * 100, 
+        email: email,
         name: firstName + ' ' + lastName
       });
   
@@ -85,7 +73,6 @@ const PaymentScreen = () => {
         return;
       }
   
-      // Initialize the Payment sheet
       const initResponse = await initPaymentSheet({
         merchantDisplayName: 'credpo',
         paymentIntentClientSecret: response.data.paymentIntent,
@@ -96,7 +83,6 @@ const PaymentScreen = () => {
         return;
       }
   
-      // Present the Payment Sheet from Stripe
       const paymentResponse = await presentPaymentSheet();
   
       if (paymentResponse.error) {
@@ -107,22 +93,17 @@ const PaymentScreen = () => {
         return;
       }
   
-      // Optionally trigger any follow-up action after successful payment
       onCheckout();
   
     } catch (error) {
       console.error('An error occurred:', error);
       Alert.alert("Error", error.message || "An error occurred during payment processing.");
     } finally {
-      setLoading(false); // Ensure loading is set to false after all operations
+      setLoading(false);
     }
   };
   
 
-
-//   useEffect(() => {
-//     initializePaymentSheet();
-//   }, []);
 return (
   <View style={styles.container}>
     <Text style={styles.headerTitle}>Unlock Premium Features</Text>

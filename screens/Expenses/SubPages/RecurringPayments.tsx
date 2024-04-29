@@ -1,21 +1,19 @@
 /* eslint-disable no-undef */
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, FlatList, Image, ActivityIndicator } from 'react-native';
-import { AuthContext } from '../../store/auth-context';
-import { db } from '../../firebaseConfig';
+import { AuthContext } from '../../../store/auth-context';
+import { db } from '../../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import RecurringTransactionInput from '../../components/ui/RecurringTransactionInput';
-import { convertCurrencyToCurrency } from '../../util/conversion';
+import RecurringTransactionInput from '../../../components/ui/RecurringTransactionInput';
+import { convertCurrencyToCurrency } from '../../../util/conversion';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Keyboard } from 'react-native';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
-import Icon from 'react-native-vector-icons/MaterialIcons';  // You can choose any set like FontAwesome, Ionicons, etc.
-
+import en from '../../../languages/en.json';
+import de from '../../../languages/de.json';
+import hu from '../../../languages/hu.json';
 
 const languages: any = {
   English: en,
@@ -24,25 +22,26 @@ const languages: any = {
 };
 
 const iconMapping: { [key: string]: any } = {
-  Twitter: require('../../assets/Recurrings/twitter.png'),
-  Youtube: require('../../assets/Recurrings/FrameYoutube.png'),
-  Instagram: require('../../assets/Recurrings/FrameInstagram.png'),
-  LinkedIn: require('../../assets/Recurrings/linkedin.png'),
-  Wordpress: require('../../assets/Recurrings/wordpress.png'),
-  Pinterest: require('../../assets/Recurrings/pinterest.png'),
-  Figma: require('../../assets/Recurrings/figma.png'),
-  Behance: require('../../assets/Recurrings/behance.png'),
-  Apple: require('../../assets/Recurrings/FrameApple.png'),
-  GooglePlay: require('../../assets/Recurrings/google-play.png'),
-  Google: require('../../assets/Recurrings/google.png'),
-  AppStore: require('../../assets/Recurrings/app-store.png'),
-  Github: require('../../assets/Recurrings/github.png'),
-  Xbox: require('../../assets/Recurrings/xbox.png'),
-  Discord: require('../../assets/Recurrings/discord.png'),
-  Stripe: require('../../assets/Recurrings/stripe.png'),
-  Spotify: require('../../assets/Recurrings/spotify.png'),
+  Twitter: require('../../../assets/Recurrings/twitter.png'),
+  Youtube: require('../../../assets/Recurrings/FrameYoutube.png'),
+  Instagram: require('../../../assets/Recurrings/FrameInstagram.png'),
+  LinkedIn: require('../../../assets/Recurrings/linkedin.png'),
+  Wordpress: require('../../../assets/Recurrings/wordpress.png'),
+  Pinterest: require('../../../assets/Recurrings/pinterest.png'),
+  Figma: require('../../../assets/Recurrings/figma.png'),
+  Behance: require('../../../assets/Recurrings/behance.png'),
+  Apple: require('../../../assets/Recurrings/FrameApple.png'),
+  GooglePlay: require('../../../assets/Recurrings/google-play.png'),
+  Google: require('../../../assets/Recurrings/google.png'),
+  AppStore: require('../../../assets/Recurrings/app-store.png'),
+  Github: require('../../../assets/Recurrings/github.png'),
+  Xbox: require('../../../assets/Recurrings/xbox.png'),
+  Discord: require('../../../assets/Recurrings/discord.png'),
+  Stripe: require('../../../assets/Recurrings/stripe.png'),
+  Spotify: require('../../../assets/Recurrings/spotify.png'),
 };
 
+// !TODO! - Refactor - Make a shared, dynamic component from the subpages
 const RecurringPayments = () => {
   const navigation = useNavigation();
   const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
@@ -56,19 +55,14 @@ const RecurringPayments = () => {
   const [conversionRate, setConversionRate] = useState<number | null>(null);
   const [prevCurrency, setPrevCurrency] = useState<string | null>(null);
   const [symbol, setSymbol] = useState<any>('');
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English'); 
   const [loading, setLoading] = useState(true);
   const isMounted = useRef(false);
 
-  // const authCtx = useContext(AuthContext);
-  // const { userId } = authCtx as any;
   const route = useRoute();
   const { userId } = route.params; 
 
-  console.log("Received userId:", userId);  // This should log the actual userId or undefined
-
   const fetchRecurringTransactions = async () => {
-    // console.log("userId in recurring: ", userId)
     try {
       setLoading(true);
 
@@ -92,7 +86,6 @@ const RecurringPayments = () => {
   };
 
   const fetchUserSettings = async () => {
-    console.log("userId in recurring: ", userId)
 
     try {
       const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId))
@@ -104,21 +97,16 @@ const RecurringPayments = () => {
         if (userData) {
           setUserSettings(userData);
 
-          // console.log('Fetched settings:', userData);
         } else {
-          console.log('No user data found.');
         }
       } else {
-        console.log('No documents found.');
       }
     } catch (error: any) {
       console.error('Error fetching settings:', error.message);
     }
   };
 
-  const getCurrencySymbol = (currencyCode: any) => {
-    console.log("CHANGING CURRENCY SYMBOL")
-    
+  const getCurrencySymbol = (currencyCode: any) => {    
     switch (currencyCode) {
       case 'USD':
         return '$';
@@ -137,54 +125,6 @@ const RecurringPayments = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Check if user settings have already been fetched
-  //       if (!userSettings.currency) {
-  //         // Fetch user settings
-  //         await fetchUserSettings();
-  //       }
-        
-  //       // Check if the currency value is valid and has changed
-  //       if (userSettings.currency && userSettings.currency !== prevCurrency) {
-  //         // Get the saved symbol from AsyncStorage
-  //         const savedSymbol = await AsyncStorage.getItem('symbol');
-          
-  //         // Check if the current symbol is the same as the saved symbol
-  //         const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
-    
-  //         if (symbolHaveNotChanged) {
-  //           // Use saved conversion rate
-  //           const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-  //           setConversionRate(parseFloat(savedConversionRate));
-  //           // Set currency symbol
-  //           setSymbol(savedSymbol);
-  //         } else {
-  //           // Fetch conversion rate from API
-  //           const result = await convertCurrencyToCurrency('USD', userSettings.currency);
-  //           setConversionRate(result);
-        
-  //           // Save conversion rate and symbol
-  //           await AsyncStorage.setItem('conversionRate', result.toString());
-  //           const newSymbol = getCurrencySymbol(userSettings.currency);
-  //           setSymbol(newSymbol);
-  //           await AsyncStorage.setItem('symbol', newSymbol);
-  //         }
-          
-  //         // Update the previous currency value
-  //         setPrevCurrency(userSettings.currency);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching user settings or converting currency:', error);
-        
-  //     }
-  //   };
-    
-  
-  //   fetchData();
-  // }, [userSettings.currency, prevCurrency]); // Add userSettings.currency and prevCurrency to the dependency array
-  
   const snapPoints = useMemo(() => ['33%', '66%', '85%'], []);
 
   const addTransactionHandler = async (newRecurringTransaction: any) => {
@@ -217,11 +157,8 @@ const RecurringPayments = () => {
       await deleteDoc(docRef);
       fetchRecurringTransactions();
       setEditModalVisible(false);
-      console.log("Deleted and set the modal to false.")
     } catch (error: any) {
       console.error('Error deleting recurring transaction:', error.message);
-      console.log("Not deleted and set the modal to false.")
-
     }
 
   };
@@ -242,7 +179,6 @@ const RecurringPayments = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -250,47 +186,50 @@ const RecurringPayments = () => {
     }
   };
 
-  const getSelectedCurrency = async () => {
-    try {
-
-      const savedSymbol = await AsyncStorage.getItem('symbol');
-      const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
-      console.log("Saved Symbol: ", savedSymbol)
-      console.log("Saved conversionRate: ", savedConversionRate)
-
-      if (savedSymbol && savedConversionRate !== null) {
-        console.log("savedSymbol and savedConversionRate: ", savedSymbol, savedConversionRate )
-        setSymbol(savedSymbol);
-        setConversionRate(savedConversionRate);
-      } else {
-        console.log("User des not have saves curreny and symbol yet, we have to use the default. " )
-
-        const defaultsavedSymbol= "$";
-        const defaultConversionRate= 1;
-
-        await AsyncStorage.setItem('conversionRate', defaultConversionRate.toString());
-        await AsyncStorage.setItem('symbol', defaultsavedSymbol);
-
-        setSymbol(savedSymbol);
-        setConversionRate(savedConversionRate);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!userSettings.currency) {
+          await fetchUserSettings();
+        }
+        
+        if (userSettings.currency && userSettings.currency !== prevCurrency) {
+          const savedSymbol = await AsyncStorage.getItem('symbol');
+          const symbolHaveNotChanged = savedSymbol === getCurrencySymbol(userSettings.currency);
+    
+          if (symbolHaveNotChanged) {
+            const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+            setConversionRate(parseFloat(savedConversionRate));
+            setSymbol(savedSymbol);
+          } else {
+            const result = await convertCurrencyToCurrency('USD', userSettings.currency);
+            setConversionRate(result);
+        
+            await AsyncStorage.setItem('conversionRate', result.toString());
+            const newSymbol = getCurrencySymbol(userSettings.currency);
+            setSymbol(newSymbol);
+            await AsyncStorage.setItem('symbol', newSymbol);
+          }
+          
+          setPrevCurrency(userSettings.currency);
+        }
+      } catch (error) {
+        console.error('Error fetching user settings or converting currency:', error);
       }
-
-    } catch (error) {
-      console.error('Error retrieving selected language:', error);
-    }
-  };
+    };
+  
+    fetchData();
+  }, [userSettings.currency, prevCurrency]);
 
   const totalSubscriptions = recurringTransactions.length;
   const totalValue = recurringTransactions.reduce((acc, curr) => acc + parseInt(curr.value), 0);
 
   const fetchLanguage = async () => {
      await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const fetchCurrency = async () => {
     await getSelectedCurrency();
-    // Use the retrieved language for any rendering or functionality
   };
 
 
@@ -304,7 +243,7 @@ const RecurringPayments = () => {
       }
     };
   
-    checkDataAndUpdate(); // Immediately call the async function
+    checkDataAndUpdate();
   }, [isFocused]);
 
   useEffect(() => {
@@ -341,7 +280,6 @@ const RecurringPayments = () => {
             <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
           ) : (
             <View style={styles.totalRow}>
-              {/* {symbol} {(parseFloat(totalValue) * conversionRate).toFixed(2) */}
               {conversionRate !== null ? (
                 <Text style={styles.totalValue}>
                   {' '}
@@ -365,7 +303,7 @@ const RecurringPayments = () => {
           data={recurringTransactions}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
-            const transactionDate = item.Date.toDate();  // Assuming 'item.date' is a Firebase Timestamp
+            const transactionDate = item.Date.toDate();
             const now = new Date();
             const isPastDate = transactionDate.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0);
 
@@ -401,30 +339,7 @@ const RecurringPayments = () => {
         )}
     </View>
 
-
-        {/* Delete Modal */}
-        {/* <Modal
-          visible={deleteModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setDeleteModalVisible(false)}
-        >
-          <View style={styles.deleteModalContainer}>
-            <View style={styles.deleteModalContent}>
-              <Text style={styles.deleteModalText}>{languages[selectedLanguage].deleteModalText}</Text>
-              <View style={styles.deleteModalButtons}>
-                <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.deleteModalButton}>
-                  <Text style={styles.deleteModalButtonText}>No</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteRecurringTransactionHandler(selectedRecurringTransactionId!)} style={[styles.deleteModalButton, styles.deleteModalButtonYes]}>
-                  <Text style={styles.deleteModalButtonText}>Yes</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal> */}
-
-        {/* Edit Modal */}
+        
         <Modal
           visible={editModalVisible}
           transparent={true}
@@ -436,7 +351,7 @@ const RecurringPayments = () => {
           <Pressable
             style={styles.modalBackground}
             onPress={() => {
-              Keyboard.dismiss(); // This will not dismiss the modal now; only the keyboard
+              Keyboard.dismiss();
             }}>
             <BottomSheet
               ref={bottomSheetRef}
@@ -451,12 +366,7 @@ const RecurringPayments = () => {
                 <View style={[style, styles.bottomSheetBackground]} />
               )}>
               <View style={styles.contentContainer}>
-                {/* <Icon
-                  name="close"
-                  size={24}
-                  style={styles.closeIcon}
-                  onPress={() => setEditModalVisible(false)}
-                /> */}
+                
                 <RecurringTransactionInput
                   initialRecurringTransaction={selectedRecurringTransaction}
                   onAddRecurringTransaction={editRecurringTransactionHandler}
@@ -471,8 +381,6 @@ const RecurringPayments = () => {
           </Pressable>
         </Modal>
 
-
-        {/* Add Modal */}
         <Modal
         visible={modalVisible}
         transparent={true}
@@ -484,7 +392,7 @@ const RecurringPayments = () => {
         <Pressable
           style={styles.modalBackground}
           onPress={() => {
-            Keyboard.dismiss(); // This will not dismiss the modal now; only the keyboard
+            Keyboard.dismiss(); 
           }}>
           <BottomSheet
             ref={bottomSheetRef}
@@ -499,12 +407,7 @@ const RecurringPayments = () => {
               <View style={[style, styles.bottomSheetBackground]} />
             )}>
             <View style={styles.contentContainer}>
-              {/* <Icon
-                name="close"
-                size={24}
-                style={styles.closeIcon}
-                onPress={() => setModalVisible(false)}
-              /> */}
+          
               <RecurringTransactionInput
                 onAddRecurringTransaction={addTransactionHandler}
                 conversionRate={conversionRate}
@@ -518,7 +421,6 @@ const RecurringPayments = () => {
       </Modal>
 
 
-      {/* Add button */}
       <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
         <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
         <Text style={styles.addButtonText}>{languages[selectedLanguage].addSubscription}</Text>
@@ -531,32 +433,31 @@ const RecurringPayments = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 16,
   },
   listContainer: {
     flex: 1,
-    maxHeight: '65%', // Adjust as needed
+    maxHeight: '65%', 
     marginBottom: 20,
   },
   addButton: {
     position: 'absolute',
-    bottom: 20, // Adjust as needed
-    left: 21, // Align with the left edge of the screen
-    right: 21, // Align with the right edge of the screen
+    bottom: 20, 
+    left: 21, 
+    right: 21, 
     backgroundColor: '#35BA52',
     borderRadius: 20,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    zIndex: 1, // Ensure the button appears above other content
+    zIndex: 1, 
   },
   addIcon: {
     marginRight: 8,
   },
   loadingText: {
     fontSize: 16,
-    color: '#888', // Example color
+    color: '#888', 
     fontStyle: 'italic',
   },  
   addButtonText: {
@@ -565,7 +466,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   space: {
-    marginBottom: 20, // Adjust this value to change the amount of space
+    marginBottom: 20, 
   },
   transactionItem: {
     flexDirection: 'row',
@@ -589,10 +490,10 @@ const styles = StyleSheet.create({
   },
   closeIcon: {
     position: 'absolute',
-    top: 10,  // Adjust as needed
-    right: 10, // Adjust as needed
-    color: 'black', // Choose a color that matches your theme
-    zIndex: 10, // Ensure it's above other elements
+    top: 10, 
+    right: 10, 
+    color: 'black', 
+    zIndex: 10, 
   },
   transactionInfo: {
     flex: 1,
@@ -622,14 +523,14 @@ const styles = StyleSheet.create({
   bottomSheetBackground: {
     backgroundColor: 'white',
     flex: 1,
-    borderTopLeftRadius: 20, // Rounded corners on the top-left
-    borderTopRightRadius: 20, // Rounded corners on the top-right
-    overflow: 'hidden', // Ensures children don't overflow rounded corners
+    borderTopLeftRadius: 20, 
+    borderTopRightRadius: 20, 
+    overflow: 'hidden', 
   },
   modalBackground: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for the modal background
-    justifyContent: 'flex-end', // Aligns the BottomSheet to the bottom
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    justifyContent: 'flex-end', 
   },
   categoryDateContainer: {
     flexDirection: 'row',
@@ -685,13 +586,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    // padding: 5,
     marginBottom: 16,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#F3F4F7',
-    // marginLeft: 5,
-    // marginRight: 5
   },
   totalCard: {
     borderRadius: 20,
@@ -723,9 +621,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loadingIndicator: {
-    // position: 'absolute',
     alignSelf: 'center',
-    marginTop: 200, // Adjust as needed
+    marginTop: 200, 
   },
   pastDateText: {
     color: 'red',

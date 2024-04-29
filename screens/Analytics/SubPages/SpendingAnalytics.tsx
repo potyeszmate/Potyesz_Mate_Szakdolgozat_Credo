@@ -4,25 +4,25 @@ import { Text } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { Feather } from '@expo/vector-icons';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import { AuthContext } from "../../store/auth-context";
-import DonutChart from "../../components/ui/DonutChart";
-import DateLineChart from "../../components/ui/DateLineChart";
-import BarChartSpending from "../../components/ui/BarchartSpending";
+import { db } from '../../../firebaseConfig';
+import { AuthContext } from "../../../store/auth-context";
+import DonutChart from "../../../components/ui/DonutChart";
+import DateLineChart from "../../../components/ui/DateLineChart";
+import BarChartSpending from "../../../components/ui/BarchartSpending";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [filterModalVisible, setFilterModalVisible] = useState(false);
-    const [filterType, setFilterType] = useState('monthly'); // 'monthly', 'weekly', 'yearly'
+    const [filterType, setFilterType] = useState('monthly');
     const [transactions, setTransactions] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // New state to track loading status
+    const [isLoading, setIsLoading] = useState(true);
 
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
     
     const fetchTransactions = async () => {
         try {
-          setIsLoading(true); // Start loading
+          setIsLoading(true);
 
           const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
           const querySnapshot = await getDocs(transactionsQuery);
@@ -35,10 +35,10 @@ const SpendingAnalytics = () => {
 
         } catch (error: any) {
           console.error('Error fetching transactions:', error.message);
-          setIsLoading(false); // End loading once both promises are resolved
+          setIsLoading(false); 
 
         }
-        setIsLoading(false); // End loading once both promises are resolved
+        setIsLoading(false); 
 
     };
 
@@ -90,18 +90,18 @@ const SpendingAnalytics = () => {
       
         if (filterType === 'monthly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Assuming transaction.date is a Firestore Timestamp
+            const transactionDate = new Date(transaction.date.seconds * 1000);
             return transactionDate.getMonth() === currentDate.getMonth() &&
                    transactionDate.getFullYear() === currentDate.getFullYear();
           });
         } else if (filterType === 'weekly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            const transactionDate = new Date(transaction.date.seconds * 1000);
             return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
           });
         } else if (filterType === 'yearly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            const transactionDate = new Date(transaction.date.seconds * 1000);
             return transactionDate.getFullYear() === currentDate.getFullYear();
           });
         }
@@ -114,17 +114,9 @@ const SpendingAnalytics = () => {
 
       useEffect(() => {
         fetchTransactions();
-      }, [userId, filterType, currentDate, []]); // Depend on filterType and currentDate too
+      }, [userId, filterType, currentDate, []]);
       
-      // if (transactions.length) {
-      //   // Display an activity indicator when data is loading
-      //   return (
-      //     <View style={styles.centered}>
-      //       <ActivityIndicator size="large" color="#0000ff" />
-      //     </View>
-      //   );
-      // }
-      
+    
     return (
     <View> 
         <View style={styles.filterBar}>
@@ -148,7 +140,7 @@ const SpendingAnalytics = () => {
         visible={filterModalVisible}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setFilterModalVisible(false)}  // This allows pressing the hardware back button on Android to close the modal.
+        onRequestClose={() => setFilterModalVisible(false)}
         >
         <View style={styles.modalContent}>
         <View style={styles.modalHeader}>
@@ -222,14 +214,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
         shadowRadius: 6,
-        elevation: 5,  // For Android
+        elevation: 5, 
       },
       modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        // padding: 16,
-    
+        alignItems: 'center',    
       },
       modalHeaderText: {
         fontSize: 18,
@@ -238,7 +228,7 @@ const styles = StyleSheet.create({
         marginRight: 'auto'
       },
       closeButton: {
-        padding: 10,  // Padding makes it easier to tap
+        padding: 10, 
       },
 });
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -19,9 +18,10 @@ const languages: any = {
   Hungarian: hu,
 };
 
+// TODO: Add to languages, move to styles and constants, move methods to helper, etc.
 const SavingsScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English'); 
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [profile, setProfile] = useState(null as any);
 
@@ -31,23 +31,11 @@ const SavingsScreen: React.FC = () => {
   const handleGoalsClick = () => {
     // @ts-ignore
     navigation.navigate('Goals');
-    // navigation.navigate('ThemePage', { defaultMode: userSettings.darkMode });
 
   };
 
-  // const handleCryptoCurrenciesClick = () => {
-  //   // @ts-ignore
-  //   navigation.navigate('Cryptocurrencies');
-  // };
-
-  // const handleStocksClick = () => {
-  //   // @ts-ignore
-  //   navigation.navigate('Stocks');
-  // };
-
   const handleCryptoCurrenciesClick = () => {
     if (profile && profile.isPremiumUser) {
-      // Navigate to Cryptocurrencies page for premium users
       // @ts-ignore
       navigation.navigate('Cryptocurrencies');
     } else {
@@ -58,11 +46,9 @@ const SavingsScreen: React.FC = () => {
   
   const handleStocksClick = () => {
     if (profile && profile.isPremiumUser) {
-      // Navigate to Stocks page for premium users
       // @ts-ignore
       navigation.navigate('Stocks');
     } else {
-      // Navigate to Payment page for non-premium users
       // @ts-ignore
       navigation.navigate('Payment');
     }
@@ -75,9 +61,7 @@ const SavingsScreen: React.FC = () => {
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-        // Assuming only one document will match, return the first one
         const userSettings = querySnapshot?.docs[0]?.data();
-        console.log("User settings exist:", userSettings);
         setIsProfileLoading(false)
         return userSettings;
     }
@@ -89,7 +73,6 @@ const SavingsScreen: React.FC = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -99,7 +82,6 @@ const SavingsScreen: React.FC = () => {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
@@ -120,9 +102,7 @@ const SavingsScreen: React.FC = () => {
         setIsProfileLoading(false)
 
       }
-
       fetchLanguage();
-      console.log("In useEffect")
     }
   };
   
@@ -134,7 +114,7 @@ const SavingsScreen: React.FC = () => {
       const settings = await getUserSettings(userId);
       setProfile(settings)
     };
-    fetchProfile(); // Immediately call the asyc function
+    fetchProfile(); 
   }, [userId]);
 
   if (isProfileLoading || !profile) {
@@ -143,7 +123,6 @@ const SavingsScreen: React.FC = () => {
 
   return (
     <View style={styles.rootContainer}>
-      {/* Recurring Payments Card */}
 
       <View style={styles.space}></View>
 
@@ -182,9 +161,7 @@ const SavingsScreen: React.FC = () => {
             <Text style={styles.titleText}>Stocks</Text>
             <Text style={styles.subtitleText}>Apple, NVIDIA, Tesla, etc</Text>
           </View>
-          {/* <Text style={styles.navigationArrow}>{'>'}</Text> */}
           <Image source={require('../../assets/angle-right.png')} />
-          {/* <Image source={require('../assets/angle-right.png')} style={styles.icon}  width={1} height={1} /> */}
         </View>
       </TouchableOpacity>
     </View>
@@ -196,7 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   space: {
-    marginBottom: 10, // Adjust this value to change the amount of space
+    marginBottom: 10,
   },
   recurringCard: {
     backgroundColor: 'white',

@@ -1,15 +1,15 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
-import { AuthContext } from '../../store/auth-context';
-import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, deleteDoc, updateDoc, doc, DocumentData } from 'firebase/firestore'; // Import DocumentData
-import GoalCard from '../../components/ui/GoalCard';
+import { AuthContext } from '../../../store/auth-context';
+import { db } from '../../../firebaseConfig';
+import { query, collection, where, getDocs, addDoc, deleteDoc, updateDoc, doc, DocumentData } from 'firebase/firestore'; 
+import GoalCard from '../../../components/ui/GoalCard';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import GoalInput from '../../components/ui/GoalInput';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
+import GoalInput from '../../../components/ui/GoalInput';
+import en from '../../../languages/en.json';
+import de from '../../../languages/de.json';
+import hu from '../../../languages/hu.json';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,13 +24,13 @@ const languages: any = {
 const GoalScreen = () => {
   const [goals, setGoals] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [totalSaved, setTotalSaved] = useState<number>(0); // Define totalSaved as number
-  const bottomSheetRef = useRef<any>(null); // Set ref type to any
+  const [totalSaved, setTotalSaved] = useState<number>(0); 
+  const bottomSheetRef = useRef<any>(null); 
   const [modalVisible, setModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState<any | null>(null); // Define selectedGoal as any | null
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedGoal, setSelectedGoal] = useState<any | null>(null); 
+  const [selectedLanguage, setSelectedLanguage] = useState('English'); 
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
@@ -45,7 +45,7 @@ const GoalScreen = () => {
         ...doc.data(),
       }));
 
-      const totalAmount = fetchedGoals.reduce((sum, goal: any) => sum + goal.Current_Ammount, 0); // Correct typo in property name
+      const totalAmount = fetchedGoals.reduce((sum, goal: any) => sum + goal.Current_Ammount, 0);
       setTotalSaved(totalAmount);
 
       setGoals(fetchedGoals);
@@ -61,7 +61,7 @@ const GoalScreen = () => {
       await addDoc(collection(db, 'goals'), {
         ...newGoal,
         uid: userId,
-        Current_Ammount: 0, // Correct typo in property name
+        Current_Ammount: 0,
       });
 
       fetchGoals();
@@ -109,7 +109,6 @@ const GoalScreen = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -119,16 +118,11 @@ const GoalScreen = () => {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
 
-  
-  useEffect(() => {
-    fetchGoals();
-  }, [userId]);
-
+ 
   const snapPoints = useMemo(() => ['333%', '66%', '85%'], []);
 
   const showDeleteModal = (goal: any) => {
@@ -154,9 +148,13 @@ const GoalScreen = () => {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
-      console.log("In useEffect")
     }
   }, [isFocused]);
+   
+  useEffect(() => {
+    fetchGoals();
+  }, [userId]);
+
 
   return (
     <View style={styles.container}>
@@ -225,7 +223,6 @@ const GoalScreen = () => {
             snapPoints={snapPoints}
             enablePanDownToClose
             onClose={() => {
-              console.log('Edit BottomSheet closed');
               setEditModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
@@ -259,7 +256,6 @@ const GoalScreen = () => {
             snapPoints={snapPoints}
             enablePanDownToClose
             onClose={() => {
-              console.log('BottomSheet closed');
               setModalVisible(false);
             }}
             backgroundComponent={({ style }) => (

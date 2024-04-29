@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -11,6 +10,7 @@ import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
 
+// TODO: Organise methods to helper component
 
 const languages: any = {
   English: en,
@@ -20,16 +20,14 @@ const languages: any = {
 
 const ExpensesScreen: React.FC = () => {
   const navigation = useNavigation();
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
 
-    const handleRecurringPaymentsClick = () => {
-      console.log("Navigating with userId:", userId);  // This should log a defined userId
+  const handleRecurringPaymentsClick = () => {
       navigation.navigate('Recurrings', { userId: userId });
-    };
-
+  };
 
   const handleLoansClick = () => {
     // @ts-ignore
@@ -45,7 +43,6 @@ const ExpensesScreen: React.FC = () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
       if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
         setSelectedLanguage(selectedLanguage);
       }
     } catch (error) {
@@ -55,7 +52,6 @@ const ExpensesScreen: React.FC = () => {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
@@ -64,55 +60,52 @@ const ExpensesScreen: React.FC = () => {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
-      console.log("In useEffect")
     }
   }, [isFocused]);
 
   return (
     <View style={styles.rootContainer}>
-      {/* Recurring Payments Card */}
 
       <View style={styles.space}></View>
 
       <TouchableOpacity style={styles.recurringCard} onPress={handleRecurringPaymentsClick}>
-  <View style={styles.cardContent}>
-    <View style={styles.iconContainer}>
-      <Image source={require('../../assets/Recurrings/subscriptions.png')} style={styles.icon} />
-    </View>
-    <View style={[styles.textContainer, { width: '60%' }]}>
-      <Text style={styles.titleText}>{languages[selectedLanguage].subscriptionsTitle}</Text>
-      <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].subscriptionDesc}</Text>
-    </View>
-    <Image source={require('../../assets/angle-right.png')} />
-  </View>
-</TouchableOpacity>
+        <View style={styles.cardContent}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/subscriptions.png')} style={styles.icon} />
+          </View>
+          <View style={[styles.textContainer, { width: '60%' }]}>
+            <Text style={styles.titleText}>{languages[selectedLanguage].subscriptionsTitle}</Text>
+            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].subscriptionDesc}</Text>
+          </View>
+          <Image source={require('../../assets/angle-right.png')} />
+        </View>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.recurringCard} onPress={handleBillsClick}>
-  <View style={styles.cardContent}>
-    <View style={styles.iconContainer}>
-      <Image source={require('../../assets/Recurrings/bills.png')} style={styles.icon} />
-    </View>
-    <View style={[styles.textContainer, { width: '60%' }]}>
-      <Text style={styles.titleText}>{languages[selectedLanguage].billsTitle}</Text>
-      <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].billsDesc}</Text>
-    </View>
-    <Image source={require('../../assets/angle-right.png')} />
-  </View>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.recurringCard} onPress={handleBillsClick}>
+        <View style={styles.cardContent}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/bills.png')} style={styles.icon} />
+          </View>
+          <View style={[styles.textContainer, { width: '60%' }]}>
+            <Text style={styles.titleText}>{languages[selectedLanguage].billsTitle}</Text>
+            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].billsDesc}</Text>
+          </View>
+          <Image source={require('../../assets/angle-right.png')} />
+        </View>
+      </TouchableOpacity>
 
-<TouchableOpacity style={styles.recurringCard} onPress={handleLoansClick}>
-  <View style={styles.cardContent}>
-    <View style={styles.iconContainer}>
-      <Image source={require('../../assets/Recurrings/loans.png')} style={styles.icon} />
-    </View>
-    <View style={[styles.textContainer, { width: '60%' }]}>
-      <Text style={styles.titleText}>{languages[selectedLanguage].loansTitle}</Text>
-      <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].loansDesc}</Text>
-    </View>
-    <Image source={require('../../assets/angle-right.png')} />
-  </View>
-</TouchableOpacity>
-
+      <TouchableOpacity style={styles.recurringCard} onPress={handleLoansClick}>
+        <View style={styles.cardContent}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/loans.png')} style={styles.icon} />
+          </View>
+          <View style={[styles.textContainer, { width: '60%' }]}>
+            <Text style={styles.titleText}>{languages[selectedLanguage].loansTitle}</Text>
+            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].loansDesc}</Text>
+          </View>
+          <Image source={require('../../assets/angle-right.png')} />
+        </View>
+      </TouchableOpacity>
 
     </View>
   );
@@ -123,7 +116,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   space: {
-    marginBottom: 10, // Adjust this value to change the amount of space
+    marginBottom: 10,
   },
   recurringCard: {
     backgroundColor: 'white',
@@ -161,7 +154,6 @@ const styles = StyleSheet.create({
   
   subtitleText: {
     color: 'grey',
-    // paddingRight: 60
   },
   navigationArrow: {
     fontSize: 24,

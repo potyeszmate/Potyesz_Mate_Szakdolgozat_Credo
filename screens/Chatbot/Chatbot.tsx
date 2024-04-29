@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import OpenAI from 'openai'; // Adjust based on actual exported name
+import OpenAI from 'openai'; 
 import prompts, { basicMessages, models } from '../../util/prompts';
 import axios from 'axios';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
@@ -11,7 +11,9 @@ import Message from '../../components/ui/Message';
 import { Icon } from 'react-native-elements';
 
 export const OPENAI_API_KEY= 'sk-proj-BAjAoTHZearEfetmybGmT3BlbkFJTBtAGIoFP7bThJTv4Wz3'
+const api = 'https://api.openai.com/v1/chat/completions'
 
+// TODO: Organise string promts to consts and main method to helper
 const Chatbot = () => {
     const [userInput, setUserInput] = useState('');
     const [conversation, setConversation] = useState([basicMessages.initialGreeting]);
@@ -33,25 +35,18 @@ const Chatbot = () => {
     const [stocks, setStocks] = useState<any[]>([]);
     const [goals, setGoals] = useState<any[]>([]);
 
-    const [challanges, setChallenges] = useState<any[]>([]);
-    const [balance, setBalance] = useState<number | null>(null);
 
-    const api = 'https://api.openai.com/v1/chat/completions'
-
-    async function fetchTransactions(uid) {
-      console.log(`Fetching transactions for user ID: ${uid}`); // Log the user ID being used
+    async function fetchTransactions(uid: any) {
       try {
         const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', uid));
         const snapshot = await getDocs(transactionsQuery);
         if (snapshot.empty) {
-          console.log('No matching documents.');
           return [];
         }
-        console.log("There was data in transaction")
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (error) {
         console.error("Error fetching transactions: ", error);
-        return []; // Return an empty array or handle the error appropriately
+        return []; 
       }
     }
 
@@ -91,29 +86,10 @@ const Chatbot = () => {
     })); 
     }
 
-    async function fetchChallanges(uid: any) {
-    const recurringQuery = query(collection(db, 'joinedChallenges'), where('uid', '==', uid));
-    const snapshot = await getDocs(recurringQuery);
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    }
-
-    async function fetchBalance(uid: string) {
-      const balanceQuery = query(collection(db, 'balance'), where('uid', '==', uid));
-      const snapshot = await getDocs(balanceQuery);
-      return snapshot.docs[0]?.data()?.balance ? snapshot.docs[0]?.data().balance : 0;
-      // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-      // console.log("BALANCE ", balance)
-
-      // setBalance(balance);  // Convert balance o number if it exists
-    }
-
     async function fetchBudgets(uid: any) {
       const incomesQuery = query(collection(db, 'incomes'), where('uid', '==', uid));
       const snapshot = await getDocs(incomesQuery);
-      // setIsIncomeLoading(false)
+
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -147,7 +123,7 @@ const Chatbot = () => {
       }));  
     }
 
-    const handleTopicSelection = (topic) => {
+    const handleTopicSelection = (topic: any) => {
       setConversation(prev => [...prev, `Chatbot: Sure, please ask me any question about your ${topic}.`]);
       setCurrentTopic(topic);
       setShowTopics(false);
@@ -166,7 +142,6 @@ const Chatbot = () => {
                   fetchStocks(userId),
                   fetchCryptos(userId),
                   fetchGoals(userId),
-                  // fetchBudgets(userId),
                   
               ]);
               setTransactions(transactions);
@@ -177,9 +152,7 @@ const Chatbot = () => {
               setStocks(stocks),
               setCryptocurrencies(cryptos)
               setGoals(goal);
-              // fetchBudgets(budgets),
            
-
           } catch (error) {
               setIsLoading(false);
 
@@ -188,15 +161,10 @@ const Chatbot = () => {
           }
       }
 
-      console.log("FETCHED THE DATA")
       fetchData();
   }, [userId]);
 
       
-  useEffect(() => {
-    console.log("Updated goals: ", goals );
-  }, [goals]);
-
   const handleSend = async () => {
     if (!userInput.trim()) return;
   
@@ -206,41 +174,34 @@ const Chatbot = () => {
       const userResponse = userInput.trim().toLowerCase();
       if (userResponse === 'yes') {
         setConversation(prev => [...prev, `You: ${userInput}`, `Chatbot: What else would you like to know about ${currentTopic}?`]);
-        // Allow the user to ask another question within the current topic
-        setUserInput(''); // This should clear the input field.
+        setUserInput(''); 
       } else if (userResponse === 'no') {
-        setShowTopics(true); // Show the topic selection again
+        setShowTopics(true); 
         setConversation(prev => [...prev, `You: ${userInput}`, basicMessages.selectFromTopics]);
-        setCurrentTopic(''); // Reset current topic
-        setUserInput(''); // This should clear the input field.
+        setCurrentTopic(''); 
+        setUserInput(''); 
       } else {
-        // The user didn't respond with 'yes' or 'no'
         setConversation(prev => [...prev, `You: ${userInput}`, `Chatbot: I didn't really catch that, can you answer again with 'yes' or 'no', please?`]);
-        setUserInput(''); // This should clear the input field.
-        return; // Early return to avoid processing the input as a new query
+        setUserInput(''); 
+        return; 
       }
     } 
     else {
       setConversation(prev => [...prev, `You: ${userInput}`]);
       setUserInput('');
-      // Check if the current topic is 'Spendings' and format transactions accordingly.
       let systemMessageContent = "";
 
-      // Set up prompts about spendings 
       if (currentTopic === 'Spendings') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         if (transactions.length > 0) {
           const formattedTransactions = transactions.map(transaction => {
             const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
             const date = new Date(transaction.date.seconds * 1000).toLocaleDateString('en-US', dateOptions);
             return `Date: ${date.replace(/ /g, ' ')} - Name: ${transaction.name} - Category: (${transaction.category}) Spent ammount: $${transaction.value}`;
           }).join(", ");
-          console.log("formattedTransactions for spending", formattedTransactions)
           
         systemMessageContent = `The user's incomes and earnings are the following earning transactions: ${formattedTransactions}`;
         }
       else {
-        // Handle the case where there are no transactions
         systemMessageContent = "The user has no recent transactions.";
       }
 
@@ -252,7 +213,7 @@ const Chatbot = () => {
             { role: "user", content: userInput },
             { role: "system", content: systemMessageContent }
           ],
-          max_tokens: 2000,
+          max_tokens: 700,
         }, {
           headers: {
             'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -261,18 +222,15 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Incomes') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         if (incomes.length > 0) {
           const formattedIncomes = incomes.map(transaction => {
             const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -284,17 +242,14 @@ const Chatbot = () => {
         } else {
           systemMessageContent = "The user has no recorded income transactions. Let the user know he has no income yet.";
         }
-      console.log('incomes in handleSend: ', systemMessageContent)
 
       try {
-        // const systemPromptForIncomeAnalysis = `Provide a summary of the user's income transactions and any notable trends, such as regular payments that might indicate stable salary deposits or irregular large amounts that could suggest freelance payments.`;
 
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.gpt3_5Turbo,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in finance management, income and expense analysis." },
             { role: "user", content: userInput },
-            // { role: "system", content: systemPromptForIncomeAnalysis },
             { role: "system", content: systemMessageContent }
           ],
           max_tokens: 2000,
@@ -306,18 +261,15 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Subscriptions') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedSubscriptions = "";
         try {
           if (subscriptions.length > 0) {
@@ -328,7 +280,6 @@ const Chatbot = () => {
               return `Date: ${date.replace(/ /g, ' ')} - Name: ${subscription.name} - Importance: ${subscription.Importance} - Value: $${value} - Frequency: ${subscription.category}`;
             }).join(", ");
             systemMessageContent = `The user's subscriptions details are as follows: ${formattedSubscriptions}`;
-            console.log("formattedSubscriptions", formattedSubscriptions)
           }
           else{
             systemMessageContent = "The user has no recorded subscriptions yet. Let the user know he has no subscription yet.";
@@ -338,8 +289,6 @@ const Chatbot = () => {
 
           console.error("Error formatting subscriptions: ", error);
         }
-
-      console.log('Subscription in handleSend: ', systemMessageContent)
 
       try {
         const response = await axios.post(api, {
@@ -358,18 +307,15 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Loans') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedLoansAndDebts = "";
         try {
           if (loansAndDebts.length > 0) {
@@ -385,7 +331,6 @@ const Chatbot = () => {
               return `Creation Date: ${createDate} - Due Date: ${dueDate} - Name: ${loan.name} - Value: $${value} - Frequency: ${loan.category}`;
             }).join(", ");
             systemMessageContent = `The user's loans and debts details are as follows: ${formattedLoansAndDebts}`;
-            console.log("formattedSubscriptions", formattedLoansAndDebts)
           }
           else{
             systemMessageContent = "The user has no recorded loans or debts yet. Let the user know he has no loans or debts yet so he is lucky.";
@@ -395,8 +340,6 @@ const Chatbot = () => {
 
           console.error("Error formatting loans: ", error);
         }
-
-      console.log('Loans in handleSend: ', systemMessageContent)
 
       try {
         const response = await axios.post(api, {
@@ -415,18 +358,15 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Bills') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedBills = "";
         try {
           if (bills.length > 0) {
@@ -439,7 +379,6 @@ const Chatbot = () => {
               return `Date: ${date} - Name: ${bill.name} bill - Value: $${value}`;
             }).join(", ");
             systemMessageContent = `The user's bills are detailed below, providing insights into upcoming dues and financial commitments: ${formattedBills}`;
-            console.log("formattedBills", formattedBills)
           }
           else{
             systemMessageContent = "The user has no recorded bills yet. Let the user know he has no bills yet so he is lucky.";
@@ -449,8 +388,6 @@ const Chatbot = () => {
 
           console.error("Error formatting loans: ", error);
         }
-
-      console.log('Loans in handleSend: ', systemMessageContent)
 
       try {
         const response = await axios.post(api, {
@@ -469,27 +406,23 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Cryptos') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedCryptos = "";
         try {
           if (cryptocurrencies.length > 0) {
             formattedCryptos = cryptocurrencies.map(crypto => {
-              const amountFormatted = crypto.amount.toFixed(3); // Ensure 3 decimal places
+              const amountFormatted = crypto.amount.toFixed(3);
               return `Cryptocurrency Name: ${crypto.name} - Share amount: ${amountFormatted}`;
             }).join(", ");
             systemMessageContent = `The user's cryptocurrency portfolio is detailed below: ${formattedCryptos}. Please provide the current value analysis based on these holdings.`;
-            console.log("formattedCryptos", formattedCryptos)
           }
           else{
             systemMessageContent = "The user has no cryptos yet. Let the user know he has no cryptocurrencies yet.";
@@ -499,8 +432,6 @@ const Chatbot = () => {
 
           console.error("Error formatting loans: ", error);
         }
-
-      console.log('Loans in handleSend: ', systemMessageContent)
 
       try {
         const response = await axios.post(api, {
@@ -519,27 +450,23 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Stocks') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedStocks  = "";
         try {
           if (stocks.length > 0) {
             formattedStocks = stocks.map(stock => {
-              const amountFormatted = stock.amount.toFixed(3); // Ensure 3 decimal places
+              const amountFormatted = stock.amount.toFixed(3);
               return `Stock Name: ${stock.name} - Share amount: ${amountFormatted}`;
             }).join(", ");
             systemMessageContent = `The user's stock portfolio is detailed below: ${formattedStocks}. Please provide the current value analysis based on these holdings.`;
-            console.log("formattedCryptos", formattedStocks)
           }
           else{
             systemMessageContent = "The user has no cryptos yet. Let the user know he has no cryptocurrencies yet.";
@@ -549,8 +476,6 @@ const Chatbot = () => {
 
           console.error("Error formatting loans: ", error);
         }
-
-      console.log('Loans in handleSend: ', systemMessageContent)
 
       try {
         const response = await axios.post(api, {
@@ -569,18 +494,15 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
       if (currentTopic === 'Goals') {
-        console.log("CURRENT TOPIC IS: ", currentTopic)
         let formattedGoals = "";
         const today = new Date();
         const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -595,7 +517,6 @@ const Chatbot = () => {
               return `| Goal Name: ${goal.Name} - Already saved amount: $${goal.Current_Ammount.toFixed(0)} - Needed amount: $${goal.Total_Ammount.toFixed(0)} - Approximately  Due Date: ${dueDate} |`;
             }).join(", ");
             systemMessageContent = `As of today, ${todayFormatted}, the user's financial goals are detailed below: ${formattedGoals}. Please provide advice on how the user can efficiently meet these goals based on their current progress and the timelines.`;
-            console.log("formattedGoals", formattedGoals)
           }
 
           else{
@@ -607,11 +528,9 @@ const Chatbot = () => {
           console.error("Error formatting goals: ", error);
         }
 
-      console.log('goals: ', systemMessageContent)
-
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.gpt3_5Turbo,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in financial goal planning and advising on saving strategies." },
             { role: "user", content: userInput },
@@ -626,14 +545,12 @@ const Chatbot = () => {
         });
     
         setConversation(prev => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
-        // After the chatbot response, ask if the user wants to continue with the current topic.
         setConversation(prev => [...prev, basicMessages.askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation(prev => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
       }
     
-      // Reset user input after sending
       setUserInput('');
       }
     
@@ -643,7 +560,6 @@ const Chatbot = () => {
   }
 
     if (isLoading) {
-      console.log("CHATBOT IS LOADING")
       return <ActivityIndicator size="large" color="#0000ff" />;
     }
     
@@ -679,20 +595,20 @@ const Chatbot = () => {
 
             <View style={styles.inputContainer}>
             <TextInput
-                style={[styles.input, showTopics && styles.inputDisabled]} // Apply the disabled style conditionally
+                style={[styles.input, showTopics && styles.inputDisabled]} 
                 onChangeText={setUserInput}
                 value={userInput}
                 placeholder="Ask me anything..."
                 placeholderTextColor="#999"
                 returnKeyType="send"
                 onSubmitEditing={handleSend}
-                editable={!showTopics} // Disable input when topics are visible
+                editable={!showTopics}
             />
 
             <TouchableOpacity 
                 style={styles.sendButton} 
                 onPress={handleSend}
-                disabled={!userInput.trim()} // Disable if input is empty or topics are visible
+                disabled={!userInput.trim()} 
             >
                 <Icon name="send" size={24} color="#fff" />
             </TouchableOpacity>
@@ -706,14 +622,14 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        justifyContent: 'space-between', // Ensures input area stays visible
+        justifyContent: 'space-between',
     },
     conversationContainer: {
         flex: 1,
         marginBottom: 20,
     },
     input: {
-        flex: 1, // TextInput will take up as much space as possible, pushing the button to the end
+        flex: 1,
         height: 40,
         borderColor: '#ddd',
         borderWidth: 1,
@@ -754,16 +670,16 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     inputDisabled: {
-      backgroundColor: '#f0f0f0', // or any color that indicates it's disabled
-      color: '#999', // optional: change text color to indicate it's disabled
+      backgroundColor: '#f0f0f0', 
+      color: '#999', 
     },
     sendButton: {
-        height: 40, // Match height of TextInput
+        height: 40, 
         borderTopRightRadius: 20,
         borderBottomRightRadius: 20,
         backgroundColor: '#35BA52',
-        justifyContent: 'center', // Center the icon vertically
-        paddingHorizontal: 12, // You can adjust padding to adjust the size of the button
+        justifyContent: 'center', 
+        paddingHorizontal: 12,
         marginBottom: 6
       },
       sendButtonText: {
@@ -771,30 +687,27 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       topicContainer: {
-        flexDirection: 'row', // Align items in a row
-        flexWrap: 'wrap', // Allow items to wrap to the next line
-        justifyContent: 'center', // Center items in the container
-        // padding: 4, // Add padding around the container
+        flexDirection: 'row', 
+        flexWrap: 'wrap', 
+        justifyContent: 'center', 
         marginBottom: 3,
 
       },
       topicButton: {
-        backgroundColor: '#4CAF50', // Green background
-        paddingVertical: 8, // Vertical padding
-        paddingHorizontal: 7, // Horizontal padding
+        backgroundColor: '#4CAF50', 
+        paddingVertical: 8, 
+        paddingHorizontal: 7,
         height: 40,
-        margin: 4, // Margin around the buttons
-        borderRadius: 10, // Rounded corners
-        // Adding flex basis for equal width & margins for three buttons per row
+        margin: 4, 
+        borderRadius: 10, 
         flexBasis: '30%', 
-        justifyContent: 'center', // Center text horizontally in button
-        alignItems: 'center', // Center text vertically in button
+        justifyContent: 'center', 
+        alignItems: 'center', 
       },
       topicText: {
-        color: '#fff', // White text color
-        fontSize: 14, // Font size
+        color: '#fff', 
+        fontSize: 14, 
       },
 });
-
 
 export default Chatbot;

@@ -1,15 +1,11 @@
-// AnalyticsScreen.js
 import React from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-// Statistics data array removed for brevity
-
 const AnalyticsScreen = () => {
   const navigation = useNavigation();
   
-  // Helper function for navigating to the appropriate analytics screen
   const navigateToAnalytics = (analyticsType) => {
     let routeName = '';
     switch (analyticsType) {
@@ -25,16 +21,12 @@ const AnalyticsScreen = () => {
       case 'stocksAndCrypto':
         routeName = 'Investments';
         break;
-      // Add more cases as needed
       default:
-        // Handle unknown analyticsType
-        console.warn('Unknown analytics type:', analyticsType);
         return;
     }
     navigation.navigate(routeName);
   };
 
-  // StatisticsCard component extracted for clarity
   const StatisticCard = ({ title, desc, iconName, iconColor, analyticsType }) => {
     return (
       <TouchableOpacity
@@ -52,7 +44,6 @@ const AnalyticsScreen = () => {
     );
   };
 
-  // Statistics array reinstated for rendering { title: 'Balance', amount: '3 920 941,00 Ft', iconName: 'wallet', iconColor: '#007AFF', analyticsType: 'balance' },
   const statistics = [
     { title: 'Spendings', desc: 'Check your spendings analytics', iconName: 'shopping-cart', iconColor: '#FF9500', analyticsType: 'spendings'},
     { title: 'Cash Flow', desc: 'Have you earned more than you spent?', iconName: 'exchange-alt', iconColor: '#FF3B30', analyticsType: 'cashFlow' },
@@ -76,7 +67,6 @@ const AnalyticsScreen = () => {
   );
 };
 
-// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -114,10 +104,7 @@ const styles = StyleSheet.create({
   cardAmount: {
     fontSize: 15,
     color: 'grey',
-    // paddingRight: 20
-
   },
-  // Add other styles if necessary
 });
 
 export default AnalyticsScreen;

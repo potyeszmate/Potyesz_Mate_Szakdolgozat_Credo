@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
 import React from 'react';
-import { Colors } from '../../constants/styles';
+import { Colors } from '../../commonConstants/styles';
 
 // Import the image using a relative path
 const AppleIcon = require('../../assets/apple.png');

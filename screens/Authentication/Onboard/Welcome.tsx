@@ -1,33 +1,21 @@
-/* eslint-disable no-undef */
-// WelcomeScreen.js
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '../../../constants/styles';
 
 const Welcome: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const handleCreateAccount = () => {
-  };
-
-  const handleSignIn = () => {
-   
-  };
 
   return (
     <View style={styles.container}>
-      {/* Top part */}
       <Text style={styles.welcomeText}>Welcome to Credo</Text>
         <View style={styles.subtitleContainer}>
         <Text style={styles.subtitleFirstRow}>Let’s get you to</Text>
         <Text style={styles.subtitleSecondRow}>the top of your finances</Text>
         </View>
 
-      {/* Centered image */}
       <Image
         source={require('../../../assets/credo-plan.png')} 
         style={styles.centeredImage}
       />
 
-      {/* Bottom buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.createAccountButton}
@@ -56,25 +44,22 @@ const styles = StyleSheet.create({
   },
     welcomeText: {
         color: '#1CB854',
-        fontSize: 18, // Updated size for Welcome text
+        fontSize: 18, 
         fontWeight: 'bold',
         marginBottom: 20,
         marginTop: -60,
-        // fontFamily: 'Inter',
       },
       subtitleContainer: {
         alignItems: 'center',
         marginBottom: 60,
       },
       subtitleFirstRow: {
-        // fontFamily: 'Inter',
         fontSize: 27,
         fontWeight: '700',
         textAlign: 'center',
         marginBottom: 5,
       },
       subtitleSecondRow: {
-        // fontFamily: 'Inter',
         fontSize: 27,
         fontWeight: '700',
         textAlign: 'center',
@@ -112,12 +97,12 @@ const styles = StyleSheet.create({
         borderColor: '#1CB854',
       },
       buttonTextSignIn: {
-        color: '#1CB854', // Corrected text color for Sign in button
+        color: '#1CB854', 
         fontSize: 16,
         fontWeight: 'bold',
       },
     buttonTextSignUp: {
-      color: 'white', // For Create account button
+      color: 'white',
       fontSize: 16,
       fontWeight: 'bold',
     },

@@ -19,8 +19,6 @@ const LoginScreen: React.FC = () => {
       setIsAuthenticating(false);
 
     } catch (error) {
-      console.error(error);
-
       Alert.alert(
         'Authentication failed!',
         'Could not log you in. Please check your credentials or try again later!'

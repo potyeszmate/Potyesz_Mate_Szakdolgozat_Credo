@@ -9,3 +9,5 @@ export const getCurrencySymbol = (currencyCode: any): string => {
     };
     return symbols[currencyCode] || '';
 };
+
+// TODO: Move all common methods here

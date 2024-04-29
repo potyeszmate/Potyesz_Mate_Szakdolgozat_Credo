@@ -1,28 +1,29 @@
 /* eslint-disable no-undef */
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, FlatList, Image, ActivityIndicator, Keyboard } from 'react-native';
-import { AuthContext } from '../../store/auth-context';
-import { db } from '../../firebaseConfig';
+import { AuthContext } from '../../../store/auth-context';
+import { db } from '../../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import RecurringBillsInput from '../../components/ui/RecurringBillsInput';
+import RecurringTransactionInput from '../../../components/ui/RecurringTransactionInput';
+import RecurringLoanInput from '../../../components/ui/RecurringLoanInput';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { convertCurrencyToCurrency } from '../../util/conversion';
+import { convertCurrencyToCurrency } from '../../../util/conversion';
 
 const iconMapping: { [key: string]: any } = {
-  Electricity: require('../../assets/Recurrings/electricity.png'),
-  Water: require('../../assets/Recurrings/water.png'),
-  Gas: require('../../assets/Recurrings/gas.png'),
-  Phone: require('../../assets/Recurrings/phone.png'),
-  Internet: require('../../assets/Recurrings/internet.png'),
-  Hospitality: require('../../assets/Recurrings/hospitality.png'),
+  'Credit card' : require('../../../assets/Recurrings/Credit_card.png'),
+  'Mortgage' : require('../../../assets/Recurrings/Mortgage.png'),
+  'Bank loan': require('../../../assets/Recurrings/Bank_loan.png'),
+  'Personal loan': require('../../../assets/Recurrings/Personal_loan.png'),
+  'Student loan': require('../../../assets/Recurrings/Student_loan.png'),
+  'Car loan': require('../../../assets/Recurrings/Car_loan.png'),
 };
 
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
+import en from '../../../languages/en.json';
+import de from '../../../languages/de.json';
+import hu from '../../../languages/hu.json';
 
 
 const languages: any = {
@@ -31,7 +32,9 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const Bills = () => {
+// !TODO! - Refactor - Make a shared, dynamic component from the subpages
+
+const LoansAndDebt = () => {
   const navigation = useNavigation();
   const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
   const bottomSheetRef = useRef<any>(null);
@@ -41,38 +44,21 @@ const Bills = () => {
   const [selectedRecurringTransaction, setSelectedRecurringTransaction] = useState<any>(null);
   const [selectedRecurringTransactionId, setSelectedRecurringTransactionId] = useState<string | null>(null);
   const [userSettings, setUserSettings] = useState<any>({});
-  const [conversionRate, setConversionRate] = useState<number | null>(null);
+  const [conversionRate, setConversionRate] = useState<number>(null);
   const [prevCurrency, setPrevCurrency] = useState<string | null>(null);
   const [symbol, setSymbol] = useState<any>('');
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
-  const [loading, setLoading] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState('English'); 
+  const [loading, setLoading] = useState(true); 
 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
-
-  const getSelectedLanguage = async () => {
-    try {
-      const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-      if (selectedLanguage !== null) {
-        console.log(selectedLanguage)
-        setSelectedLanguage(selectedLanguage);
-      }
-    } catch (error) {
-      console.error('Error retrieving selected language:', error);
-    }
-  };
-
-  const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
-  };
 
   const fetchRecurringTransactions = async () => {
     try {
       setLoading(true);
 
       const recurringTransactionsQuery = query(
-        collection(db, 'bills'),
+        collection(db, 'loans_and_debt'),
         where('uid', '==', userId)
       );
       const querySnapshot = await getDocs(recurringTransactionsQuery);
@@ -85,14 +71,29 @@ const Bills = () => {
 
     } catch (error: any) {
       console.error('Error fetching recurring transactions:', error.message);
-      setLoading(false);
+      setLoading(true);
 
     }
   };
 
+  const getSelectedLanguage = async () => {
+    try {
+      const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
+      if (selectedLanguage !== null) {
+        setSelectedLanguage(selectedLanguage);
+      }
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
+    }
+  };
+
+  const fetchLanguage = async () => {
+    const language = await getSelectedLanguage();
+  };
+
   const fetchUserSettings = async () => {
     try {
-      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId))
+      const settingsQuery = query(collection(db, 'users'),  where('uid', '==', userId));
       const querySnapshot = await getDocs(settingsQuery);
   
       if (!querySnapshot.empty) {
@@ -100,10 +101,9 @@ const Bills = () => {
         if (userData) {
           setUserSettings(userData);
         } else {
-          console.log('No user data found.');
         }
       } else {
-        console.log('No documents found.');
+        console.error('No documents found.');
       }
     } catch (error: any) {
       console.error('Error fetching settings:', error.message);
@@ -168,7 +168,7 @@ const Bills = () => {
 
   const addTransactionHandler = async (newRecurringTransaction: any) => {
     try {
-      await addDoc(collection(db, 'bills'), {
+      await addDoc(collection(db, 'loans_and_debt'), {
         ...newRecurringTransaction,
         uid: userId,
       });
@@ -191,7 +191,7 @@ const Bills = () => {
 
   const deleteRecurringTransactionHandler = async (recurringTransactionId: string) => {
     try {
-      const docRef = doc(db, 'bills', recurringTransactionId);
+      const docRef = doc(db, 'loans_and_debt', recurringTransactionId);
       await deleteDoc(docRef);
       fetchRecurringTransactions();
       setDeleteModalVisible(false);
@@ -203,7 +203,7 @@ const Bills = () => {
   const editRecurringTransactionHandler = async (editedRecurringTransaction: any) => {
     try {
       const { id, ...editedData } = editedRecurringTransaction;
-      const docRef = doc(db, 'bills', id);
+      const docRef = doc(db, 'loans_and_debt', id);
       await updateDoc(docRef, editedData);
       fetchRecurringTransactions();
       setEditModalVisible(false);
@@ -219,6 +219,7 @@ const Bills = () => {
     fetchRecurringTransactions();
     fetchUserSettings();
     fetchLanguage();
+
   }, []);
 
   return (
@@ -229,17 +230,16 @@ const Bills = () => {
         <View style={styles.totalRow}>
         <Text style={styles.totalLabel}>{languages[selectedLanguage].total}</Text>
           {loading ? (
-                <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
-              ) : (          
-              <Text style={styles.totalSubscriptions}>
-              {`${totalSubscriptions} ${totalSubscriptions !== 1 ? languages[selectedLanguage].bills : languages[selectedLanguage].bills}`}
-              </Text>
-          )}
-
+              <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
+            ) : (
+            <Text style={styles.totalSubscriptions}>
+              {`${totalSubscriptions} ${totalSubscriptions !== 1 ? languages[selectedLanguage].loans : languages[selectedLanguage].loan}`}
+            </Text>
+            )}
         </View>
         {loading ? (
-            <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
-        ) : (
+          <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
+          ) : (
           <View style={styles.totalRow}>
             {conversionRate !== null ? (
                 <Text style={styles.totalValue}> {userSettings.currency === 'HUF' ? 
@@ -251,83 +251,87 @@ const Bills = () => {
                   <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
                 )}
           </View>
-        )}
+         )}
 
       </View>
 
       {loading ? (
           <ActivityIndicator size="large" color="#000" style={styles.loadingIndicator} />
-        ) : (
-      <FlatList
-        data={recurringTransactions}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => {
-
-          const transactionDate = item.Date.toDate();  // Assuming 'item.date' is a Firebase Timestamp
+      ) : (
+        <FlatList
+          data={recurringTransactions}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => {
+            const transactionDate = item.Date.toDate();  
             const now = new Date();
             const isPastDate = transactionDate.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0);
-
+            
             return (
-
-          <TouchableOpacity style={styles.transactionItem} onPress={() => handleEditIconClick(item)}>
-            <View style={styles.transactionIcon}>
-            <Image source={iconMapping[item.name]} style={styles.iconImage} />
-            </View>
-            <View style={styles.transactionInfo}>
-              <Text style={styles.transactionName}>{languages[selectedLanguage][item.name]}</Text>
-              <View style={styles.categoryDateContainer}>
-                <Text style={[styles.transactionCategory, { color: '#888' }]}>                
-                  {languages[selectedLanguage][item.category]}
-                </Text>
-                <View style={styles.separator} />
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity style={styles.transactionItem} onPress={() => handleEditIconClick(item)}>
+              <View style={styles.transactionIcon}>
+              <Image source={iconMapping[item.name]} style={styles.iconImage} />
+              </View>
+              <View style={styles.transactionInfo}>
+                <Text style={styles.transactionName}>{languages[selectedLanguage][item.name]}</Text>
+                <View style={styles.categoryDateContainer}>
+                  <Text style={[styles.transactionCategory, { color: '#888' }]}>               
+                    {languages[selectedLanguage][item.category]}
+                  </Text>
+                  <View style={styles.separator} />
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Text style={[styles.transactionDate, isPastDate ? styles.pastDateText : null]}>
                         {transactionDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </Text>
                       {isPastDate && <Feather name="alert-circle" size={16} style={styles.warningIcon} />}
+                    </View>
                 </View>
               </View>
-            </View>
-            <View style={styles.transactionAmount}>
-              {conversionRate !== null ? (
-              <Text style={styles.transactionAmountValue}> {userSettings.currency === 'HUF' ? 
-                  Math.round(parseFloat(item.value) * conversionRate) :
-                  (parseFloat(item.value) * conversionRate).toFixed(2)
-                } {symbol}
-              </Text>
-              ) : (
-                <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
-              )}
-            </View>
-          </TouchableOpacity>
-)
-}}      />
+              <View style={styles.transactionAmount}>
+                {conversionRate !== null ? (
+                <Text style={styles.transactionAmountValue}>  {userSettings.currency === 'HUF' ? 
+                    Math.round(parseFloat(item.value) * conversionRate) :
+                    (parseFloat(item.value) * conversionRate).toFixed(2)
+                  } {symbol}
+                </Text>
+                ) : (
+                  <Text style={styles.loadingText}>{languages[selectedLanguage].loading}</Text>
+                )}
+              </View>
+            </TouchableOpacity>
+            )
+          }}
+          />
       )}
 
-      
-        {/* Delete Modal */}
-        <Modal
-          visible={deleteModalVisible}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setDeleteModalVisible(false)}
-        >
-          <View style={styles.deleteModalContainer}>
-            <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalText}>{languages[selectedLanguage].deleteBillModalText}</Text>
-              <View style={styles.deleteModalButtons}>
-                <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.deleteModalButton}>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
+        <Text style={styles.addButtonText}>{languages[selectedLanguage].addLoan}</Text>
+      </TouchableOpacity>
+
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.deleteModalContainer}>
+          <View style={styles.deleteModalContent}>
+          <Text style={styles.deleteModalText}>{languages[selectedLanguage].deleteLoanModalText}</Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.deleteModalButton}>
                 <Text style={styles.deleteModalButtonText}>{languages[selectedLanguage].no}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => deleteRecurringTransactionHandler(selectedRecurringTransactionId!)} style={[styles.deleteModalButton, styles.deleteModalButtonYes]}>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteRecurringTransactionHandler(selectedRecurringTransactionId!)} style={[styles.deleteModalButton, styles.deleteModalButtonYes]}>
                 <Text style={styles.deleteModalButtonText}>{languages[selectedLanguage].yes}</Text>
-                </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
 
-        {/* Edit Modal */}
         <Modal
           visible={editModalVisible}
           transparent={true}
@@ -335,11 +339,11 @@ const Bills = () => {
           onRequestClose={() => {
             Keyboard.dismiss();
             setEditModalVisible(false);
-          }}         >
+          }}          >
           <Pressable
             style={styles.modalBackground}
             onPress={() => {
-              Keyboard.dismiss(); // Dismiss the keyboard when the background is pressed
+              Keyboard.dismiss(); 
             }}
           >
             <BottomSheet
@@ -348,7 +352,7 @@ const Bills = () => {
               snapPoints={snapPoints}
               enablePanDownToClose
               onClose={() => {
-                Keyboard.dismiss(); // Also dismiss the keyboard when the BottomSheet is closed
+                Keyboard.dismiss(); 
                 setEditModalVisible(false);
               }}
               backgroundComponent={({ style }) => (
@@ -356,7 +360,7 @@ const Bills = () => {
               )}
             >
               <View style={styles.contentContainer}>
-                <RecurringBillsInput
+                <RecurringLoanInput
                   initialRecurringTransaction={selectedRecurringTransaction}
                   onAddRecurringTransaction={editRecurringTransactionHandler}
                   conversionRate = {conversionRate}
@@ -370,7 +374,6 @@ const Bills = () => {
           </Pressable>
         </Modal>
 
-        {/* Add Modal */}
         <Modal
           visible={modalVisible}
           transparent={true}
@@ -378,20 +381,18 @@ const Bills = () => {
           onRequestClose={() => {
             Keyboard.dismiss();
             setModalVisible(false);
-          }}         >
+          }}        >
           <Pressable
             style={styles.modalBackground}
-            onPress={() => {
-              setModalVisible(false)
-              Keyboard.dismiss(); // Dismiss the keyboard when the background is pressed
-            }}>
+            onPress={() => setModalVisible(false)}
+          >
             <BottomSheet
               ref={bottomSheetRef}
               index={2}
               snapPoints={snapPoints}
               enablePanDownToClose
               onClose={() => {
-                Keyboard.dismiss(); // Also dismiss the keyboard when the BottomSheet is closed
+                Keyboard.dismiss(); 
                 setModalVisible(false);
               }}
               backgroundComponent={({ style }) => (
@@ -399,7 +400,7 @@ const Bills = () => {
               )}
             >
               <View style={styles.contentContainer}>
-                <RecurringBillsInput
+                <RecurringLoanInput
                   onAddRecurringTransaction={addTransactionHandler}
                   conversionRate = {conversionRate}
                   currency = {userSettings.currency}
@@ -416,43 +417,41 @@ const Bills = () => {
         onPress={() => setModalVisible(true)}
       >
         <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
-        <Text style={styles.addButtonText}>{languages[selectedLanguage].addBill}</Text>
+        <Text style={styles.addButtonText}>{languages[selectedLanguage].addLoan}</Text>
       </TouchableOpacity>
 
     </View>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 16,
   },
   listContainer: {
     flex: 1,
-    maxHeight: '65%', // Adjust as needed
+    maxHeight: '65%', 
     marginBottom: 20,
   },
   addButton: {
     position: 'absolute',
-    bottom: 20, // Adjust as needed
-    left: 21, // Align with the left edge of the screen
-    right: 21, // Align with the right edge of the screen
+    bottom: 20,
+    left: 21, 
+    right: 21, 
     backgroundColor: '#35BA52',
     borderRadius: 20,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    zIndex: 1, // Ensure the button appears above other content
+    zIndex: 1, 
   },
   addIcon: {
     marginRight: 8,
   },
   loadingText: {
     fontSize: 16,
-    color: '#888', // Example color
+    color: '#888',
     fontStyle: 'italic',
   },  
   addButtonText: {
@@ -461,7 +460,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   space: {
-    marginBottom: 20, // Adjust this value to change the amount of space
+    marginBottom: 20, 
   },
   transactionItem: {
     flexDirection: 'row',
@@ -511,14 +510,14 @@ const styles = StyleSheet.create({
   bottomSheetBackground: {
     backgroundColor: 'white',
     flex: 1,
-    borderTopLeftRadius: 20, // Rounded corners on the top-left
-    borderTopRightRadius: 20, // Rounded corners on the top-right
-    overflow: 'hidden', // Ensures children don't overflow rounded corners
+    borderTopLeftRadius: 20, 
+    borderTopRightRadius: 20,
+    overflow: 'hidden', 
   },
   modalBackground: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dark overlay for the modal background
-    justifyContent: 'flex-end', // Aligns the BottomSheet to the bottom
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    justifyContent: 'flex-end', 
   },
   categoryDateContainer: {
     flexDirection: 'row',
@@ -574,13 +573,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    // padding: 5,
     marginBottom: 16,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#F3F4F7',
-    // marginLeft: 5,
-    // marginRight: 5
   },
   totalCard: {
     borderRadius: 20,
@@ -612,9 +608,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loadingIndicator: {
-    // position: 'absolute',
     alignSelf: 'center',
-    marginTop: 200, // Adjust as needed
+    marginTop: 200, 
   },
   pastDateText: {
     color: 'red',
@@ -625,4 +620,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Bills;
+export default LoansAndDebt;

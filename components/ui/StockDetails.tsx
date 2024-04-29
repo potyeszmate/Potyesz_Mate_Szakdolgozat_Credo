@@ -55,7 +55,7 @@ const StockDetails = () => {
 
         const logo = companyLogo;  // Ensure the correct path to logo
         const description = info.description;  // Ensure the correct path to description
-        const price = priceResponse.ticker.day.c;   //priceResponse.ticker.day.c
+        const price = priceResponse.ticker.min.c;   //priceResponse.ticker.day.c
         const percent_change_24h = priceResponse.ticker.todaysChangePerc;
 
         setStockDetails({

@@ -1,3 +1,4 @@
+// TODO: Move the prompts, and basic message string to here from chatbot.tsx 
 
 export const prompts = {
     analyzeSpendingHabits: "Analyze the user's spending habits based on their transaction history. Highlight any significant spending patterns, like frequent purchases in a particular category or unusually large transactions. Consider seasonal variations or monthly trends.",

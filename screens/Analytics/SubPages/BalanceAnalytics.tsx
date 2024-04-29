@@ -4,17 +4,19 @@ import { Text } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { Feather } from '@expo/vector-icons';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import { AuthContext } from "../../store/auth-context";
-import CashFlowSummary from "../../components/ui/CashFlowSummary";
+import { db } from '../../../firebaseConfig';
+import { AuthContext } from "../../../store/auth-context";
+import CashFlowSummary from "../../../components/ui/CashFlowSummary";
 
-const SpendingAnalytics = () => {
+const BalanceAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [filterModalVisible, setFilterModalVisible] = useState(false);
-    const [filterType, setFilterType] = useState('monthly'); // 'monthly', 'weekly', 'yearly'
+    const [filterType, setFilterType] = useState('monthly');
     const [transactions, setTransactions] = useState<any[]>([]);
     const [incomes, setIncomes] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // New state to track loading status
+    const [balance, setBalance] = useState<any>({});
+
+    const [isLoading, setIsLoading] = useState(true);
 
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
@@ -43,6 +45,7 @@ const SpendingAnalytics = () => {
           const querySnapshot = await getDocs(transactionsQuery);
           const fetchedTransactions = querySnapshot.docs.map((doc) => ({
             id: doc.id,
+            type: 'expense',
             ...doc.data(),
           })) as any[];
     
@@ -52,12 +55,22 @@ const SpendingAnalytics = () => {
         }
     };
 
+    const fetchBalance = async () => {
+        const balanceQuery = query(collection(db, 'balance'), where('uid', '==', userId));
+        const querySnapshot = await getDocs(balanceQuery);
+        const balanceData = querySnapshot.docs[0]?.data();
+        if (balanceData) {
+            setBalance(balanceData.ammount); 
+        }
+      };
+
     const fetchIncomes = async () => {
         try {
           const incomeQuery = query(collection(db, 'incomes'), where('uid', '==', userId));
           const querySnapshot = await getDocs(incomeQuery);
           const fetchedIcomes = querySnapshot.docs.map((doc) => ({
             id: doc.id,
+            type: 'income',
             ...doc.data(),
           })) as any[];
     
@@ -97,18 +110,18 @@ const SpendingAnalytics = () => {
       
         if (filterType === 'monthly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Assuming transaction.date is a Firestore Timestamp
+            const transactionDate = new Date(transaction.date.seconds * 1000); 
             return transactionDate.getMonth() === currentDate.getMonth() &&
                    transactionDate.getFullYear() === currentDate.getFullYear();
           });
         } else if (filterType === 'weekly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            const transactionDate = new Date(transaction.date.seconds * 1000);
             return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
           });
         } else if (filterType === 'yearly') {
           filteredTransactions = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date.seconds * 1000); // Convert to Date object
+            const transactionDate = new Date(transaction.date.seconds * 1000); 
             return transactionDate.getFullYear() === currentDate.getFullYear();
           });
         }
@@ -125,18 +138,18 @@ const SpendingAnalytics = () => {
       
         if (filterType === 'monthly') {
             filteredIncomes = incomes.filter((income) => {
-            const incomeDate = new Date(income.date.seconds * 1000); // Assuming transaction.date is a Firestore Timestamp
+            const incomeDate = new Date(income.date.seconds * 1000);
             return incomeDate.getMonth() === currentDate.getMonth() &&
             incomeDate.getFullYear() === currentDate.getFullYear();
           });
         } else if (filterType === 'weekly') {
             filteredIncomes = incomes.filter((income) => {
-            const incomeDate = new Date(income.date.seconds * 1000); // Convert to Date object
+            const incomeDate = new Date(income.date.seconds * 1000);
             return incomeDate >= startOfWeek && incomeDate <= endOfWeek;
           });
         } else if (filterType === 'yearly') {
             filteredIncomes = incomes.filter((income) => {
-            const incomeDate = new Date(income.date.seconds * 1000); // Convert to Date object
+            const incomeDate = new Date(income.date.seconds * 1000);
             return incomeDate.getFullYear() === currentDate.getFullYear();
           });
         }
@@ -146,37 +159,19 @@ const SpendingAnalytics = () => {
          
     const memoizedFilteredTransactions = useMemo(() => filterTransactionsByDate(), [transactions, currentDate, filterType]);
     const memoizedIncomeTransactions = useMemo(() => filterIncomesByDate(), [incomes, currentDate, filterType]);
-
-    const calculateCashFlow = (transactions, incomes) => {
-        const totalExpenses = transactions.reduce((sum, item) => sum + Number(item.value), 0);
-        const totalIncome = incomes.reduce((sum, item) => sum + Number(item.value), 0);
-        const netCashFlow = totalIncome - totalExpenses;
-      
-        return {
-          totalExpenses,
-          totalIncome,
-          netCashFlow
-        };
-      };
-      
-      const cashFlowData = useMemo(() => {
-        return calculateCashFlow(memoizedFilteredTransactions, memoizedIncomeTransactions);
-      }, [memoizedFilteredTransactions, memoizedIncomeTransactions]);
-      
+ 
       
       useEffect(() => {
         const fetchData = async () => {
-            console.log("fetching data")
-            setIsLoading(true); // Start loading
-            await Promise.all([fetchTransactions(), fetchIncomes()]);
-            setIsLoading(false); // End loading once both promises are resolved
+            setIsLoading(true); 
+            await Promise.all([fetchTransactions(), fetchIncomes(), fetchBalance()]);
+            setIsLoading(false); 
           };
           
         fetchData();
       }, [userId, filterType])
 
       if (isLoading) {
-        // Display an activity indicator when data is loading
         return (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#0000ff" />
@@ -202,18 +197,13 @@ const SpendingAnalytics = () => {
             </View>
 
             <ScrollView >
-            <CashFlowSummary 
-                totalIncome={cashFlowData.totalIncome} 
-                totalExpenses={cashFlowData.totalExpenses} 
-                netCashFlow={cashFlowData.netCashFlow} 
-            />
             </ScrollView>
 
             <Modal
                 visible={filterModalVisible}
                 animationType="slide"
                 transparent={true}
-                onRequestClose={() => setFilterModalVisible(false)}  // This allows pressing the hardware back button on Android to close the modal.
+                onRequestClose={() => setFilterModalVisible(false)}
                 >
                 <View style={styles.modalContent}>
                 <View style={styles.modalHeader}>
@@ -283,14 +273,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.08,
         shadowRadius: 6,
-        elevation: 5,  // For Android
+        elevation: 5, 
       },
       modalHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        // padding: 16,
-    
+        alignItems: 'center',    
       },
       modalHeaderText: {
         fontSize: 18,
@@ -299,7 +287,7 @@ const styles = StyleSheet.create({
         marginRight: 'auto'
       },
       closeButton: {
-        padding: 10,  // Padding makes it easier to tap
+        padding: 10,
       },
       centered: {
         flex: 1,
@@ -308,4 +296,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default SpendingAnalytics;
+export default BalanceAnalytics;

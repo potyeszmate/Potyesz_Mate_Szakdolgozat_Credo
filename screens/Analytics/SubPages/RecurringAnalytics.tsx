@@ -1,11 +1,11 @@
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 import { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../../store/auth-context';
+import { AuthContext } from '../../../store/auth-context';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import RecurringDonutChart from '../../components/ui/RecurringDonutChart';
-import ImportanceBarChart from '../../components/ui/ImportanceBarChart';
-import LoanPaymentChart from '../../components/ui/LoanPaymentChart';
+import RecurringDonutChart from '../../../components/ui/RecurringDonutChart';
+import ImportanceBarChart from '../../../components/ui/ImportanceBarChart';
+import LoanPaymentChart from '../../../components/ui/LoanPaymentChart';
 
 const RecurringAnalytics = () => {
 
@@ -16,12 +16,6 @@ const RecurringAnalytics = () => {
 
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
-
-      //name: 
-      //category: -> weekly, monthly, yearly
-      //value: 
-      //Date:
-      //Importance: -> mandatory, necessary, neutral, negligible, 
 
     const fetchSubscriptions = async () => {
         try {
@@ -36,18 +30,12 @@ const RecurringAnalytics = () => {
             ...doc.data(),
           }));
     
-          console.log("fetchedRecurringTransactions", fetchedRecurringTransactions)
           setSubscriptions(fetchedRecurringTransactions);
         } catch (error: any) {
           console.error('Error fetching transactions:', error.message);
         }
       
     };
-
-      //name: 
-      //category: -> weekly, monthly, yearly
-      //value: 
-      //Date:
 
     const fetchBills = async () => {
         try {    
@@ -68,11 +56,6 @@ const RecurringAnalytics = () => {
         }
       };
 
-
-      //name: 
-      //category: -> weekly, monthly, yearly
-      //value: 
-      //Date:
     const fetchLoans = async () => {
         try {
     
@@ -93,18 +76,18 @@ const RecurringAnalytics = () => {
         }
     };
 
-    const adjustValueByCategory = (value, category) => {
+    const adjustValueByCategory = (value: any, category: any) => {
         let adjustedValue = value;
         if (category === 'Yearly') {
-          adjustedValue = value / 12; // Convert yearly to monthly
+          adjustedValue = value / 12;
         } else if (category === 'Weekly') {
-          adjustedValue = value * 4; // Convert weekly to monthly
+          adjustedValue = value * 4;
         }
-        return parseFloat(adjustedValue.toFixed(2)); // Round to two decimal places
+        return parseFloat(adjustedValue.toFixed(2));
     };
 
-    const generateChartData = (transactions) => {
-        return transactions.map((transaction) => ({
+    const generateChartData = (transactions: any) => {
+        return transactions.map((transaction: any) => ({
           name: transaction.name,
           value: adjustValueByCategory(transaction.value, transaction.category),
         }));
@@ -119,9 +102,9 @@ const RecurringAnalytics = () => {
           }));
       };
 
-      const calculateTotal = (transactions) => {
+      const calculateTotal = (transactions: any) => {
         return transactions.reduce(
-          (acc, transaction) => acc + adjustValueByCategory(transaction.value, transaction.category),
+          (acc: any, transaction: any) => acc + adjustValueByCategory(transaction.value, transaction.category),
           0
         );
       };
@@ -239,7 +222,6 @@ const RecurringAnalytics = () => {
       tabBarContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        // paddingVertical: 16
         marginBottom: 5,
         paddingHorizontal: 24,
         paddingTop: 10,
@@ -249,7 +231,6 @@ const RecurringAnalytics = () => {
       tabButtonText: {
         color: '#1A1A2C',
         fontSize: 14,
-        // fontFamily: 'Inter', // Make sure you have the Inter font available
       },
       activeTabButton: {
         backgroundColor: '#35BA52',
@@ -265,7 +246,6 @@ const RecurringAnalytics = () => {
         borderRadius: 99,
         borderColor: '#149E53',
         borderWidth: 0.6
-        // backgroundColor: '#FAFAFA',
       },
     });
 

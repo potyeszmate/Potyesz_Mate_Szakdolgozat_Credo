@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-import { Colors } from '../../constants/styles';
+import { Colors } from '../../commonConstants/styles';
 
 const Input: React.FC<any> = ({
   label,

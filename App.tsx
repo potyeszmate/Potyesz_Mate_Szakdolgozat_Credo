@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -12,16 +11,15 @@ import AppLoading from 'expo-app-loading';
 import LoginScreen from './screens/Authentication/Login/LoginScreen';
 import Welcome from './screens/Authentication/Onboard/Welcome';
 import SignupScreen from './screens/Authentication/Register/SignupScreen';
-import WelcomeScreen from './screens/Home/WelcomeScreen';
-import RecurringPayments from './screens/Recurrings/RecurringPayments';
+import RecurringPayments from './screens/Expenses/SubPages/RecurringPayments';
 import Gamification from './components/ui/Gamification';
 import Challanges from './components/ui/Challanges';
 import TransactionsList from './components/ui/TransactionsList';
 import ExpensesScreen from './screens/Expenses/ExpensesScreen';
 import AnalyticsScreen from './screens/Analytics/AnalyticsScreen';
-import GoalScreen from './screens/Save/GoalScreen';
+import GoalScreen from './screens/Savings/SubPages/GoalScreen';
 import CustomHeader from './components/ui/CustomHeader';
-import { Colors } from './constants/styles';
+import { Colors } from './commonConstants/styles';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
 import TransactionInput from './components/ui/TransactionInput';
 import SettingsPage from './screens/Settings/SettingsPage';
@@ -33,27 +31,28 @@ import ThemePage from './components/ui/ThemePage';
 import BugReport from './components/ui/BugReport';
 import ConnectPage from './components/ui/ConnectPage';
 import FaqPage from './components/ui/FaqPage';
-import LoansAndDebt from './screens/Recurrings/LoansAndDebt';
-import Bills from './screens/Recurrings/Bills';
+import LoansAndDebt from './screens/Expenses/SubPages/LoansAndDebt';
+import Bills from './screens/Expenses/SubPages/Bills';
 import en from './languages/en.json';
 import de from './languages/de.json';
 import hu from './languages/hu.json';
-import SavingsScreen from './screens/Save/SavingsScreen';
-import CryptoCurrenciesScreen from './screens/Save/CryptoCurrenciesScreen';
+import SavingsScreen from './screens/Savings/SavingsScreen';
+import CryptoCurrenciesScreen from './screens/Savings/SubPages/CryptoCurrenciesScreen';
 import CryptoDetails from './components/ui/CryptoDetails';
-import StocksScreen from './screens/Save/StocksScreen';
+import StocksScreen from './screens/Savings/SubPages/StocksScreen';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import BudgetDetail from './components/ui/BudgetDetail';
 import UserProfileCard from './components/ui/UserProfileCard';
 import Payment from './screens/Payment/Payment';
 import StockDetails from './components/ui/StockDetails';
 import GoalDetailScreen from './components/ui/GoalDetailScreen';
-import SpendingAnalytics from './screens/Analytics/SpendingAnalytics';
+import SpendingAnalytics from './screens/Analytics/SubPages/SpendingAnalytics';
 import Chatbot from './screens/Chatbot/Chatbot';
-import RecurringAnalytics from './screens/Analytics/RecurringAnalytics';
-import CashFlowAnalytics from './screens/Analytics/CashFlowAnalytics';
-import BalanceAnalytics from './screens/Analytics/BalanceAnalytics';
-import StocksAndCryptoAnalytics from './screens/Analytics/StocksAndCryptoAnalytics';
+import RecurringAnalytics from './screens/Analytics/SubPages/RecurringAnalytics';
+import CashFlowAnalytics from './screens/Analytics/SubPages/CashFlowAnalytics';
+import BalanceAnalytics from './screens/Analytics/SubPages/BalanceAnalytics';
+import StocksAndCryptoAnalytics from './screens/Analytics/SubPages/StocksAndCryptoAnalytics';
+import Home from './screens/Home/Home';
 
 
 const languages: any = {
@@ -93,25 +92,11 @@ function AuthenticatedStack() {
   );
 }
 
-function CustomTabButton({ children, onPress, focused }) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: focused ? '#35BA52' : '#F5F6F5', // Change color if focused
-      }}>
-      {children}
-    </TouchableOpacity>
-  );
-}
-
-
 function TabNavigator() {
+
+  // TODO -> bugfix/refactor -> make language change dynamic here in tabs as well
   const authCtx = useContext(AuthContext);
-  const [selectedLanguage, setSelectedLanguage] = useState('English'); // Default language
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   
   const getSelectedLanguage = async () => {
@@ -128,7 +113,6 @@ function TabNavigator() {
 
   const fetchLanguage = async () => {
     const language = await getSelectedLanguage();
-    // Use the retrieved language for any rendering or functionality
   };
 
   const isFocused = useIsFocused();
@@ -180,20 +164,6 @@ function TabNavigator() {
           ),
         }}
       />
-
-      {/* <Tab.Screen
-        name="AddButton"
-        component={TransactionInput}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Image
-              source={require('./assets/IconButton.png')}
-              style={{ width: 62, height: 62, marginTop: 30 }}
-              />
-          ),
-          tabBarLabel: '', // Set tabBarLabel to an empty string
-        }}
-      /> */}
       
       <Tab.Screen
         name={languages[selectedLanguage].analytics}
@@ -229,7 +199,7 @@ function Navigation() {
   const authCtx = useContext(AuthContext) as any;
 
   return (
-    <View style={styles.appBackground}>
+    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
       <NavigationContainer>
         {!authCtx.isAuthenticated ? (
           <AuthStackScreen />
@@ -282,13 +252,6 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
-  appBackground: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-  },
-});
-
 function ExpensesStack() {
   return (
     <Stack.Navigator
@@ -322,15 +285,12 @@ function WelcomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerStyle: { backgroundColor: '#F5F6F5' },
-        // headerTintColor: 'white',
-        // contentStyle: { backgroundColor: Colors.primary100 },
       }}
     >
       <Stack.Screen
         name="Home"
-        component={WelcomeScreen}
-        options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
+        component={Home}
+        options={{ headerShown: false }}
       />
 
       <Stack.Screen
@@ -363,7 +323,6 @@ function WelcomeStack() {
       <Stack.Screen
         name="Settings"
         component={SettingsPage}
-        // options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
       />
 
       <Stack.Screen
@@ -412,9 +371,6 @@ function SavingsStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerStyle: { backgroundColor: '#F5F6F5' },
-        // headerTintColor: 'white',
-        // contentStyle: { backgroundColor: Colors.primary100 },
       }}
     >
       <Stack.Screen
@@ -459,11 +415,7 @@ function SavingsStack() {
 function AnalyticsStack() {
   return (
     <Stack.Navigator
-      screenOptions={{
-        // headerStyle: { backgroundColor: '#F5F6F5' },
-        // headerTintColor: 'white',
-        // contentStyle: { backgroundColor: Colors.primary100 },
-        
+      screenOptions={{     
       }}
     >
       <Stack.Screen
@@ -498,55 +450,6 @@ function AnalyticsStack() {
     
     
       
-    </Stack.Navigator>
-  );
-}
-
-function SettingsStack() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        // headerStyle: { backgroundColor: '#F5F6F5' },
-        // headerTintColor: 'white',
-        // contentStyle: { backgroundColor: Colors.primary100 },
-      }}
-    >
-      <Stack.Screen
-        name="Settings"
-        component={SettingsPage}
-        options={{ headerShown: false }} // Hide the header for the SettingsPage screen
-
-        // options={{ headerShown: false }} // Set headerShown to false for the "Welcome" screen
-      />
-      <Stack.Screen
-        name="Currency"
-        component={CurrencyPage}
-        // options={{ headerShown: false }} // Hide the header for the SettingsPage screen
-        
-      />
-      {/* <Stack.Screen
-        name="TransactionsList"
-        component={TransactionsList}
-      />
-      <Stack.Screen
-        name="Gamification"
-        component={Gamification}
-      />
-      <Stack.Screen
-        name="Challanges"
-        component={Challanges}
-      />
-
-      <Stack.Screen
-        name="SettingsPage"  //PIN
-        component={SettingsPage}
-      /> */}
-
-      {/* <Stack.Screen
-        name="ProfilePage"
-        component={ProfilePage}
-      /> */}
-
     </Stack.Navigator>
   );
 }

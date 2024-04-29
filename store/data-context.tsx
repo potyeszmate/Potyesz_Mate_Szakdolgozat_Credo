@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface DataContextType {
-  data: any[]; // Change 'any' to the type of your data array
-  updateData: (newData: any[]) => void; // Change 'any' to the type of your data array
+  data: any[]; 
+  updateData: (newData: any[]) => void; 
 }
 
 const defaultData: DataContextType = {
@@ -10,12 +10,13 @@ const defaultData: DataContextType = {
   updateData: () => {}
 };
 
+// Delete if not using anymore
 const DataContext = createContext<DataContextType>(defaultData);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<any[]>([]); // Change 'any' to the type of your data array
+  const [data, setData] = useState<any[]>([]); 
 
-  const updateData = (newData: any[]) => { // Change 'any' to the type of your data array
+  const updateData = (newData: any[]) => { 
     setData(newData);
   };
 

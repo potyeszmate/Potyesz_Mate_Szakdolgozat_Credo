@@ -10,11 +10,11 @@ import {
   TextInput,
 } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { getCompanyInfo, getStockPrice } from "../../util/stocks";
-import { db } from '../../firebaseConfig';
+import { getCompanyInfo, getStockPrice } from "../../../util/stocks";
+import { db } from '../../../firebaseConfig';
 import { query, collection, where, getDocs } from 'firebase/firestore';
-import { AuthContext } from "../../store/auth-context";
-import stocks from '../../db/stocks.json';
+import { AuthContext } from "../../../store/auth-context";
+import stocks from '../../../db/stocks.json';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useNavigation } from "@react-navigation/native";
@@ -40,26 +40,25 @@ const StockScreen = () => {
   const [isOwnedExpanded, setIsOwnedExpanded] = useState(true);
   const [isWatchlistedExpanded, setIsWatchlistedExpanded] = useState(true);
   
-  // Handlers to toggle the sections
   const toggleOwned = () => setIsOwnedExpanded(!isOwnedExpanded);
   const toggleWatchlisted = () => setIsWatchlistedExpanded(!isWatchlistedExpanded);
   const authCtx: any = useContext(AuthContext);
   const userId = authCtx.userId;
 
-  // Similar to fetchCryptoDetails
   const fetchStockDetails = async (stockSymbols: any) => {
     const detailsWithLogo = await Promise.all(stockSymbols.map(async (symbol) => {
       const infoResponse = await getCompanyInfo(symbol);
       const priceInfo = await getStockPrice(symbol);
 
+      console.log("priceInfo for" + stockSymbols + " : " , priceInfo)
+
       const info = infoResponse.results;
-      // const logoUrl = info.branding?.icon_url || '';
       const companyLogo = `${info.branding?.icon_url}?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8`;
 
       return { 
         symbol, 
         logo: companyLogo, 
-        price: priceInfo.ticker.day.c, 
+        price: priceInfo.ticker.min.c, 
         todaysChangePerc: priceInfo.ticker.todaysChangePerc,
       };
     }));
@@ -67,49 +66,13 @@ const StockScreen = () => {
     return detailsWithLogo;
   };
 
-  // const fetchStocks = async () => {
-  //   setLoading(true);
-  //   // Fetch watchlisted stocks
-  //   const watchedQuery = query(collection(db, 'watchedStocks'), where('uid', '==', userId));
-  //   const watchedSnapshot = await getDocs(watchedQuery);
-  //   const watchedStockSymbols = watchedSnapshot.docs.map(doc => doc.data().symbol);
-
-  //   // Fetch owned stocks
-  //   const ownedQuery = query(collection(db, 'stocks'), where('uid', '==', userId));
-  //   const ownedSnapshot = await getDocs(ownedQuery);
-  //   const ownedStockSymbols = ownedSnapshot.docs.map(doc => doc.data().symbol);
-
-  //   // Get details for all unique stocks
-  //   const allStockSymbols = Array.from(new Set([...watchedStockSymbols, ...ownedStockSymbols]));
-  //   const stockDetails = await fetchStockDetails(allStockSymbols);
-
-  //   // Combine data with details from stocks.json
-  //   const combinedWatchlistedStocks = watchedStockSymbols.map(symbol => {
-  //     const details = stockDetails.find(stock => stock.symbol === symbol);
-  //     const stockInfo = stocks.find(stock => stock.symbol === symbol);
-  //     return { ...stockInfo, ...details };
-  //   });
-
-  //   const combinedOwnedStocks = ownedStockSymbols.map(symbol => {
-  //     const details = stockDetails.find(stock => stock.symbol === symbol);
-  //     const stockInfo = stocks.find(stock => stock.symbol === symbol);
-  //     return { ...stockInfo, ...details };
-  //   });
-
-  //   setWatchlistedStocks(combinedWatchlistedStocks);
-  //   setOwnedStocks(combinedOwnedStocks);
-  //   setLoading(false);
-  // };
-
   const fetchStocks = async () => {
     setLoading(true);
   
-    // Fetch watchlisted stocks
     const watchedQuery = query(collection(db, 'watchedStocks'), where('uid', '==', userId));
     const watchedSnapshot = await getDocs(watchedQuery);
     const watchedStockSymbols = watchedSnapshot.docs.map(doc => doc.data().symbol);
   
-    // Fetch owned stocks
     const ownedQuery = query(collection(db, 'stocks'), where('uid', '==', userId));
     const ownedSnapshot = await getDocs(ownedQuery);
     const ownedStockData = ownedSnapshot.docs.map(doc => ({
@@ -117,14 +80,11 @@ const StockScreen = () => {
       amount: doc.data().amount
     }));
   
-    // Extract only symbols from ownedStockData for detail fetching
     const ownedStockSymbols = ownedStockData.map(stock => stock.symbol);
   
-    // Get details for all unique stocks
     const allStockSymbols = Array.from(new Set([...watchedStockSymbols, ...ownedStockSymbols]));
     const stockDetails = await fetchStockDetails(allStockSymbols);
   
-    // Combine data with details from stocks.json
     const combinedWatchlistedStocks = watchedStockSymbols.map(symbol => {
       const details = stockDetails.find(stock => stock.symbol === symbol);
       const stockInfo = stocks.find(stock => stock.symbol === symbol);
@@ -135,9 +95,9 @@ const StockScreen = () => {
       const details = stockDetails.find(detail => detail.symbol === stockData.symbol);
       const stockInfo = stocks.find(stock => stock.symbol === stockData.symbol);
       return {
-        ...stockInfo, // Info from stocks.json
-        ...details,   // Info from fetchStockDetails
-        amount: stockData.amount // Including the fetched amount
+        ...stockInfo, 
+        ...details,   
+        amount: stockData.amount 
       };
     });
   
@@ -146,12 +106,7 @@ const StockScreen = () => {
     setLoading(false);
   };
   
-  useEffect(() => {
-    fetchStocks();
-  }, []);
-
   const handleCardPress = (name: any, symbol: any) => {
-    console.log("symbol before nav: ", symbol)
     // @ts-ignore
     navigation.navigate("Stock Details", {name: name, symbol: symbol, onGoBack: fetchStocks});
   };
@@ -163,40 +118,19 @@ const StockScreen = () => {
         stock.name && stock.name.toLowerCase().includes(searchText.toLowerCase())
       );
       setSearchResults(filteredResults);
-      setScrollEnabled(false);  // Disable scrolling on main ScrollView
+      setScrollEnabled(false);  
     } else {
       setSearchResults([]);
-      setScrollEnabled(true);   // Enable scrolling on main ScrollView
+      setScrollEnabled(true); 
     }
   };
-
-  // const StockCard = ({ stock, isOwned }) => {
-  //   const changeColor = stock.todaysChangePerc < 0 ? styles.red : styles.green;
-  //   const calculatedValue = isOwned ? (stock.price * stock.amount).toFixed(2) : stock.price.toFixed(2);
-
-  //   return (
-  //     <TouchableOpacity style={styles.card} onPress={() => handleCardPress( stock.name, stock.symbol)}>
-  //       <Image source={{ uri: stock.logo }} style={styles.logo} />
-  //       <View style={styles.stockInfo}>
-  //         <Text style={styles.name}>{stock.name}</Text>
-  //         <Text style={styles.symbol}>{stock.symbol}</Text>
-  //       </View>
-  //       <View style={styles.stockValue}>
-  //         <Text style={styles.price}>${calculatedValue}</Text>
-  //         <Text style={[styles.percentChange, changeColor]}>
-  //           {stock.todaysChangePerc.toFixed(2)}%
-  //         </Text>
-  //       </View>
-  //     </TouchableOpacity>
-  //   );
-  // };
 
   const StockCard = ({ stock, isOwned }) => {
     const isNegative = stock.todaysChangePerc < 0;
     const iconDirection = isNegative ? 'caret-down-outline' : 'caret-up-outline';
     const changeColor = isNegative ? 'red' : 'green';
     const calculatedValue = isOwned ? (stock.price * stock.amount).toFixed(2) : stock.price.toFixed(2);
-  
+    
     return (
       <TouchableOpacity style={styles.card} onPress={() => handleCardPress(stock.name, stock.symbol)}>
         <View style={styles.cryptoInfo}>
@@ -218,6 +152,7 @@ const StockScreen = () => {
       </TouchableOpacity>
     );
   };
+
   const totalOwnedValue = ownedStocks.reduce((acc, stock) => acc + (stock.price * stock.amount), 0).toFixed(2);
 
 
@@ -232,16 +167,19 @@ const StockScreen = () => {
           style={styles.card}
           onPress={() => handleCardPress( stock.name, stock.symbol)}
         >
-          {/* <Image source={{ uri: stock.logo }} style={styles.logo} /> */}
           <View style={styles.stockInfo}>
             <Text style={styles.name}>{stock.name}</Text>
             <Text style={styles.symbol}>{stock.symbol}</Text>
           </View>
-          {/* <Text style={styles.price}>${stock.price.toFixed(2)}</Text> */}
         </TouchableOpacity>
       ))}
     </ScrollView>
   );
+
+  useEffect(() => {
+    fetchStocks();
+  }, []);
+
 
   return (
     <ScrollView style={styles.container} scrollEnabled={scrollEnabled}>
@@ -269,16 +207,7 @@ const StockScreen = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
-          {/* <Text style={styles.title}>Watchlisted Stocks</Text>
-          {watchlistedStocks.map((stock) => (
-            <StockCard key={stock.symbol} stock={stock} isOwned={false} />
-          ))}
-
-          <Text style={styles.title}>Owned Stocks</Text>
-          {ownedStocks.map((stock) => (
-            <StockCard key={stock.symbol} stock={stock} isOwned={true} />
-          ))} */}
-
+         
         <View style={styles.cryptoContainer}>
           <View style={styles.containerHeader}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -341,12 +270,10 @@ const StockScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    // padding: 20,
     marginLeft: 10,
     marginRight: 10
   },
   card: {
-    // backgroundColor: '#fff',
     borderRadius: 8,
     padding: 15,
     marginVertical: 8,
@@ -356,7 +283,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
     elevation: 3,
     flexDirection: 'row',
-    justifyContent: 'space-between', // space items between the sides of the card
+    justifyContent: 'space-between', 
   },
 cardContent: {
   flexDirection: 'row',
@@ -389,14 +316,14 @@ cardContent: {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: '#fff', // Ensure this matches the cryptoContainer's background
+    backgroundColor: '#fff',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
   separator: {
     height: 1,
-    backgroundColor: '#E2E2E2', // Color for the separator
-    width: '91%', // Separator should span the full width
+    backgroundColor: '#E2E2E2', 
+    width: '91%', 
     alignSelf: 'center',
   },
   containerTitle: {
@@ -415,7 +342,6 @@ cardContent: {
     zIndex: 2,
     height: 200,
     marginTop: 10
-    // top: searchBarHeight,
 },
   left: {
     flex: 1,
@@ -439,21 +365,21 @@ cardContent: {
     marginBottom: 5,
   },
   changeContainer: {
-    flexDirection: 'row', // Make icon and text appear in a row
-    alignItems: 'center', // Center items vertically
+    flexDirection: 'row', 
+    alignItems: 'center', 
   },
   green: {
     color: 'green',
   },
   resultsScrollView: {
-    maxHeight: 200, // You can set the maxHeight to limit the scrolling area height
+    maxHeight: 200, 
   },
   red: {
     color: 'red',
   },
   searchContainer: {
     padding: 10,
-    backgroundColor: '#EFEFEF', // Adjust color for better visibility
+    backgroundColor: '#EFEFEF', 
     borderRadius: 10,
     marginVertical: 10
   },
@@ -473,14 +399,7 @@ cardContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  // name: {
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  // },
-  // symbol: {
-  //   fontSize: 14,
-  //   color: '#888',
-  // },
+
   iconStyle: {
     marginLeft: 5,
   },
@@ -490,39 +409,33 @@ cardContent: {
   price: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4, // Spacing between price and percentage change
+    marginBottom: 4, 
   },
   percentChange: {
     fontSize: 14,
   },
-  // red: {
-  //   color: 'red',
-  // },
-  // green: {
-  //   color: 'green',
-  // },
+
   title: {
     fontSize: 22,
     marginTop: 20,
   },
   cryptoContainer: {
-    backgroundColor: '#fff', // The color should match the cards
+    backgroundColor: '#fff',
     borderRadius: 8,
     marginVertical: 10,
-    // paddingHorizontal: 10,
-    width: '95%', // Set width to 95% to make it wider
-    alignSelf: 'center', // Center the container
+    width: '95%', 
+    alignSelf: 'center', 
   },
   searchBarContainer: {
-    backgroundColor: 'transparent', // Use the same background color as your app's theme
+    backgroundColor: 'transparent',
     borderTopWidth: 0,
     borderBottomWidth: 0,
     paddingHorizontal: 10,
   },
   searchBarInputContainer: {
     backgroundColor: 'white',
-    borderRadius: 20, // Slightly less round than the full height to give some shape
-    height: 45, // Or any height that works with your design
+    borderRadius: 20, 
+    height: 45, 
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
@@ -530,9 +443,9 @@ cardContent: {
     elevation: 2,
   },
   searchBarInput: {
-    color: 'black', // text color
-    backgroundColor: 'white', // background color of the input area
-    borderRadius: 15, // round the corners of the input
+    color: 'black', 
+    backgroundColor: 'white', 
+    borderRadius: 15,
   },
 });
 

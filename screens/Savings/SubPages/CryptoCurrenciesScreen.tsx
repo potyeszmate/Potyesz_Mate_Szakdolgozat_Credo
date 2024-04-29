@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { Text, View, Image, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import currencies from '../../db/currencies.json';
-import { getCryptoInfo } from "../../util/crypto";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome icons
+import currencies from '../../../db/currencies.json';
+import { getCryptoInfo } from "../../../util/crypto";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { SearchBar } from 'react-native-elements'; 
-import { db } from '../../firebaseConfig';
+import { db } from '../../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { AuthContext } from "../../store/auth-context";
+import { AuthContext } from "../../../store/auth-context";
 import { Ionicons } from '@expo/vector-icons';
 
 interface Crypto {
@@ -42,7 +40,7 @@ const CryptoCurrenciesScreen = () => {
   const fetchCryptoDetails = async (cryptoIds) => {
     const detailsWithLogo = await Promise.all(cryptoIds.map(async (id) => {
       const info = await getCryptoInfo(id);
-      return info.data[id] || {}; // in case some info might be undefined
+      return info.data[id] || {};
     }));
 
     return detailsWithLogo;
@@ -50,21 +48,17 @@ const CryptoCurrenciesScreen = () => {
 
   const fetchCryptos = async () => {
     setLoading(true);
-    // Fetch watchlisted cryptos
     const watchedQuery = query(collection(db, 'watchedCryptoCurrencies'), where('uid', '==', userId));
     const watchedSnapshot = await getDocs(watchedQuery);
     const watchedCryptos = watchedSnapshot.docs.map(doc => ({ id: doc.data().id, ...doc.data() }));
 
-    // Fetch owned cryptos
     const ownedQuery = query(collection(db, 'cryptocurrencies'), where('uid', '==', userId));
     const ownedSnapshot = await getDocs(ownedQuery);
     const ownedCryptos = ownedSnapshot.docs.map(doc => ({ id: doc.data().id, ...doc.data() }));
 
-    // Get details for all unique cryptos
     const allCryptoIds = Array.from(new Set([...watchedCryptos.map(c => c.id), ...ownedCryptos.map(c => c.id)]));
     const cryptoDetails = await fetchCryptoDetails(allCryptoIds);
 
-    // Combine data with details from currencies.json
     const combinedWatchedCryptos = watchedCryptos.map(c => {
       const details = cryptoDetails.find(d => d.id === c.id);
       const currency = currencies.data.find(cur => cur.id === c.id);
@@ -82,19 +76,6 @@ const CryptoCurrenciesScreen = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchCryptos();
-  }, []);
-
-  useEffect(() => {
-    const totalValue = ownedCryptos.reduce((acc, crypto) => {
-      const value = (crypto.price * crypto.amount);
-      return acc + value;
-    }, 0);
-  
-    setTotalOwnedValue(totalValue.toFixed(2)); // Keep two decimal points
-  }, [ownedCryptos]);
-
   const handleCardPress = (id: any, name: any, symbol: any) => {
     // @ts-ignore
     navigation.navigate("Crypto Details", { id: id, name: name, symbol: symbol, onGoBack: fetchCryptos});
@@ -107,10 +88,10 @@ const CryptoCurrenciesScreen = () => {
         crypto.name.toLowerCase().includes(searchText.toLowerCase())
       );
       setSearchResults(filteredResults);
-      setScrollEnabled(false);  // Disable scrolling on main ScrollView
+      setScrollEnabled(false);  
     } else {
       setSearchResults([]);
-      setScrollEnabled(true);   // Enable scrolling on main ScrollView
+      setScrollEnabled(true); 
     }
   };
 
@@ -150,7 +131,7 @@ const CryptoCurrenciesScreen = () => {
   const renderSearchResults = () => (
     <ScrollView 
       style={[styles.overlayContainer, { top: searchBarHeight + 20 }]}
-      nestedScrollEnabled={true}  // Ensure nested scrolling is enabled
+      nestedScrollEnabled={true} 
     >
       {searchResults.map((crypto: any) => (
         <TouchableOpacity
@@ -175,19 +156,18 @@ const CryptoCurrenciesScreen = () => {
     setIsOwnedExpanded(!isOwnedExpanded);
   };
   
+  useEffect(() => {
+    fetchCryptos();
+  }, []);
 
-
-  // const renderCryptoCard = (crypto, index) => (
-  //   <TouchableOpacity key={index} style={styles.card} onPress={() => handleCardPress(crypto)}>
-  //     <Image source={{ uri: crypto.logo }} style={styles.logo} />
-  //     <Text style={styles.name}>{crypto.name}</Text>
-  //     <Text style={styles.symbol}>{crypto.symbol}</Text>
-  //     <Text style={styles.price}>${crypto.price.toFixed(2)}</Text>
-  //     <Text style={crypto.percent_change_24h < 0 ? styles.red : styles.green}>
-  //       {crypto.percent_change_24h.toFixed(2)}%
-  //     </Text>
-  //   </TouchableOpacity>
-  // );
+  useEffect(() => {
+    const totalValue = ownedCryptos.reduce((acc, crypto) => {
+      const value = (crypto.price * crypto.amount);
+      return acc + value;
+    }, 0);
+  
+    setTotalOwnedValue(totalValue.toFixed(2)); 
+  }, [ownedCryptos]);
 
   return (
     <ScrollView style={styles.container}>
@@ -196,7 +176,7 @@ const CryptoCurrenciesScreen = () => {
         placeholder="Search Cryptocurrencies..."
         onChangeText={updateSearch}
         value={search}
-        round // already makes it rounded
+        round 
         containerStyle={styles.searchBarContainer}
         inputContainerStyle={styles.searchBarInputContainer}
         inputStyle={styles.searchBarInput}
@@ -275,12 +255,10 @@ const CryptoCurrenciesScreen = () => {
 const styles = StyleSheet.create({
     container: {
       flexGrow: 1,
-      // padding: 20,
       marginLeft: 10,
       marginRight: 10
     },
     card: {
-      // backgroundColor: '#fff',
       borderRadius: 8,
       padding: 15,
       marginVertical: 8,
@@ -290,7 +268,7 @@ const styles = StyleSheet.create({
       shadowRadius: 2.22,
       elevation: 3,
       flexDirection: 'row',
-      justifyContent: 'space-between', // space items between the sides of the card
+      justifyContent: 'space-between',
     },
   cardContent: {
     flexDirection: 'row',
@@ -323,14 +301,14 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: 10,
-      backgroundColor: '#fff', // Ensure this matches the cryptoContainer's background
+      backgroundColor: '#fff', 
       borderTopLeftRadius: 8,
       borderTopRightRadius: 8,
     },
     separator: {
       height: 1,
-      backgroundColor: '#E2E2E2', // Color for the separator
-      width: '91%', // Separator should span the full width
+      backgroundColor: '#E2E2E2', 
+      width: '91%', 
       alignSelf: 'center',
     },
     containerTitle: {
@@ -349,7 +327,6 @@ const styles = StyleSheet.create({
       zIndex: 2,
       height: 200,
       marginTop: 10
-      // top: searchBarHeight,
   },
     left: {
       flex: 1,
@@ -373,21 +350,21 @@ const styles = StyleSheet.create({
       marginBottom: 5,
     },
     changeContainer: {
-      flexDirection: 'row', // Make icon and text appear in a row
-      alignItems: 'center', // Center items vertically
+      flexDirection: 'row', 
+      alignItems: 'center', 
     },
     green: {
       color: 'green',
     },
     resultsScrollView: {
-      maxHeight: 200, // You can set the maxHeight to limit the scrolling area height
+      maxHeight: 200, 
     },
     red: {
       color: 'red',
     },
     searchContainer: {
       padding: 10,
-      backgroundColor: '#EFEFEF', // Adjust color for better visibility
+      backgroundColor: '#EFEFEF',
       borderRadius: 10,
       marginVertical: 10
     },
@@ -407,14 +384,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
     },
-    // name: {
-    //   fontSize: 16,
-    //   fontWeight: 'bold',
-    // },
-    // symbol: {
-    //   fontSize: 14,
-    //   color: '#888',
-    // },
+
     iconStyle: {
       marginLeft: 5,
     },
@@ -424,39 +394,33 @@ const styles = StyleSheet.create({
     price: {
       fontSize: 16,
       fontWeight: 'bold',
-      marginBottom: 4, // Spacing between price and percentage change
+      marginBottom: 4, 
     },
     percentChange: {
       fontSize: 14,
     },
-    // red: {
-    //   color: 'red',
-    // },
-    // green: {
-    //   color: 'green',
-    // },
+
     title: {
       fontSize: 22,
       marginTop: 20,
     },
     cryptoContainer: {
-      backgroundColor: '#fff', // The color should match the cards
+      backgroundColor: '#fff', 
       borderRadius: 8,
       marginVertical: 10,
-      // paddingHorizontal: 10,
-      width: '95%', // Set width to 95% to make it wider
-      alignSelf: 'center', // Center the container
+      width: '95%', 
+      alignSelf: 'center', 
     },
     searchBarContainer: {
-      backgroundColor: 'transparent', // Use the same background color as your app's theme
+      backgroundColor: 'transparent', 
       borderTopWidth: 0,
       borderBottomWidth: 0,
       paddingHorizontal: 10,
     },
     searchBarInputContainer: {
       backgroundColor: 'white',
-      borderRadius: 20, // Slightly less round than the full height to give some shape
-      height: 45, // Or any height that works with your design
+      borderRadius: 20, 
+      height: 45, 
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.2,
@@ -464,9 +428,9 @@ const styles = StyleSheet.create({
       elevation: 2,
     },
     searchBarInput: {
-      color: 'black', // text color
-      backgroundColor: 'white', // background color of the input area
-      borderRadius: 15, // round the corners of the input
+      color: 'black', 
+      backgroundColor: 'white', 
+      borderRadius: 15, 
     },
   });
   
