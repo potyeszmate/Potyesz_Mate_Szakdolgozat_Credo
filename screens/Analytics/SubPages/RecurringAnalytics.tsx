@@ -3,9 +3,9 @@ import { db } from '../../../firebaseConfig';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../store/auth-context';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import RecurringDonutChart from '../../../components/ui/RecurringDonutChart';
-import ImportanceBarChart from '../../../components/ui/ImportanceBarChart';
-import LoanPaymentChart from '../../../components/ui/LoanPaymentChart';
+import RecurringDonutChart from '../../../components/Recurrings/RecurringDonutChart';
+import ImportanceBarChart from '../../../components/Charts/ImportanceBarChart';
+import LoanPaymentChart from '../../../components/Charts/LoanPaymentChart';
 
 const RecurringAnalytics = () => {
 

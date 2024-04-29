@@ -6,9 +6,9 @@ import { Feather } from '@expo/vector-icons';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { AuthContext } from "../../../store/auth-context";
-import DonutChart from "../../../components/ui/DonutChart";
-import DateLineChart from "../../../components/ui/DateLineChart";
-import BarChartSpending from "../../../components/ui/BarchartSpending";
+import DonutChart from "../../../components/Charts/DonutChart";
+import DateLineChart from "../../../components/Charts/DateLineChart";
+import BarChartSpending from "../../../components/Charts/BarchartSpending";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());

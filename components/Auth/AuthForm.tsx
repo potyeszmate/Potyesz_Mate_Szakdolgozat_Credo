@@ -1,18 +1,16 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
 import { Alert, StyleSheet, View, Text, Modal, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
-import Button from '../ui/Button';
 import Input from './Input';
-import GoogleButton from '../ui/GoogleButton';
-import FacebookButton from '../ui/FacebookButton';
-import IOSButton from '../ui/IOSButton';
-import Separator from '../ui/Separator';
-import FlatButton from '../ui/FlatButton';
+import GoogleButton from '../CommonComponents/GoogleButton';
+import FacebookButton from '../CommonComponents/FacebookButton';
+import IOSButton from '../CommonComponents/IOSButton';
+import Separator from '../CommonComponents/Separator';
+import FlatButton from '../CommonComponents/FlatButton';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
 import { Ionicons } from '@expo/vector-icons'; 
+import Button from '../CommonComponents/Button';
 
 
 

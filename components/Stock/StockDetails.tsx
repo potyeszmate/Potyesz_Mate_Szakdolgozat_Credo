@@ -1,59 +1,64 @@
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useRoute } from "@react-navigation/native";
-import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Modal, TextInput, Button } from "react-native";
-import { getCryptoInfo, getCryptoValues } from "../../util/crypto";
+import { getCompanyInfo, getStockPrice } from "../../util/stocks";
 import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc, increment } from 'firebase/firestore';
+import { query, collection, where, getDocs, addDoc, updateDoc, increment, deleteDoc } from 'firebase/firestore';
 import { AuthContext } from "../../store/auth-context";
 import { Alert } from 'react-native';
-import CryptoChart from "./CryptoChart";
+import StockChart from "./StockChart";
 import { FontAwesome } from '@expo/vector-icons';
+import apiKeys from './../../apiKeys.json';
 
-interface Crypto {
-  id: number;
-  name: string;
+interface Stock {
   symbol: string;
+  name: string;
   price: number;
   logo: string;
   percent_change_24h: number;
-  description: string;
 }
 
-const CryptoDetails = () => {
+const StockDetails = () => {
+
   const route = useRoute();
-  const { id, name, symbol, onGoBack } = route.params;
+  const { name, symbol, onGoBack} = route.params;
+
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [amountOwned, setAmountOwned] = useState('');
+  const [ownsStock, setOwnsStock] = useState(false);
   const [sellModalVisible, setSellModalVisible] = useState(false);
-  const [ownsCrypto, setOwnsCrypto] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const watchlistDocRef = useRef(null);
-  const cryptoWatchlistDocRef = useRef(null);
-
-  const [cryptoDetails, setCryptoDetails] = useState({
+  
+  const [stockDetails, setStockDetails] = useState({
     price: 0,
     percent_change_24h: 0,
     logo: '',
     description: '',
-    loading: true, 
+    loading: true,
   });
 
   const authCtx = useContext(AuthContext);
-  const { userId } = authCtx as any;
-  
-  useEffect(() => {
-    const fetchCryptoData = async () => {
-      try {
-        const infoResponse = await getCryptoInfo(id);
-        const valuesResponse = await getCryptoValues(id);
-        
-        const logo = infoResponse.data[id].logo;
-        const description = infoResponse.data[id].description;
-        const price = valuesResponse.data[id].quote.USD.price;
-        const percent_change_24h = valuesResponse.data[id].quote.USD.percent_change_24h;
+  const { userId } = authCtx;
 
-        setCryptoDetails({
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const infoResponse = await getCompanyInfo(symbol);
+        const priceResponse = await getStockPrice(symbol);
+
+        const info = infoResponse.results;
+        const companyLogo = `${info.branding?.icon_url}?apiKey=${apiKeys.StocksApiKey}`
+
+        const logo = companyLogo;  
+        const description = info.description;  
+        const price = priceResponse.ticker.min.c;  
+        const percent_change_24h = priceResponse.ticker.todaysChangePerc;
+        console.log("stock price: ", price )
+
+        setStockDetails({
           logo,
           description,
           price,
@@ -61,39 +66,18 @@ const CryptoDetails = () => {
           loading: false,
         });
       } catch (error) {
-        console.error("Failed to fetch crypto details:", error);
-        setCryptoDetails((prev) => ({ ...prev, loading: false }));
+        console.error("Failed to fetch stock details:", error);
+        setStockDetails(prev => ({ ...prev, loading: false }));
       }
     };
 
-    fetchCryptoData();
-  }, [id]);
-
-  useEffect(() => {
-    const checkOwnership = async () => {
-      const q = query(collection(db, 'cryptocurrencies'), where('id', '==', id), where('uid', '==', userId));
-      const querySnapshot = await getDocs(q);
-      setOwnsCrypto(!querySnapshot.empty);
-    };
-
-    const checkWatchlist = async () => {
-      const q = query(collection(db, 'watchedCryptoCurrencies'), where('id', '==', id), where('uid', '==', userId));
-      const querySnapshot: any = await getDocs(q);
-      if (!querySnapshot.empty) {
-        setIsInWatchlist(true);
-        watchlistDocRef.current = querySnapshot.docs[0].ref;
-      }
-    };
-
-    checkOwnership();
-    checkWatchlist();
-
-  }, [id, userId]);
+    fetchStockData();
+  }, [symbol]);
 
   const addWatchedListHandler = async () => {
     Alert.alert(
       "Confirm Addition",
-      "Are you sure you want to add this cryptocurrency to your watchlist?",
+      "Are you sure you want to add this stock to your watchlist?",
       [
         {
           text: "Cancel",
@@ -101,71 +85,43 @@ const CryptoDetails = () => {
         },
         { 
           text: "OK", onPress: async () => {
-            try {
-              const docRef = await addDoc(collection(db, 'watchedCryptoCurrencies'), {
-                name: name,
-                id: id,
-                uid: userId,
-              });
-              cryptoWatchlistDocRef.current = docRef; 
-              setIsInWatchlist(true); 
-              Alert.alert('Added to watchlist');
-              route.params?.onGoBack?.(); 
-            } catch (error) {
-              console.error('Error adding to watchlist:', error.message);
+              try {
+                const docRef = await addDoc(collection(db, 'watchedStocks'), {
+                  name: name,
+                  symbol,
+                  uid: userId,
+                });
+                watchlistDocRef.current = docRef; 
+                Alert.alert('Added to watchlist');
+                setIsInWatchlist(true);  
+                route.params?.onGoBack?.(); 
+              } catch (error) {
+                console.error('Error adding to watchlist:', error.message);
+              }
             }
-          }
         }
       ]
     );
   };
   
-  const handleWatchlistToggle = async () => {
-    if (isInWatchlist) {
-      Alert.alert("Confirm Removal", "Remove this cryptocurrency from your watchlist?", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          onPress: async () => {
-            try {
-              const q = query(collection(db, 'watchedCryptoCurrencies'), where('id', '==', id), where('uid', '==', userId));
-              const querySnapshot = await getDocs(q);
-              if (!querySnapshot.empty) {
-                const docRef = querySnapshot.docs[0].ref;
-                await deleteDoc(docRef);
-                setIsInWatchlist(false); 
-                Alert.alert('Removed from watchlist');
-                route.params?.onGoBack?.(); 
-              }
-            } catch (error) {
-              console.error('Error removing from watchlist:', error.message);
-            }
-          },
-        },
-      ]);
-    } else {
-      addWatchedListHandler();
-    }
-  };
 
-  const addOwnedCryptoHandler = async () => {
+  const addOwnedStocksHandler = async () => {
     const amount = parseFloat(amountOwned);
-    const addedAmount = amount  / cryptoDetails.price 
-
+    const addedAmount = amount  / stockDetails.price 
     if (isNaN(addedAmount) || addedAmount <= 0) {
       Alert.alert("Please enter a valid amount");
       return;
     }
   
     try {
-      const q = query(collection(db, 'cryptocurrencies'), where('id', '==', id), where('uid', '==', userId));
+      const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
-        await addDoc(collection(db, 'stockDetails'), {
-          id,
-          addedAmount,  
-          name,
+        await addDoc(collection(db, 'stocks'), {
+          symbol,
+          amount: addedAmount,
+          name: name,
           uid: userId,
         });
       } else {
@@ -174,27 +130,27 @@ const CryptoDetails = () => {
           amount: increment(addedAmount),
         });
       }
-      route.params?.onGoBack?.(); 
+      route.params?.onGoBack?.();
       setModalVisible(false);
-      Alert.alert('Added crypto');
+      Alert.alert('Added stock');
 
     } catch (error) {
-      console.error('Error adding owned crypto:', error.message);
+      console.error('Error adding owned stock:', error.message);
     }
   };
 
-  const sellCryptoHandler = async () => {
+  const sellStockHandler = async () => {
     const inputAmount = parseFloat(amountOwned);
     if (isNaN(inputAmount) || inputAmount <= 0) {
       Alert.alert("Please enter a valid amount to sell");
       return;
     }
   
-    const stockValue = cryptoDetails.price;
+    const stockValue = stockDetails.price;
   
     const amountToSell = inputAmount / stockValue;
   
-    const q = query(collection(db, 'cryptocurrencies'), where('id', '==', id), where('uid', '==', userId));
+    const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
     const querySnapshot = await getDocs(q);
   
     if (!querySnapshot.empty) {
@@ -220,10 +176,9 @@ const CryptoDetails = () => {
                   await updateDoc(stockDoc.ref, {
                     amount: increment(-amountToSell), 
                   });
-                  route.params?.onGoBack?.(); 
-
+                  route.params?.onGoBack?.();
                   setSellModalVisible(false);
-                  Alert.alert("Sold from crypto");
+                  Alert.alert("Sold from stock");
                   setAmountOwned('');
                 } catch (error) {
                   console.error('Error selling stock:', error.message);
@@ -233,30 +188,78 @@ const CryptoDetails = () => {
         ]
       );
     } else {
-      Alert.alert("You do not own this crypto");
+      Alert.alert("You do not own this stock");
     }
   };
   
+  const handleWatchlistToggle = async () => {
+    if (isInWatchlist) {
+      Alert.alert("Confirm Removal", "Remove this stock from your watchlist?", [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Remove",
+          onPress: async () => {
+            try {
+              const q = query(collection(db, 'watchedStocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+              const querySnapshot = await getDocs(q);
+              if (!querySnapshot.empty) {
+                const docRef = querySnapshot.docs[0].ref;
+                await deleteDoc(docRef);
+                setIsInWatchlist(false);
+                Alert.alert('Removed from watchlist');
+                route.params?.onGoBack?.();
+              }
+            } catch (error) {
+              console.error('Error removing from watchlist:', error.message);
+            }
+          },
+        },
+      ]);
+    } else {
+      addWatchedListHandler();
+    }
+  };
+  
+
   const toggleDescription = () => {
     setExpanded(!expanded);
   };
 
-  const toggleModal = () => {
-    setModalVisible(prev => !prev);
-  };
-  
   const toggleSellModal = () => {
     setSellModalVisible(prev => !prev);
   };
 
-  if (cryptoDetails.loading) {
+  useEffect(() => {
+    const checkOwnership = async () => {
+      const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+      const querySnapshot = await getDocs(q);
+      setOwnsStock(!querySnapshot.empty);
+    };
+
+    const checkWatchlist = async () => {
+      const q = query(collection(db, 'watchedStocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+      const querySnapshot: any = await getDocs(q);
+      if (!querySnapshot.empty) {
+        setIsInWatchlist(true);
+        watchlistDocRef.current = querySnapshot.docs[0].ref; 
+      }
+    };
+
+    checkWatchlist();
+    checkOwnership();
+  }, [symbol, userId]);
+
+  const toggleModal = () => {
+    setModalVisible(prev => !prev);
+  };
+
+  if (stockDetails.loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
-
 
   const IconButton = ({ title, onPress, iconName, iconColor, backgroundColor }) => (
     <TouchableOpacity onPress={onPress} style={[styles.iconButton, { backgroundColor }]}>
@@ -267,10 +270,8 @@ const CryptoDetails = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      
-
       <View style={styles.header}>
-        <Image source={{ uri: cryptoDetails.logo }} style={styles.logo} />
+        <Image source={{ uri: stockDetails.logo }} style={styles.logo} />
         <View style={styles.headerText}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.symbol}>{symbol}</Text>
@@ -280,22 +281,26 @@ const CryptoDetails = () => {
       <View style={styles.statsContainer}>
         <View style={styles.priceContainer}>
           <Text style={styles.label}>Current Price</Text>
-          <Text style={styles.price}>${cryptoDetails.price.toFixed(2)}</Text>
+          <Text style={styles.price}>${stockDetails.price.toFixed(2)}</Text>
         </View>
-        <View style={[styles.changeContainer, cryptoDetails.percent_change_24h < 0 ? styles.negativeChange : styles.positiveChange]}>
-          <FontAwesome name={cryptoDetails.percent_change_24h < 0 ? "caret-down" : "caret-up"} size={20} color={"white"} />
-          <Text style={styles.changeText}>24h: {cryptoDetails.percent_change_24h.toFixed(2)}%</Text>
+        <View style={[styles.changeContainer, stockDetails.percent_change_24h < 0 ? styles.negativeChange : styles.positiveChange]}>
+          <FontAwesome name={stockDetails.percent_change_24h < 0 ? "caret-down" : "caret-up"} size={20} color={"white"} />
+          <Text style={styles.changeText}>24h: {stockDetails.percent_change_24h.toFixed(2)}%</Text>
         </View>
       </View>
 
-      <CryptoChart symbol={symbol} />
+      <View style={styles.chartPlaceholder}>
+        <StockChart symbol={symbol} />
+      </View>
+
 
       <TouchableOpacity onPress={toggleDescription} style={styles.descriptionContainer}>
         <Text style={styles.descriptionText} numberOfLines={expanded ? undefined : 3}>
-          {cryptoDetails.description}
+          {stockDetails.description}
         </Text>
         <FontAwesome name={expanded ? "angle-up" : "angle-down"} size={20} color={"#007bff"} />
       </TouchableOpacity>
+
 
       <View style={styles.buttonContainer}>
         <IconButton
@@ -305,9 +310,9 @@ const CryptoDetails = () => {
           iconColor="#fff"
           backgroundColor="#35BA52"
         />
-        {ownsCrypto && (
+        {ownsStock && (
           <IconButton
-            title="Sell Crypto"
+            title="Sell Stock"
             onPress={toggleSellModal}
             iconName="minus-circle"
             iconColor="#fff"
@@ -323,37 +328,36 @@ const CryptoDetails = () => {
         />
       </View>
 
-      {/* Modal for adding to portfolio */}
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={toggleModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Enter your amount in USD</Text>
-            <TextInput
-              style={styles.modalInput}
-              onChangeText={setAmountOwned}
-              value={amountOwned}
-              placeholder="Amount in USD"
-              keyboardType="numeric"
-              placeholderTextColor="#aaa" 
-              clearButtonMode="while-editing"
-            />
-            <View style={styles.modalButtonGroup}>
-              <TouchableOpacity onPress={addOwnedCryptoHandler} style={[styles.button, styles.modalButton]}>
-                <Text style={styles.buttonText}>Add</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={toggleModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={toggleModal}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>Enter your amount in USD</Text>
+          <TextInput
+            style={styles.modalInput}
+            onChangeText={setAmountOwned}
+            value={amountOwned}
+            placeholder="Amount in USD"
+            keyboardType="numeric"
+            placeholderTextColor="#aaa" 
+            clearButtonMode="while-editing" 
+          />
+          <View style={styles.modalButtonGroup}>
+            <TouchableOpacity onPress={addOwnedStocksHandler} style={[styles.button, styles.modalButton]}>
+              <Text style={styles.buttonText}>Add</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </Modal>
-
-      <Modal
+      </View>
+    </Modal>
+  
+    <Modal
         animationType="fade"
         transparent={true}
         visible={sellModalVisible}
@@ -368,10 +372,10 @@ const CryptoDetails = () => {
               placeholder="Amount in USD"
               keyboardType="numeric"
               placeholderTextColor="#aaa" 
-              clearButtonMode="while-editing" 
+             clearButtonMode="while-editing" 
             />
             <View style={styles.modalButtonGroup}>
-              <TouchableOpacity onPress={sellCryptoHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
+              <TouchableOpacity onPress={sellStockHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
                 <Text style={styles.buttonText}>Sell</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleSellModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
@@ -408,7 +412,7 @@ const styles = StyleSheet.create({
     },
     sellButton: {
       backgroundColor: '#FF4136',
-      marginTop: 10, 
+      marginTop: 10,
     },
     name: {
       fontSize: 20,
@@ -520,7 +524,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
       flex: 1,
-      textAlign: 'center', 
+      textAlign: 'center',
       fontSize: 16,
       fontWeight: 'bold',
     },
@@ -588,7 +592,7 @@ const styles = StyleSheet.create({
       borderColor: '#ddd', 
       borderRadius: 10,
       padding: 15, 
-      fontSize: 16,
+      fontSize: 16, 
       color: '#000', 
       backgroundColor: '#fff', 
       marginBottom: 20, 
@@ -605,6 +609,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 12,
+    
     backgroundColor: 'white',
     borderRadius: 20,
     shadowColor: '#000',
@@ -646,4 +651,5 @@ const styles = StyleSheet.create({
     },
    
   });
-export default CryptoDetails;
+
+  export default StockDetails;

@@ -16,6 +16,7 @@ import { query, collection, where, getDocs } from 'firebase/firestore';
 import { AuthContext } from "../../../store/auth-context";
 import stocks from '../../../db/stocks.json';
 import { Ionicons } from '@expo/vector-icons';
+import apiKeys from './../../../apiKeys.json';
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -52,7 +53,7 @@ const StockScreen = () => {
 
 
       const info = infoResponse.results;
-      const companyLogo = `${info.branding?.icon_url}?apiKey=20pxfp55CRF4QFeF0P1uQXdppypX7nk8`;
+      const companyLogo = `${info.branding?.icon_url}?apiKey=${apiKeys.StocksApiKey}`;
 
       return { 
         symbol, 
@@ -117,7 +118,8 @@ const StockScreen = () => {
         stock.name && stock.name.toLowerCase().includes(searchText.toLowerCase())
       );
       setSearchResults(filteredResults);
-      setScrollEnabled(false);  
+      setScrollEnabled(false); 
+      console.log("searchResults: ", searchResults) 
     } else {
       setSearchResults([]);
       setScrollEnabled(true); 

@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { TextInput, Button, StyleSheet,TouchableWithoutFeedback,Keyboard, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';

@@ -1,13 +1,14 @@
 
+import apiKeys from './../apiKeys.json';
+
 export const getCryptoInfo = async (id: any) => {
     try {
       
-      const apiKey = '9b94857e-1638-4cab-8642-42aa59df086e';
       const apiUrl = `https://pro-api.coinmarketcap.com/v2/cryptocurrency/info?id=${id}`;
   
       const response = await fetch(apiUrl, {
         headers: {
-          'X-CMC_PRO_API_KEY': apiKey,
+          'X-CMC_PRO_API_KEY': apiKeys.cryptoApiKey,
         },
       });
   
@@ -27,12 +28,12 @@ export const getCryptoValues = async (id: any) => {
 
   try {
     
-    const apiKey = '9b94857e-1638-4cab-8642-42aa59df086e';
+    const cryptoValuesApiKey = '9b94857e-1638-4cab-8642-42aa59df086e';
     const apiUrl = `https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=${id}`;
 
     const response = await fetch(apiUrl, {
       headers: {
-        'X-CMC_PRO_API_KEY': apiKey,
+        'X-CMC_PRO_API_KEY': apiKeys.cryptoApiKey,
       },
     });
 
@@ -50,8 +51,7 @@ export const getCryptoValues = async (id: any) => {
 
 export const getCryptoChartData = async (symbol: string, startDate: any, endDate: any, interval: any) => {
   try {
-    const apiKey = '012d681fe88749e3964a547eeab622d8';
-    const apiUrl = `https://api.twelvedata.com/time_series?&start_date=${startDate}&end_date=${endDate}&symbol=${symbol}/USD&interval=${interval}&apikey=${apiKey}`;
+    const apiUrl = `https://api.twelvedata.com/time_series?&start_date=${startDate}&end_date=${endDate}&symbol=${symbol}/USD&interval=${interval}&apikey=${apiKeys.chartsApiKey}`;
 
     const response = await fetch(apiUrl);
 

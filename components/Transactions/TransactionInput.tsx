@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { TextInput, Button, StyleSheet, Text, View, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Platform, Image, Modal, Pressable, ScrollView, KeyboardAvoidingView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';

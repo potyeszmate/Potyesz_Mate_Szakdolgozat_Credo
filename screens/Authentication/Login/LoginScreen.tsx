@@ -2,9 +2,9 @@ import { useContext, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import AuthContent from '../../../components/Auth/AuthContent';
-import LoadingOverlay from '../../../components/ui/LoadingOverlay';
 import { AuthContext } from '../../../store/auth-context';
 import { login } from '../../../util/auth';
+import LoadingOverlay from '../../../components/CommonComponents/LoadingOverlay';
 
 const LoginScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);

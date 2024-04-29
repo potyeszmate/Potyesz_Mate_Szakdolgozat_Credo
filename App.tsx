@@ -12,16 +12,16 @@ import LoginScreen from './screens/Authentication/Login/LoginScreen';
 import Welcome from './screens/Authentication/Onboard/Welcome';
 import SignupScreen from './screens/Authentication/Register/SignupScreen';
 import RecurringPayments from './screens/Expenses/SubPages/RecurringPayments';
-import Gamification from './components/ui/Gamification';
-import Challanges from './components/ui/Challanges';
-import TransactionsList from './components/ui/TransactionsList';
+import Gamification from './components/Challenges/Gamification';
+import Challanges from './components/Challenges/Challanges';
+import TransactionsList from './components/Transactions/TransactionsList';
 import ExpensesScreen from './screens/Expenses/ExpensesScreen';
 import AnalyticsScreen from './screens/Analytics/AnalyticsScreen';
 import GoalScreen from './screens/Savings/SubPages/GoalScreen';
-import CustomHeader from './components/ui/CustomHeader';
+import CustomHeader from './components/CommonComponents/CustomHeader';
 import { Colors } from './commonConstants/styles';
 import AuthContextProvider, { AuthContext } from './store/auth-context';
-import TransactionInput from './components/ui/TransactionInput';
+import TransactionInput from './components/Transactions/TransactionInput';
 import SettingsPage from './screens/Settings/SettingsPage';
 import ProfilePage from './screens/Profile/ProfilePage';
 import LoansAndDebt from './screens/Expenses/SubPages/LoansAndDebt';
@@ -31,14 +31,14 @@ import de from './languages/de.json';
 import hu from './languages/hu.json';
 import SavingsScreen from './screens/Savings/SavingsScreen';
 import CryptoCurrenciesScreen from './screens/Savings/SubPages/CryptoCurrenciesScreen';
-import CryptoDetails from './components/ui/CryptoDetails';
+import CryptoDetails from './components/Crypto/CryptoDetails';
 import StocksScreen from './screens/Savings/SubPages/StocksScreen';
 import { StripeProvider } from '@stripe/stripe-react-native';
-import BudgetDetail from './components/ui/BudgetDetail';
-import UserProfileCard from './components/ui/UserProfileCard';
+import BudgetDetail from './components/Budget/BudgetDetail';
+import UserProfileCard from './components/Profile/UserProfileCard';
 import Payment from './screens/Payment/Payment';
-import StockDetails from './components/ui/StockDetails';
-import GoalDetailScreen from './components/ui/GoalDetailScreen';
+import StockDetails from './components/Stock/StockDetails';
+import GoalDetailScreen from './components/Goals/GoalDetailScreen';
 import SpendingAnalytics from './screens/Analytics/SubPages/SpendingAnalytics';
 import Chatbot from './screens/Chatbot/Chatbot';
 import RecurringAnalytics from './screens/Analytics/SubPages/RecurringAnalytics';
@@ -52,7 +52,7 @@ import NotificationsPage from './screens/Settings/SubPages/NotificationsPage';
 import BugReport from './screens/Settings/SubPages/BugReport';
 import ConnectPage from './screens/Settings/SubPages/ConnectPage';
 import FaqPage from './screens/Settings/SubPages/FaqPage';
-
+import apiKeys from './apiKeys.json';
 
 const languages: any = {
   English: en,
@@ -60,7 +60,6 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const STRIPE_KEY = 'pk_test_51P7PiGRxFFZ42bcDIB4ZlNMLSkp7SxCfBXQjbsAlYVpcS8j6me3cjfcqNKrZZL7Gz4EybixVJibN0YkfWUnysMVL008ZkfArvi'
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -240,7 +239,7 @@ export default function App() {
       <BottomSheetModalProvider>
         <AuthContextProvider>
           <StatusBar barStyle="dark-content" />
-          <StripeProvider publishableKey={STRIPE_KEY}>
+          <StripeProvider publishableKey={apiKeys.STRIPE_KEY}>
               <Root />
           </StripeProvider>
         </AuthContextProvider>

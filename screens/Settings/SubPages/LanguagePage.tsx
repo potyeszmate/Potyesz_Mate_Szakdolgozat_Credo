@@ -5,7 +5,7 @@ import { collection, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Radio from '../../../components/ui/Radio';
+import Radio from '../../../components/CommonComponents/Radio';
 
 const LanguagePage = () => {
 

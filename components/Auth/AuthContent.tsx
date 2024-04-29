@@ -1,9 +1,8 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { useState } from 'react';
 import { Alert, StyleSheet, View,Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import FlatButton from '../ui/FlatButton';
+import FlatButton from '../CommonComponents/FlatButton';
 import AuthForm from './AuthForm';
 import { Colors } from '../../commonConstants/styles';
 

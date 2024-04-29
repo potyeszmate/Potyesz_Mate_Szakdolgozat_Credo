@@ -6,7 +6,7 @@ import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertCurrencyToCurrency } from '../../../util/conversion';
-import Radio from '../../../components/ui/Radio';
+import Radio from '../../../components/CommonComponents/Radio';
 
 const CurrencyPage = () => {
   const authCtx = useContext(AuthContext) as any;

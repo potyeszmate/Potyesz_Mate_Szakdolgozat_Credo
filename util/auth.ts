@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../firebaseConfig';
+import apiKeys from './../apiKeys.json';
 
-const API_KEY = 'AIzaSyCevIOdziT9r8ZR-W0ILfCC8rLvqWJcAQ8';
 
 export const getUid = async (idToken: any): Promise<string | null> => {
   try {
     const response = await axios.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`,
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKeys.FIREBASE_API_KEY}`,
       {
         idToken: idToken,
       }
@@ -33,7 +33,7 @@ export const getUid = async (idToken: any): Promise<string | null> => {
 export const getEmail = async (idToken: any) => {
   try {
     const response = await axios.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${API_KEY}`,
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKeys.FIREBASE_API_KEY}`,
       {
         idToken: idToken,
       }
@@ -57,7 +57,7 @@ export const getEmail = async (idToken: any) => {
 
 
 async function authenticate(mode: any, email: any, password: any) {
-  const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${API_KEY}`;
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:${mode}?key=${apiKeys.FIREBASE_API_KEY}`;
 
   const response = await axios.post(url, {
     email: email,

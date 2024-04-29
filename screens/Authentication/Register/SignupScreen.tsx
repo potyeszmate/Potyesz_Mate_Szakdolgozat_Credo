@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import AuthContent from '../../../components/Auth/AuthContent';
-import LoadingOverlay from '../../../components/ui/LoadingOverlay';
+import LoadingOverlay from '../../../components/CommonComponents/LoadingOverlay';
 import { AuthContext } from '../../../store/auth-context';
 import { createUser } from '../../../util/auth';
 import { doc, setDoc } from 'firebase/firestore';

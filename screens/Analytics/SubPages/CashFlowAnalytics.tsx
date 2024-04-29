@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { AuthContext } from "../../../store/auth-context";
-import CashFlowSummary from "../../../components/ui/CashFlowSummary";
+import CashFlowSummary from "../../../components/Analytics/CashFlowSummary";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());

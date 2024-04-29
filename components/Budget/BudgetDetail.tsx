@@ -3,8 +3,8 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { db } from '../../firebaseConfig';
 import BudgetDetailsSummaryCard from './BudgetDetailSummaryCard';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
-import SpendingBudgetChart from './SpendingBudgetChart';
-import SpendingHistoryBudgetsBarChart from './SpendingHistoryBudgetsBarChart';
+import SpendingBudgetChart from '../Charts/SpendingBudgetChart';
+import SpendingHistoryBudgetsBarChart from '../Charts/SpendingHistoryBudgetsBarChart';
 
 const BudgetDetails = ({ route,  }) => {
   const { budgetId, conversionRate, symbol } = route.params; 

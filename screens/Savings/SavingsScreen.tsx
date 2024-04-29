@@ -4,7 +4,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../store/auth-context';
 import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Budget from '../../components/ui/Budget';
+import Budget from '../../components/Budget/Budget';
 
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';

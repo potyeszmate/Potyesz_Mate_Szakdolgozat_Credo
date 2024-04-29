@@ -1,5 +1,7 @@
-const apiKey = '153624bb29801d186d0b1db3';
-const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKey}/latest`;
+
+import apiKeys from './../apiKeys.json';
+
+const apiUrl = `https://v6.exchangerate-api.com/v6/${apiKeys.currencyConversionApiKey}/latest`;
 
 export const convertCurrencyToCurrency = async (fromCurrency: any, toCurrency: any) => {
     try {

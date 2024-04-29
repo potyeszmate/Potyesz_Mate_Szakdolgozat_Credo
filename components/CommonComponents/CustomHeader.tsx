@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

@@ -1,2 +1,5 @@
 node_modules
-db
+db/currencies.json
+db/stocks.json
+apiKeys.json
+firebaseConfig.ts

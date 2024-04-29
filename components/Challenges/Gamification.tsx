@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
-import UserProfileCard from './UserProfileCard';
+import UserProfileCard from '../Profile/UserProfileCard';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs } from 'firebase/firestore';
 import { AuthContext } from '../../store/auth-context';
-import BadgesList from './BadgeList';
-import AchivementsList from './AchivementsList';
+import BadgesList from '../Achievements/BadgeList';
+import AchivementsList from '../Achievements/AchivementsList';
 
 const Gamification: React.FC = () => {
   const [userSettings, setUserSettings] = useState<any>({});

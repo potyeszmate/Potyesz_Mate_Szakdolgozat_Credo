@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, FlatList, Image, ActivityIndicator, Keyboard } from 'react-native';
 import { AuthContext } from '../../../store/auth-context';
@@ -7,8 +6,8 @@ import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } 
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import RecurringTransactionInput from '../../../components/ui/RecurringTransactionInput';
-import RecurringLoanInput from '../../../components/ui/RecurringLoanInput';
+import RecurringTransactionInput from '../../../components/Recurrings/RecurringTransactionInput';
+import RecurringLoanInput from '../../../components/Recurrings/RecurringLoanInput';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertCurrencyToCurrency } from '../../../util/conversion';
 

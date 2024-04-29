@@ -7,10 +7,10 @@ import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } f
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
 import { KeyboardAvoidingView, Platform } from 'react-native';
-import Message from '../../components/ui/Message';
+import Message from '../../components/Chatbot/Message';
 import { Icon } from 'react-native-elements';
+import apiKeys from './../../apiKeys.json';
 
-export const OPENAI_API_KEY= 'sk-proj-BAjAoTHZearEfetmybGmT3BlbkFJTBtAGIoFP7bThJTv4Wz3'
 const api = 'https://api.openai.com/v1/chat/completions'
 
 // TODO: Organise string promts to consts and main method to helper
@@ -216,7 +216,7 @@ const Chatbot = () => {
           max_tokens: 700,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -255,7 +255,7 @@ const Chatbot = () => {
           max_tokens: 2000,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -301,7 +301,7 @@ const Chatbot = () => {
           max_tokens: 1000,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -352,7 +352,7 @@ const Chatbot = () => {
           max_tokens: 400,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -400,7 +400,7 @@ const Chatbot = () => {
           max_tokens: 400,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -444,7 +444,7 @@ const Chatbot = () => {
           max_tokens: 400,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -488,7 +488,7 @@ const Chatbot = () => {
           max_tokens: 400,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });
@@ -539,7 +539,7 @@ const Chatbot = () => {
           max_tokens: 800,
         }, {
           headers: {
-            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'
           }
         });

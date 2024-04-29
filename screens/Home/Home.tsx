@@ -3,22 +3,22 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable,
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc, getDoc } from 'firebase/firestore';
-import YourBalance from '../../components/ui/YourBalance';
-import UpcomingRecurring from '../../components/ui/UpcomingRecurring';
-import LatestTransactions from '../../components/ui/LatestTransactions';
-import BudgetSummary from '../../components/ui/BudgetSummary';
-import YourPoints from '../../components/ui/YourPoints';
-import JoinedChallanges from '../../components/ui/JoinedChallanges';
+import YourBalance from '../../components/Balance/YourBalance';
+import UpcomingRecurring from '../../components/CommonComponents/UpcomingRecurring';
+import LatestTransactions from '../../components/Transactions/LatestTransactions';
+import BudgetSummary from '../../components/Budget/BudgetSummary';
+import YourPoints from '../../components/Achievements/YourPoints';
+import JoinedChallanges from '../../components/Challenges/JoinedChallanges';
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-import CustomHeader from '../../components/ui/CustomHeader';
-import MonthlyIncome from '../../components/ui/MonthlyIncome';
-import WelcomeCard from '../../components/ui/WelcomeCard';
-import AddBudget from '../../components/ui/AddBudget';
-import OnboardingModal from '../../components/ui/OnboardingModal';
+import CustomHeader from '../../components/CommonComponents/CustomHeader';
+import MonthlyIncome from '../../components/Balance/MonthlyIncome';
+import WelcomeCard from '../../components/CommonComponents/PremiumPayment';
+import AddBudget from '../../components/Budget/AddBudget';
+import OnboardingModal from '../../components/CommonComponents/OnboardingModal';
 
 const languages: any = {
   English: en,

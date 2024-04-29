@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const Button: React.FC<any> = ({ children, onPress, isFilled }) => {

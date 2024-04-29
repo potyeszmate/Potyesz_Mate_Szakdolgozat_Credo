@@ -4,7 +4,7 @@ import { AuthContext } from '../../store/auth-context';
 import { collection, doc, getDocs, query, updateDoc, where, getFirestore } from 'firebase/firestore';
 import { db, storage } from '../../firebaseConfig';
 import BottomSheet from '@gorhom/bottom-sheet';
-import ProfileInput from '../../components/ui/ProfileInput';
+import ProfileInput from '../../components/Profile/ProfileInput';
 import { Feather } from '@expo/vector-icons';
 import en from '../../languages/en.json';
 import de from '../../languages/de.json';

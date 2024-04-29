@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable 
 import { AuthContext } from '../../../store/auth-context';
 import { db } from '../../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc, deleteDoc, updateDoc, doc, DocumentData } from 'firebase/firestore'; 
-import GoalCard from '../../../components/ui/GoalCard';
+import GoalCard from '../../../components/Goals/GoalCard';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import GoalInput from '../../../components/ui/GoalInput';
+import GoalInput from '../../../components/Goals/GoalInput';
 import en from '../../../languages/en.json';
 import de from '../../../languages/de.json';
 import hu from '../../../languages/hu.json';

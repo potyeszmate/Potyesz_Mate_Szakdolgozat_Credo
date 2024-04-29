@@ -6,7 +6,7 @@ import { query, collection, where, getDocs, addDoc, deleteDoc, doc, updateDoc } 
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
-import RecurringBillsInput from '../../../components/ui/RecurringBillsInput';
+import RecurringBillsInput from '../../../components/Recurrings/RecurringBillsInput';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertCurrencyToCurrency } from '../../../util/conversion';
 
