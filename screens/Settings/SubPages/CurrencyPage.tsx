@@ -42,6 +42,7 @@ const CurrencyPage = () => {
                 await updateDoc(doc.ref, { currency: newCurrency });
 
                 const newSymbol = getCurrencySymbol(newCurrency)  
+                // OpenExhangeRate API call from USD to the choosen currency
                 const result = await convertCurrencyToCurrency('USD', newCurrency);
                 await AsyncStorage.setItem('conversionRate', result.toString());
                 await AsyncStorage.setItem('symbol', newSymbol);

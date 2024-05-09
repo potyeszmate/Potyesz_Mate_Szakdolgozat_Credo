@@ -83,11 +83,11 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
 
       {!isLogin ? (
         <View>
-          <Text style={styles.headerText}>Create an account</Text>
+          <Text style={styles.headerText}>Please create an account to sign in</Text>
         </View> ) 
       : (
           <View>
-            <Text style={styles.headerText}>Login to your account</Text>
+            <Text style={styles.headerText}>Login to Your Account</Text>
           </View>
       )}
 
@@ -138,7 +138,7 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
             onPress={submitHandler}
             isFilled={isLogin ? enteredEmail && enteredPassword : enteredEmail && enteredPassword && enteredConfirmPassword}
           >
-          {isLogin ? 'Log In with email' : 'Sign Up'}
+          {isLogin ? 'Sign in' : 'Sign Up'}
         </Button>
         </View>
 

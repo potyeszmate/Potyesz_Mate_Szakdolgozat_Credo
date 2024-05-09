@@ -63,7 +63,6 @@ const DonutChart = ({ data }: { data: any[] }) => {
           paddingLeft="70"
           absolute
           hasLegend={false} 
-
         />
         <Text style={styles.totalAmountText}>Total Amount: ${totalAmount.toFixed(2)}</Text>
         <View style={styles.legendContainer}>

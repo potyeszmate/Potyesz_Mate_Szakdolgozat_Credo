@@ -57,7 +57,7 @@ const StocksAndCryptoAnalytics = () => {
         return Promise.all(items.map(async (item) => {
           const response = await getValueFunc(item.symbol);
 
-          const ownedValue = item.amount * response.ticker.min.c;
+          const ownedValue = item.amount * response.ticker.prevDay.c;
           const color = generateRandomColor();
 
           return { ...item, ownedValue, color  };

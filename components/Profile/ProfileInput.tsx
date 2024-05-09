@@ -48,7 +48,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
       setProfileFirstName(initialProfile.firstName || '');
       setProfileLastName(initialProfile.lastName || '');
 
-      setSelectedGender(initialProfile.gender ? initialProfile.gender.label : null);
+      setSelectedGender(initialProfile.gender ? initialProfile.gender : null);
       setMobileNumber(initialProfile.mobile || '');
       setSelectedDate(isValidDate ? new Date(initialProfile.birthday.toDate()) : new Date());
 

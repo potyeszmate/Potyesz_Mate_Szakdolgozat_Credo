@@ -256,6 +256,7 @@ const TransactionsList: React.FC = () => {
     }
   };
 
+  //
   const groupTransactionsByDate = () => {
     const grouped = transactions.reduce((acc, transaction) => {
       const transactionDate = transaction.date.toDate();

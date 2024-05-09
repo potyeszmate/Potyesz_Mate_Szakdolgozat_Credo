@@ -54,7 +54,7 @@ const StockDetails = () => {
 
         const logo = companyLogo;  
         const description = info.description;  
-        const price = priceResponse.ticker.min.c;  
+        const price = priceResponse.ticker.prevDay.c;  
         const percent_change_24h = priceResponse.ticker.todaysChangePerc;
         console.log("stock price: ", price )
 

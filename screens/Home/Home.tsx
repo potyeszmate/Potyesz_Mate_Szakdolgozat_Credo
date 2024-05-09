@@ -19,6 +19,7 @@ import MonthlyIncome from '../../components/Balance/MonthlyIncome';
 import WelcomeCard from '../../components/CommonComponents/PremiumPayment';
 import AddBudget from '../../components/Budget/AddBudget';
 import OnboardingModal from '../../components/CommonComponents/OnboardingModal';
+import Toast from 'react-native-toast-message';
 
 const languages: any = {
   English: en,
@@ -56,6 +57,8 @@ function Home() {
 
   const [activeTab, setActiveTab] = useState('overview');
   const snapPoints = useMemo(() => ['30%', '50%'], []);
+
+  // authCtx.logout();
 
   useEffect(() => {
       async function fetchData() {
@@ -160,6 +163,15 @@ function Home() {
       }
     };
   
+    Toast.show({
+      type: 'success',
+      position: 'top',
+      text1: 'Hello',
+      text2: 'This is some something 👋',
+      visibilityTime: 2000 
+    });
+    
+    
     checkDataAndUpdate(); 
   }, [isFocused]); 
 

@@ -52,6 +52,7 @@ import apiKeys from './../apiKeys.json';
         throw new Error('Network response was not ok');
       }
   
+      console.log(response)
       const data: any = await response.json();
 
       return data;

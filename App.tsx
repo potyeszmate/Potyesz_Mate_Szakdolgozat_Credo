@@ -53,6 +53,7 @@ import BugReport from './screens/Settings/SubPages/BugReport';
 import ConnectPage from './screens/Settings/SubPages/ConnectPage';
 import FaqPage from './screens/Settings/SubPages/FaqPage';
 import apiKeys from './apiKeys.json';
+import Toast from 'react-native-toast-message';
 
 const languages: any = {
   English: en,
@@ -135,7 +136,7 @@ function TabNavigator() {
     >
        <Tab.Screen
         name={languages[selectedLanguage].welcome}
-        component={WelcomeStack}
+        component={HomeStack}
         options={({ navigation, route }) => ({
           tabBarIcon: ({ color }) => (
             <Image
@@ -144,10 +145,8 @@ function TabNavigator() {
             />
           ),
           headerShown: route.name === 'Welcome' ? true : false,
-         
         })}
       />
-
       <Tab.Screen
         name={languages[selectedLanguage].payment}
         component={ExpensesStack}
@@ -160,7 +159,6 @@ function TabNavigator() {
           ),
         }}
       />
-      
       <Tab.Screen
         name={languages[selectedLanguage].analytics}
         component={AnalyticsStack}
@@ -173,7 +171,6 @@ function TabNavigator() {
           ),
         }
       }
-        
       />
       <Tab.Screen
         name={languages[selectedLanguage].savings}
@@ -202,6 +199,7 @@ function Navigation() {
         ) : (
           <AuthenticatedStack />
         )}
+        <Toast />
       </NavigationContainer>
     </View>
 
@@ -277,7 +275,7 @@ function ExpensesStack() {
   );
 }
 
-function WelcomeStack() {
+function HomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{

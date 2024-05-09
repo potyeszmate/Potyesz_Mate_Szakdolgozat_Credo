@@ -11,6 +11,25 @@ const languages: any = {
   Hungarian: hu,
 };
 
+const challengeImageMap: any = {
+  'Comprehensive Budgeting': require('../../assets/budgetBootcamp1.png'),
+  'Expense Reduction Challenge': require('../../assets/cashFlowEarn3more.png'),
+  'chatbot': require('../../assets/chatbotAsk.png'),
+  'Debt Demolition': require('../../assets/debtDemolish.png'),
+  'Financial Goal Setting': require('../../assets/financialGoal2.png'),
+  'Establish 3 financial goals': require('../../assets/financialGoalsChall.png'),
+  'First huge income': require('../../assets/incoemmoreThen2000.png'),
+  '"Financial Goal Setting': require('../../assets/moneySaving.png'),
+  'Buy Credo+': require('../../assets/premium.png'),
+  'Recurring Mastery': require('../../assets/recurringPamynet.png'),
+  'Savings Sprint': require('../../assets/savingSprint.png'),
+  'stocks': require('../../assets/stocksImage.png'),
+  'Transaction Master': require('../../assets/transaction1Image.png'),
+  'Start transactions': require('../../assets/transactions2Image.png'),
+  'First big spending': require('../../assets/transation4.png'),
+};
+
+
 interface Challenge {
   badge: string;
   desc: string;
@@ -53,7 +72,7 @@ const ChallengeItem: React.FC<{ challenge: Challenge, showActive?: boolean, onJo
       </View>
 
       <View style={styles.imageContainer}>
-        <Image source={require('../../assets/challengeBackground.png')} style={styles.image} />
+      <Image source={challengeImageMap[challenge.name]} style={styles.image} />
       </View>
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>

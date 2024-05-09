@@ -79,14 +79,7 @@ const handleNavigation = () => {
   )}
 
 <View style={[styles.rightSection, { flexDirection: 'row' }]}> 
-  <TouchableOpacity onPress={handleSettingsPage}>
-    <Image
-      source={require('../../assets/settings.png')}
-      style={styles.settingsIcon}
-    />
-  </TouchableOpacity>
-
-  {profile && ( 
+{profile && ( 
     <TouchableOpacity onPress={handleNavigation}>
       <Image
         source={require('../../assets/chatBot.png')}
@@ -94,6 +87,15 @@ const handleNavigation = () => {
       />
     </TouchableOpacity>
   )}
+
+  <TouchableOpacity onPress={handleSettingsPage}>
+    <Image
+      source={require('../../assets/settings.png')}
+      style={styles.settingsIcon}
+    />
+  </TouchableOpacity>
+
+ 
 </View>
 
 </View>
@@ -138,6 +140,8 @@ const styles = StyleSheet.create({
   settingsIcon: {
     width: 26,
     height: 26,
+    marginRight: 3,
+    marginLeft: 2
   },
 });
 

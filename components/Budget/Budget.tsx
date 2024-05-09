@@ -71,7 +71,7 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
             <Text style={[styles.leftValueText, {color: remainingColor}]}>
               {remainingAmount.toFixed(0)}{symbol} 
             </Text>
-            <Text style={styles.leftOutOfText}>left</Text>
+            <Text style={styles.leftOutOfText}> left</Text>
           </Text>
         </View>
       </View>

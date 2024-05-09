@@ -252,8 +252,6 @@ const Chatbot = () => {
             { role: "user", content: userInput },
             { role: "system", content: systemMessageContent }
           ],
-          max_tokens: 2000,
-        }, {
           headers: {
             'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
             'Content-Type': 'application/json'

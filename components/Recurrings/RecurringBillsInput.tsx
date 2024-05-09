@@ -69,7 +69,7 @@ const RecurringBillsInput: React.FC<RecurringTransactionInputProps> = ({ onAddRe
   const [deleteConfirmationVisible, setDeleteConfirmationVisible] = useState(false);
   const [textInputFocused, setTextInputFocused] = useState(false);
   const valueInputRef = useRef<TextInput>(null);
-  const textInputRef = useRef<TextInput>(null); f
+  const textInputRef = useRef<TextInput>(null);
 
   const snapPoints = useMemo(() => {
     return textInputFocused ? ['20%', '30%', '70%'] : ['20%', '30%', '40%'];

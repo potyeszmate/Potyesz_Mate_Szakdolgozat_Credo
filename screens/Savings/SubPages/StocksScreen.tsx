@@ -58,7 +58,7 @@ const StockScreen = () => {
       return { 
         symbol, 
         logo: companyLogo, 
-        price: priceInfo.ticker.min.c, 
+        price: priceInfo.ticker.prevDay.c, 
         todaysChangePerc: priceInfo.ticker.todaysChangePerc,
       };
     }));

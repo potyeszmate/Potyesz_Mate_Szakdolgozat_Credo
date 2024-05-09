@@ -34,8 +34,6 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
     fillShadowGradientOpacity: 0.4, 
     strokeWidth: 10,
     paddingLeft: 25, 
-
-
   };
 
   
@@ -66,7 +64,6 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
         showBarTops={true}
         withInnerLines={true}
         segments={5}
-
       />
     </View>
     </View>
