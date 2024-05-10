@@ -5,7 +5,7 @@ import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
 import { useFonts, Inter_400Regular } from '@expo-google-fonts/inter';
-
+import { Picker } from '@react-native-picker/picker'; // Make sure this is the correct import
 
 
 const languages: any = {
@@ -14,22 +14,14 @@ const languages: any = {
   Hungarian: hu,
 };
 
+
 const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol, conversionRate, loading }) => {
 
   const months = [
-    { label: 'January', value: 'January' },
-    { label: 'February', value: 'February' },
-    { label: 'March', value: 'March' },
-    { label: 'April', value: 'April' },
-    { label: 'May', value: 'May' },
-    { label: 'June', value: 'June' },
-    { label: 'July', value: 'July' },
-    { label: 'August', value: 'August' },
-    { label: 'September', value: 'September' },
-    { label: 'October', value: 'October' },
-    { label: 'November', value: 'November' },
-    { label: 'December', value: 'December' },
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
   ];
+  
 
   const ArrowDown = require('../../assets/arrow-down-circle.png');
   const ArrowUp = require('../../assets/arrow-up-circle.png');
@@ -81,10 +73,23 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
     return <Text>Loading balance...</Text>; 
   }
   
- 
+  const currentMonth = new Date().getMonth();
+  
   return (
     <View style={styles.cardContainer}>
     
+    <View style={styles.monthSelectorContainer}>
+      <Picker
+        selectedValue={selectedMonth.toString()}
+        onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemIndex)}
+        style={styles.monthSelector}
+        mode="dropdown"
+      >
+        {months.map((month, index) => (
+          <Picker.Item label={month} value={index.toString()} key={index} />
+        ))}
+      </Picker>
+    </View>
 
       <View style={styles.balanceContainer}>
         <Text style={styles.balanceText}>{languages[selectedLanguage].yourBalance}</Text>
@@ -221,30 +226,59 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     marginLeft: 10, 
   },
+  // monthSelectorContainer: {
+  //   position: 'absolute',
+  //   top: 16,
+  //   right: 16,
+  //   zIndex: 1,
+  // },
+  // monthSelectorCard: {
+  //   backgroundColor: '#FFFFFF',
+  //   borderRadius: 20,
+  //   padding: 8,
+  //   borderWidth: 1,
+  //   borderColor: '#F0F0F0',
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
   monthSelectorContainer: {
     position: 'absolute',
     top: 16,
     right: 16,
-    zIndex: 1,
-  },
-  monthSelectorCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 8,
+    backgroundColor: 'white',
+    borderRadius: 17,
     borderWidth: 1,
     borderColor: '#F0F0F0',
-    flexDirection: 'row',
-    alignItems: 'center',
+    padding: 10,
+    width: 140, // Increased width to accommodate longer month names
+    height: 35,
+    justifyContent: 'center', // This helps center the picker vertically
+    alignItems: 'center', // Center align items
+    overflow: 'hidden',
   },
   monthSelector: {
-    flex: 1,
-    color: '#000000',
-    paddingRight: 30, 
+    color: '#000',
+    width: '120%', // Ensure it fills the container
+    height: '100%', // Ensure it fills the container vertically
+    backgroundColor: 'transparent',
+    // padding: -10, // Reduce or remove padding
   },
   monthSelectorIcon: {
     position: 'absolute',
-    right: 10,
+    // right: 10,
   },
+  // monthSelectorContainer: {
+  //   position: 'absolute',
+  //   top: 16,
+  //   right: 16,
+  //   backgroundColor: 'white',
+  //   borderRadius: 20,
+  //   padding: 8
+  // },
+  // monthSelector: {
+  //   height: 44,
+  //   width: 150,
+  // },
 });
 
 export default YourBalance;

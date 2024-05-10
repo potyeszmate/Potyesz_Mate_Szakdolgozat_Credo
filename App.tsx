@@ -55,6 +55,7 @@ import FaqPage from './screens/Settings/SubPages/FaqPage';
 import apiKeys from './apiKeys.json';
 import Toast from 'react-native-toast-message';
 
+
 const languages: any = {
   English: en,
   German: de,
@@ -232,6 +233,7 @@ function Root() {
 }
 
 export default function App() {
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>

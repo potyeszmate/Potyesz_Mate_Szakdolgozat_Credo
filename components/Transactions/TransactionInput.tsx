@@ -71,7 +71,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
   );
   
   const snapPoints = useMemo(() => {
-    return textInputFocused ? ['20%', '30%', '70%'] : ['20%', '30%', '40%'];
+    return textInputFocused ? ['50%', '60%', '80%'] : ['50%', '60%', '70%'];
   }, [textInputFocused]); 
   
   const snapPointsDateModal = useMemo(() => ['50%'], []);
@@ -539,7 +539,7 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
 
         {openProvider === false && (
           <View style={styles.addButton}>
-            <Button title={initialTransaction ? languages[selectedLanguage].updateTransaction : languages[selectedLanguage].create} onPress={addOrUpdateTransactionHandler} color="#FFFFFF"/>
+            <Button title={initialTransaction ? languages[selectedLanguage].updateTransaction : languages[selectedLanguage].create} onPress={addOrUpdateTransactionHandler}/>
           </View>
         )}
       </View>
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    bottom: -90
+    bottom: -40
   },
   providerList: {
     flexGrow: 1,

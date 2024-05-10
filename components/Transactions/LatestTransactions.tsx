@@ -13,7 +13,7 @@ const languages: any = {
   Hungarian: hu,
 };
 
-const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, symbol, conversionRate, currency, isLoading}) => {
+const LatestTransactions: React.FC<any> = ({ incomes, transactions, selectedLanguage, symbol, conversionRate, currency, isLoading}) => {
   const navigation = useNavigation();
 
   const handleTransactionsListClick = () => {
@@ -28,15 +28,19 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
   
   const now = new Date();
     
-  const sortedTransactions = transactions
-    .filter((transaction: any) => {
-      const transactionDate = new Date(transaction.date.toDate());
-      return transactionDate <= now;
-    })
-    .sort((a: any, b: any) => b.date.toDate() - a.date.toDate())
-    .slice(0, 3);  
+  // const sortedTransactions = transactions
+  //   .filter((transaction: any) => {
+  //     const transactionDate = new Date(transaction.date.toDate());
+  //     return transactionDate <= now;
+  //   })
+  //   .sort((a: any, b: any) => b.date.toDate() - a.date.toDate())
+  //   .slice(0, 3);  
 
-
+      const combinedData = [...transactions, ...incomes].sort((a, b) => {
+        const dateA = new Date(a.date.toDate());
+        const dateB = new Date(b.date.toDate());
+        return dateB - dateA;
+    }).slice(0, 3);
 
   return (
     <View style={styles.container}>
@@ -46,7 +50,7 @@ const LatestTransactions: React.FC<any> = ({ transactions, selectedLanguage, sym
           <Feather name="chevron-right" size={24} color="#333" />
         </TouchableOpacity>
       </View>
-      <TransactionList transactions={sortedTransactions} currency={currency} conversionRate={conversionRate} symbol={symbol} isLoading= {isLoading} />
+      <TransactionList transactions={combinedData} currency={currency} conversionRate={conversionRate} symbol={symbol} isLoading= {isLoading} />
     </View>
   );
 };

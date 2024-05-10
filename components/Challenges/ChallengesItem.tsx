@@ -12,21 +12,21 @@ const languages: any = {
 };
 
 const challengeImageMap: any = {
-  'Comprehensive Budgeting': require('../../assets/budgetBootcamp1.png'),
-  'Expense Reduction Challenge': require('../../assets/cashFlowEarn3more.png'),
-  'chatbot': require('../../assets/chatbotAsk.png'),
-  'Debt Demolition': require('../../assets/debtDemolish.png'),
-  'Financial Goal Setting': require('../../assets/financialGoal2.png'),
-  'Establish 3 financial goals': require('../../assets/financialGoalsChall.png'),
-  'First huge income': require('../../assets/incoemmoreThen2000.png'),
-  '"Financial Goal Setting': require('../../assets/moneySaving.png'),
-  'Buy Credo+': require('../../assets/premium.png'),
-  'Recurring Mastery': require('../../assets/recurringPamynet.png'),
-  'Savings Sprint': require('../../assets/savingSprint.png'),
-  'stocks': require('../../assets/stocksImage.png'),
-  'Transaction Master': require('../../assets/transaction1Image.png'),
-  'Start transactions': require('../../assets/transactions2Image.png'),
-  'First big spending': require('../../assets/transation4.png'),
+  'Comprehensive Budgeting': require('../../assets/challenges/budgetBootcamp1.png'),
+  'Expense Reduction Challenge': require('../../assets/challenges/cashFlowEarn3more.png'),
+  'chatbot': require('../../assets/challenges/chatbotAsk.jpg'),
+  'Debt Demolition': require('../../assets/challenges/debtDemolish.png'),
+  'Financial Goal Setting': require('../../assets/challenges/financialGoal2.jpg'),
+  'Establish 3 financial goals': require('../../assets/challenges/financialGoalsChall.jpg'),
+  'First huge income': require('../../assets/challenges/incoemmoreThen2000.jpg'),
+  '"Financial Goal Setting': require('../../assets/challenges/moneySaving.jpg'),
+  'Buy Credo+': require('../../assets/challenges/premium.png'),
+  'Recurring Mastery': require('../../assets/challenges/recurringPamynet.jpg'),
+  'Savings Sprint': require('../../assets/challenges/savingSprint.png'),
+  'stocks': require('../../assets/challenges/stocksImage.jpg'),
+  'Transaction Master': require('../../assets/challenges/transaction1Image.jpg'),
+  'Start transactions': require('../../assets/challenges/transactions2Image.jpg'),
+  'First big spending': require('../../assets/challenges/transation4.jpg'),
 };
 
 
@@ -142,6 +142,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#fff',
     marginBottom: 12,
+    width: 300,
+    
   },
   badgeContainer: {
     position: 'absolute',
@@ -159,6 +161,9 @@ const styles = StyleSheet.create({
     height: '40%',
     backgroundColor: 'gray', 
     zIndex: 0, 
+    width: '100%',  
+    alignItems: 'center', 
+    justifyContent: 'center', 
   },
   badgeText: {
     fontSize: 16,
@@ -168,6 +173,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     resizeMode: 'cover',
+    width: '110%',  
   },
   detailsContainer: {
     flex: 1,

@@ -111,6 +111,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
 
   useEffect(() => {
     if (!loading && budgets.length > 0) {
+      //selectedMonth
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
   

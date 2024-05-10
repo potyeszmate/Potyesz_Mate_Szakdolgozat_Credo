@@ -26,6 +26,7 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
     navigateToBudgetDetails(budgetId);
   };
   
+  //selectedMonth
   const currentMonth = new Date().getMonth(); 
   const currentYear = new Date().getFullYear();
 
@@ -60,7 +61,7 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
             <Text style={styles.amountValueText}>
               {spentAmount.toFixed(0)}{symbol}  
             </Text>
-            <Text style={styles.amountOutOfText}>out of </Text>
+            <Text style={styles.amountOutOfText}> out of </Text>
             <Text style={styles.Total_ammountText}>
               {totalAmount.toFixed(0)} {symbol} 
             </Text>

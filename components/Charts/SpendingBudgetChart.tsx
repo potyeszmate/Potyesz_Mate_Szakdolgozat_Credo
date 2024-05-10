@@ -62,8 +62,8 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
       borderRadius: 16
     },
     propsForDots: {
-      r: '6',
-      strokeWidth: '2',
+      r: '0',
+      strokeWidth: '0',
       stroke: '#35BA52'
     },
     propsForBackgroundLines: {

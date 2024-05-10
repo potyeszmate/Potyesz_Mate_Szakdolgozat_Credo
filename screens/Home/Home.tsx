@@ -138,16 +138,26 @@ function Home() {
 
           await AsyncStorage.setItem('transactionsChanged', 'false');
           const newTransactions = await fetchTransactions(userId);
+          const newBalance = await fetchBalance(userId);
+
           await setTransactions(newTransactions)
+          await setBalance(newBalance)
+
           setIsTransactionsLoading(false)
 
         }
 
         if (isIncomesChanged == "true") {
+          setIsTransactionsLoading(true)
 
           await AsyncStorage.setItem('incomesChanged', 'false');
           const newIncomes = await fetchIncomes(userId);
+          const newBalance = await fetchBalance(userId);
+
+          await setBalance(newBalance)
           await setIncomes(newIncomes)
+          setIsTransactionsLoading(false)
+
         }
 
         if (isprofileChanged == "true") {
@@ -501,7 +511,7 @@ function Home() {
         )}
 
         {activeTab === 'overview' && userSettings && (
-           transactions && <LatestTransactions transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency} isLoading={isTransactionsLoading}/>
+           transactions && <LatestTransactions incomes={incomes} transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency} isLoading={isTransactionsLoading}/>
         )}
 
         {activeTab === 'overview' && userSettings && (
