@@ -40,6 +40,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
   const [openProvider, setOpenProvider] = useState(false);
   const valueInputRef = useRef<TextInput>(null);
 
+  console.log(initialProfile)
   useEffect(() => {
     const isValidDate = initialProfile && initialProfile.birthday && !isNaN(initialProfile.birthday.toDate());
 

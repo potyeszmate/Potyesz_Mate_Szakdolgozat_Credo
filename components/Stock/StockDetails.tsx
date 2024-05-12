@@ -9,6 +9,7 @@ import { Alert } from 'react-native';
 import StockChart from "./StockChart";
 import { FontAwesome } from '@expo/vector-icons';
 import apiKeys from './../../apiKeys.json';
+import { languages } from "../../commonConstants/sharedConstants";
 
 interface Stock {
   symbol: string;
@@ -21,7 +22,8 @@ interface Stock {
 const StockDetails = () => {
 
   const route = useRoute();
-  const { name, symbol, onGoBack} = route.params;
+  // const { name, symbol, onGoBack} = route.params;
+  const { name, currencySymbol, symbol, selectedLanguage, conversionRate, onGoBack } = route.params;
 
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,7 +35,7 @@ const StockDetails = () => {
   const watchlistDocRef = useRef(null);
   
   const [stockDetails, setStockDetails] = useState({
-    price: 0,
+    price: '0',
     percent_change_24h: 0,
     logo: '',
     description: '',
@@ -46,8 +48,8 @@ const StockDetails = () => {
   useEffect(() => {
     const fetchStockData = async () => {
       try {
-        const infoResponse = await getCompanyInfo(symbol);
-        const priceResponse = await getStockPrice(symbol);
+        const infoResponse = await getCompanyInfo(currencySymbol);
+        const priceResponse = await getStockPrice(currencySymbol);
 
         const info = infoResponse.results;
         const companyLogo = `${info.branding?.icon_url}?apiKey=${apiKeys.StocksApiKey}`
@@ -76,11 +78,11 @@ const StockDetails = () => {
 
   const addWatchedListHandler = async () => {
     Alert.alert(
-      "Confirm Addition",
-      "Are you sure you want to add this stock to your watchlist?",
+      `${languages[selectedLanguage].confirmAddition}`,
+      `${languages[selectedLanguage].addStockWatchlistQuestion}`,
       [
         {
-          text: "Cancel",
+          text: `${languages[selectedLanguage].cancel}`,
           style: "cancel"
         },
         { 
@@ -88,11 +90,11 @@ const StockDetails = () => {
               try {
                 const docRef = await addDoc(collection(db, 'watchedStocks'), {
                   name: name,
-                  symbol,
+                  symbol: currencySymbol,
                   uid: userId,
                 });
                 watchlistDocRef.current = docRef; 
-                Alert.alert('Added to watchlist');
+                Alert.alert(`${languages[selectedLanguage].addedToWatchlist}`);
                 setIsInWatchlist(true);  
                 route.params?.onGoBack?.(); 
               } catch (error) {
@@ -109,17 +111,17 @@ const StockDetails = () => {
     const amount = parseFloat(amountOwned);
     const addedAmount = amount  / stockDetails.price 
     if (isNaN(addedAmount) || addedAmount <= 0) {
-      Alert.alert("Please enter a valid amount");
+      Alert.alert(`${languages[selectedLanguage].enterValidAmount}`);
       return;
     }
   
     try {
-      const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+      const q = query(collection(db, 'stocks'), where('symbol', '==', currencySymbol), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
   
       if (querySnapshot.empty) {
         await addDoc(collection(db, 'stocks'), {
-          symbol,
+          symbol: currencySymbol,
           amount: addedAmount,
           name: name,
           uid: userId,
@@ -132,7 +134,7 @@ const StockDetails = () => {
       }
       route.params?.onGoBack?.();
       setModalVisible(false);
-      Alert.alert('Added stock');
+      Alert.alert(`${languages[selectedLanguage].addedStock}`);
 
     } catch (error) {
       console.error('Error adding owned stock:', error.message);
@@ -142,7 +144,7 @@ const StockDetails = () => {
   const sellStockHandler = async () => {
     const inputAmount = parseFloat(amountOwned);
     if (isNaN(inputAmount) || inputAmount <= 0) {
-      Alert.alert("Please enter a valid amount to sell");
+      Alert.alert(`${languages[selectedLanguage].enterValidAmount}`);
       return;
     }
   
@@ -150,7 +152,7 @@ const StockDetails = () => {
   
     const amountToSell = inputAmount / stockValue;
   
-    const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+    const q = query(collection(db, 'stocks'), where('symbol', '==', currencySymbol), where('uid', '==', userId));
     const querySnapshot = await getDocs(q);
   
     if (!querySnapshot.empty) {
@@ -158,16 +160,16 @@ const StockDetails = () => {
       const ownedAmount = stockDoc.data().amount;
   
       if (amountToSell > ownedAmount) {
-        Alert.alert("You cannot sell more than you own");
+        Alert.alert(`${languages[selectedLanguage].cantSellMore}`);
         return;
       }
   
       Alert.alert(
-        "Confirm Sale",
+        `${languages[selectedLanguage].confirmSale}`,
         `Are you sure you want to sell $${inputAmount} worth of this stock?`,
         [
           {
-            text: "Cancel",
+            text: `${languages[selectedLanguage].cancel}`,
             style: "cancel"
           },
           { 
@@ -178,7 +180,7 @@ const StockDetails = () => {
                   });
                   route.params?.onGoBack?.();
                   setSellModalVisible(false);
-                  Alert.alert("Sold from stock");
+                  Alert.alert(`${languages[selectedLanguage].soldFromStock}`);
                   setAmountOwned('');
                 } catch (error) {
                   console.error('Error selling stock:', error.message);
@@ -192,21 +194,21 @@ const StockDetails = () => {
     }
   };
   
-  const handleWatchlistToggle = async () => {
+  const handleWatchlistToggle = async () => { 
     if (isInWatchlist) {
-      Alert.alert("Confirm Removal", "Remove this stock from your watchlist?", [
-        { text: "Cancel", style: "cancel" },
+      Alert.alert(`${languages[selectedLanguage].confirmRemoval}`, `${languages[selectedLanguage].removeStockWatchlistQuestion}`, [
+        { text: `${languages[selectedLanguage].cancel}`, style: "cancel" },
         {
-          text: "Remove",
+          text: `${languages[selectedLanguage].remove}`,
           onPress: async () => {
             try {
-              const q = query(collection(db, 'watchedStocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+              const q = query(collection(db, 'watchedStocks'), where('symbol', '==', currencySymbol), where('uid', '==', userId));
               const querySnapshot = await getDocs(q);
               if (!querySnapshot.empty) {
                 const docRef = querySnapshot.docs[0].ref;
                 await deleteDoc(docRef);
                 setIsInWatchlist(false);
-                Alert.alert('Removed from watchlist');
+                Alert.alert(`${languages[selectedLanguage].removedFromWatchlist}`);
                 route.params?.onGoBack?.();
               }
             } catch (error) {
@@ -231,13 +233,13 @@ const StockDetails = () => {
 
   useEffect(() => {
     const checkOwnership = async () => {
-      const q = query(collection(db, 'stocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+      const q = query(collection(db, 'stocks'), where('symbol', '==', currencySymbol), where('uid', '==', userId));
       const querySnapshot = await getDocs(q);
       setOwnsStock(!querySnapshot.empty);
     };
 
     const checkWatchlist = async () => {
-      const q = query(collection(db, 'watchedStocks'), where('symbol', '==', symbol), where('uid', '==', userId));
+      const q = query(collection(db, 'watchedStocks'), where('symbol', '==', currencySymbol), where('uid', '==', userId));
       const querySnapshot: any = await getDocs(q);
       if (!querySnapshot.empty) {
         setIsInWatchlist(true);
@@ -247,7 +249,7 @@ const StockDetails = () => {
 
     checkWatchlist();
     checkOwnership();
-  }, [symbol, userId]);
+  }, [currencySymbol, userId]);
 
   const toggleModal = () => {
     setModalVisible(prev => !prev);
@@ -274,14 +276,17 @@ const StockDetails = () => {
         <Image source={{ uri: stockDetails.logo }} style={styles.logo} />
         <View style={styles.headerText}>
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.symbol}>{symbol}</Text>
+          <Text style={styles.symbol}>{currencySymbol}</Text>
         </View>
       </View>
 
       <View style={styles.statsContainer}>
         <View style={styles.priceContainer}>
-          <Text style={styles.label}>Current Price</Text>
-          <Text style={styles.price}>${stockDetails.price.toFixed(2)}</Text>
+          <Text style={styles.label}>{languages[selectedLanguage].currentPrice}</Text>
+          <Text style={styles.price}>
+            {/* ${stockDetails.price.toFixed(2)} */}
+            {(parseFloat(stockDetails.price) * conversionRate).toFixed(2)} {symbol}
+            </Text>
         </View>
         <View style={[styles.changeContainer, stockDetails.percent_change_24h < 0 ? styles.negativeChange : styles.positiveChange]}>
           <FontAwesome name={stockDetails.percent_change_24h < 0 ? "caret-down" : "caret-up"} size={20} color={"white"} />
@@ -290,7 +295,7 @@ const StockDetails = () => {
       </View>
 
       <View style={styles.chartPlaceholder}>
-        <StockChart symbol={symbol} />
+        <StockChart symbol={currencySymbol} selectedLanguage={selectedLanguage}/>
       </View>
 
 
@@ -304,7 +309,7 @@ const StockDetails = () => {
 
       <View style={styles.buttonContainer}>
         <IconButton
-          title="Add to Portfolio"
+          title={languages[selectedLanguage].addToPortfolio}
           onPress={toggleModal}
           iconName="plus-circle"
           iconColor="#fff"
@@ -312,7 +317,7 @@ const StockDetails = () => {
         />
         {ownsStock && (
           <IconButton
-            title="Sell Stock"
+            title={languages[selectedLanguage].sellStock}
             onPress={toggleSellModal}
             iconName="minus-circle"
             iconColor="#fff"
@@ -320,7 +325,7 @@ const StockDetails = () => {
           />
         )}
         <IconButton
-          title={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+          title={isInWatchlist ? `${languages[selectedLanguage].removeFromWatchlist}` : `${languages[selectedLanguage].addToWatchlist}`}
           onPress={handleWatchlistToggle}
           iconName={isInWatchlist ? "star" : "star-o"}
           iconColor="#fff"
@@ -335,22 +340,22 @@ const StockDetails = () => {
       onRequestClose={toggleModal}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Enter your amount in USD</Text>
+          <Text style={styles.modalTitle}>{languages[selectedLanguage].enterInUSD}</Text>
           <TextInput
             style={styles.modalInput}
             onChangeText={setAmountOwned}
             value={amountOwned}
-            placeholder="Amount in USD"
+            placeholder={languages[selectedLanguage].amountInUSD}
             keyboardType="numeric"
             placeholderTextColor="#aaa" 
             clearButtonMode="while-editing" 
           />
           <View style={styles.modalButtonGroup}>
             <TouchableOpacity onPress={addOwnedStocksHandler} style={[styles.button, styles.modalButton]}>
-              <Text style={styles.buttonText}>Add</Text>
+              <Text style={styles.buttonText}>{languages[selectedLanguage].add}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={toggleModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -364,22 +369,22 @@ const StockDetails = () => {
         onRequestClose={toggleSellModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Enter the amount in USD to sell</Text>
+            <Text style={styles.modalTitle}>{languages[selectedLanguage].enterToSell}</Text>
             <TextInput
               style={styles.modalInput}
               onChangeText={setAmountOwned}
               value={amountOwned}
-              placeholder="Amount in USD"
+              placeholder={languages[selectedLanguage].amountInUSD}
               keyboardType="numeric"
               placeholderTextColor="#aaa" 
              clearButtonMode="while-editing" 
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={sellStockHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
-                <Text style={styles.buttonText}>Sell</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].sell}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleSellModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
               </TouchableOpacity>
             </View>
           </View>

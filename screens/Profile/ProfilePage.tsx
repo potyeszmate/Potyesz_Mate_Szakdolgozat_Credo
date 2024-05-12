@@ -14,41 +14,23 @@ import { useIsFocused } from '@react-navigation/native';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import * as ImagePicker from 'expo-image-picker'; 
 import * as ImageManipulator from 'expo-image-manipulator';
+import { ProfileStyles } from './ProfileStyle';
+import { resizeImage } from './ProfileHelpers';
+import { Profile } from './ProfileTypes';
+import { languages } from '../../commonConstants/sharedConstants';
 
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
-
- //TODO: Move some methods, style, and contants out of here
 const ProfilePage = () => {
  
-  const [profile, setProfile] = useState<any>();
+  const [profile, setProfile] = useState<Profile>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('English'); 
   const [isLoading, setIsLoading] = useState(false);
-
   const authCtx: any = useContext(AuthContext);
   const { userId } = authCtx as any;
-
   const snapPoints = useMemo(() => ['20%', '70%', '85%'], []);
 
-  const resizeImage = async (uri) => {
-    try {
-        const result = await ImageManipulator.manipulateAsync(
-            uri,
-            [{ resize: { width: 800 } }],
-            { compress: 0.7, format: ImageManipulator.SaveFormat.PNG }
-        );
-        return result.uri;
-    } catch (error) {
-        console.error("Error resizing image:", error);
-        return uri;
-    }
-  };
-
+  // TODO - szakdogaba belerakni
   const handleSelectImage = async () => {
     setIsLoading(true);
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -57,7 +39,7 @@ const ProfilePage = () => {
       return;
     }
 
-    const pickerResult = await ImagePicker.launchImageLibraryAsync();
+    const pickerResult: any = await ImagePicker.launchImageLibraryAsync();
     if (pickerResult.cancelled) {
       setIsLoading(false);
       return;
@@ -80,7 +62,7 @@ const ProfilePage = () => {
     }
   };
 
-  const uploadImage = async (uri, userId) => {
+  const uploadImage = async (uri: string, userId: string) => {
     try {
         const response = await fetch(uri);
         const blob = await response.blob();
@@ -96,11 +78,11 @@ const ProfilePage = () => {
     }
   };
   
-  const updateUserProfileImage = async (imageUrl) => {
+  const updateUserProfileImage = async (imageUrl: string) => {
     setIsLoading(true); 
 
     const settingsQuery: any = query(collection(db, 'users'), where('uid', '==', userId));
-    const querySnapshot = await getDocs(settingsQuery);
+    const querySnapshot: any = await getDocs(settingsQuery);
 
     if (!querySnapshot.empty) {
       const userData = querySnapshot.docs[0].data(); 
@@ -138,10 +120,14 @@ const ProfilePage = () => {
     try {
       const profileQuery = query(collection(db, 'users'),  where('uid', '==', userId));
       const querySnapshot = await getDocs(profileQuery);
-      const fetchedProfiles = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+
+      const fetchedProfiles: any = querySnapshot.docs[0]
+      ? {
+          id: querySnapshot.docs[0].id,
+          ...querySnapshot.docs[0].data(),
+        }
+      : null;
+
       setProfile(fetchedProfiles);
     } catch (error: any) {
       console.error('Error fetching profile:', error.message);
@@ -160,7 +146,6 @@ const ProfilePage = () => {
       console.error('Error editing transaction:', error.message);
     }
   };
-
 
   const getSelectedLanguage = async () => {
     try {
@@ -193,218 +178,107 @@ const ProfilePage = () => {
     }
   }, [userId]); 
 
-
-    return (
-      !isLoading  && profile && 
-      <View style={styles.container}>
+  return (
+    !isLoading && profile && (
+      <View style={ProfileStyles.container}>
+        <View>
+          <View style={ProfileStyles.card}>
+            <View style={ProfileStyles.cardContent}>
+              <TouchableOpacity onPress={handleSelectImage} style={ProfileStyles.leftSection}>
+                <Image
+                  source={profile?.profilePicture ? { uri: profile.profilePicture } : require('../../assets/avatar.png')}
+                  style={ProfileStyles.avatar}
+                />
+                <Text style={ProfileStyles.changePicture}>{languages[selectedLanguage].changeProfilePicture}</Text>
+              </TouchableOpacity>
               <View>
-                <View style={styles.card}>
-                  <View style={styles.cardContent}>
-                  <TouchableOpacity onPress={handleSelectImage} style={styles.leftSection}>
-                    <Image
-                      source={profile[0]?.profilePicture ? { uri: profile[0].profilePicture } : require('../../assets/avatar.png')}
-                      style={styles.avatar}
-                    />
-                    <Text style={styles.changePicture}>{languages[selectedLanguage].changeProfilePicture}</Text>
-                  </TouchableOpacity>
-                    <View style={styles.rightSection}>
-                      {profile && profile.length > 0 && (
-                        <View style={styles.editOption}>
-                        <Text style={styles.label}>{languages[selectedLanguage].firstName}</Text>
-                        <Text style={styles.value}>   {profile[0].firstName}</Text>
-                      </View>
-                      )}
-                      {profile && profile.length > 0 && (
-                        <View  style={styles.editOption}>
-                          <Text style={styles.label}>{languages[selectedLanguage].lastName}</Text>
-                          <Text style={styles.value}>   {profile[0].lastName}</Text>
-                        </View>
-                      )}
-                    </View>
+                {profile && (
+                  <View style={ProfileStyles.editOption}>
+                    <Text style={ProfileStyles.label}>{languages[selectedLanguage].firstName}</Text>
+                    <Text style={ProfileStyles.value}>   {profile.firstName}</Text>
                   </View>
-                </View>
+                )}
+                {profile && (
+                  <View style={ProfileStyles.editOption}>
+                    <Text style={ProfileStyles.label}>{languages[selectedLanguage].lastName}</Text>
+                    <Text style={ProfileStyles.value}>   {profile.lastName}</Text>
+                  </View>
+                )}
               </View>
-              <View>
-              <View style={styles.card}>
-                <View style={styles.editOption}>
-                {/* <FontAwesome5 name="envelope" style={styles.icon} solid /> */}
-                <Text style={styles.label}>{languages[selectedLanguage].email}</Text>
-                <Text style={styles.value}>   {authCtx.email}</Text>
-                </View>
-
-                {profile && profile.length > 0 && (
-                <View>
-                <View style={styles.editOption}>
-                  <Text style={styles.label}>{languages[selectedLanguage].birthday}:</Text>
-                  <Text style={styles.value}>   {profile[0].birthday.toDate().toLocaleDateString()}</Text>
-                </View>
-                <View style={styles.editOption}>
-                  <Text style={styles.label}>{languages[selectedLanguage].gender}:</Text>
-                  <Text style={styles.value}>   {profile[0].gender}</Text>
-                </View>
-                <View style={styles.editOption}>
-                  <Text style={styles.label}>{languages[selectedLanguage].mobile}:</Text>
-                  <Text style={styles.value}>   {profile[0].mobile}</Text>
-                </View>
-              </View>
-            
-          )}
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => setEditModalVisible(true)
-        }      
-        >
-        <Feather name="edit" size={24} color="#fff" style={styles.editIcon} />
-        <Text style={styles.addButtonText}>{languages[selectedLanguage].editProfile}</Text>
-      </TouchableOpacity>
-
-      {profile && profile.length > 0 &&   ( 
-      <Modal
-        visible={editModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setEditModalVisible(false)}
-      >
-        <Pressable
-          style={styles.modalBackground}
-          onPress={() => {
-            setEditModalVisible(false);
-          }}
-        >
-          <BottomSheet
-            ref={bottomSheetRef}
-            index={2}
-            snapPoints={snapPoints}
-            enablePanDownToClose
-            onClose={() => {
-              setEditModalVisible(false);
-            }}
-            backgroundComponent={({ style }) => (
-              <View style={[style, styles.bottomSheetBackground]} />
-            )}
-          >
-            <View style={styles.contentContainer}>
-              <ProfileInput
-                initialProfile={ profile[0]}
-                onEditProfile={editProfileHandler}
-                selectedLanguage={selectedLanguage}
-              />
             </View>
-          </BottomSheet>
-
-        </Pressable>
-      </Modal>
-      )}
-
+          </View>
+        </View>
+        <View>
+          <View style={ProfileStyles.card}>
+            <View style={ProfileStyles.editOption}>
+              <Text style={ProfileStyles.label}>{languages[selectedLanguage].email}</Text>
+              <Text style={ProfileStyles.value}>   {authCtx.email}</Text>
+            </View>
+  
+            {profile && (
+              <View>
+                <View style={ProfileStyles.editOption}>
+                  <Text style={ProfileStyles.label}>{languages[selectedLanguage].birthday}:</Text>
+                  <Text style={ProfileStyles.value}>   {profile?.birthday.toDate().toLocaleDateString()}</Text>
+                </View>
+                <View style={ProfileStyles.editOption}>
+                  <Text style={ProfileStyles.label}>{languages[selectedLanguage].gender}:</Text>
+                  <Text style={ProfileStyles.value}>{profile.gender === 'Male' ?  `   ${languages[selectedLanguage].genderMale}` :  `   ${languages[selectedLanguage].genderFemale}` }</Text>
+                </View>
+                <View style={ProfileStyles.editOption}>
+                  <Text style={ProfileStyles.label}>{languages[selectedLanguage].mobile}:</Text>
+                  <Text style={ProfileStyles.value}>   {profile.mobile}</Text>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+  
+        <TouchableOpacity
+          style={ProfileStyles.editButton}
+          onPress={() => setEditModalVisible(true)}
+        >
+          <Feather name="edit" size={24} color="#fff" style={ProfileStyles.editIcon} />
+          <Text style={ProfileStyles.addButtonText}>{languages[selectedLanguage].editProfile}</Text>
+        </TouchableOpacity>
+  
+        {profile && (
+          <Modal
+            visible={editModalVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setEditModalVisible(false)}
+          >
+            <Pressable
+              style={ProfileStyles.modalBackground}
+              onPress={() => setEditModalVisible(false)}
+            >
+              <BottomSheet
+                ref={bottomSheetRef}
+                index={2}
+                snapPoints={snapPoints}
+                enablePanDownToClose
+                onClose={() => setEditModalVisible(false)}
+                backgroundComponent={({ style }) => (
+                  <View style={[style, ProfileStyles.bottomSheetBackground]} />
+                )}
+              >
+                <View style={ProfileStyles.contentContainer}>
+                  <ProfileInput
+                    initialProfile={profile}
+                    onEditProfile={editProfileHandler}
+                    selectedLanguage={selectedLanguage}
+                  />
+                </View>
+              </BottomSheet>
+            </Pressable>
+          </Modal>
+        )}
       </View>
+    )
   );
+  
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f4f7',
-    padding: 20,
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
-    marginBottom: 16,
-    alignItems: 'flex-start', 
-  },
-  cardContent: {
-    width: '100%',
-    alignItems: 'flex-start', 
-  },
-  profileCard: { 
-    alignItems: 'center',
-    marginLeft: 30
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-  changePicture: {
-    color: '#149E53',
-    fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  icon: {
-    marginRight: 10,
-    color: '#5c6bc0',
-  },
-  label: {
-    fontWeight: 'bold',
-    color: '#333',
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  value: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
-  },
-  editOption: {
-    flexDirection: 'row',
-    alignItems: 'center', 
-    width: '100%',
-    paddingVertical: 8, 
-  },
-  editButton: {
-    backgroundColor: '#149E53',
-    borderRadius: 25,
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16,
-    width: '100%', 
-  },
-  editIcon: {
-    marginRight: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  leftSection: {
-    marginLeft: 100,
-    marginRight: 40
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-
- bottomSheetBackground: {
-    backgroundColor: 'white',
-    flex: 1,
-  },
-  editButtonContainer: {
-    padding: 16,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-});
-
 
 export default ProfilePage;
 

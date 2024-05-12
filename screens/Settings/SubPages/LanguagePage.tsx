@@ -4,25 +4,27 @@ import { AuthContext } from '../../../store/auth-context';
 import { collection, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Radio from '../../../components/CommonComponents/Radio';
+import { LanguageStyles } from '../SettingsStyles';
+// import { updateUserLanguage } from '../SettingsHelpers';
+import { languages } from '../../../commonConstants/sharedConstants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LanguagePage = () => {
 
       
   const route: any = useRoute();
   
-  const languages = ['English', 'German', 'Hungarian'];
+  const language = ['English', 'German', 'Hungarian'];
 
   const defaultLanguage = route.params?.defaultLanguage ?? 'English';
 
   const [selectedLanguage, setSelectedLanguage] = useState(defaultLanguage);
 
-
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
   
-  const updateUserLanguage = async (newLanguage: string) => {
+  const updateUserLanguage = async (newLanguage: string, userId: string) => {
 
     try {
       const querySnapshot = await getDocs(collection(db, 'users'));
@@ -41,9 +43,10 @@ const LanguagePage = () => {
     }
   };
 
+
   const handleLanguageSelect = (language: string) => {
     setSelectedLanguage(language);
-    updateUserLanguage(language);
+    updateUserLanguage(language, userId);
   };
 
   useEffect(() => {
@@ -51,46 +54,20 @@ const LanguagePage = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Select a language:</Text>
-      {languages.map((language) => (
+    <View style={LanguageStyles.container}>
+      <Text style={LanguageStyles.header}>{languages[selectedLanguage].selectLanguage}:</Text>
+      {language.map((language) => (
         <TouchableOpacity
           key={language}
-          style={styles.languageOption}
+          style={LanguageStyles.languageOption}
           onPress={() => handleLanguageSelect(language)}
         >
-          <Text style={styles.languageText}>{language}</Text>
+          <Text style={LanguageStyles.languageText}>{language}</Text>
           <Radio selected={language === selectedLanguage} />
         </TouchableOpacity>
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
-  header: {
-    fontFamily: 'Inter',
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  languageOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingBottom: 10,
-  },
-  languageText: {
-    flex: 1,
-    fontSize: 16,
-  },
-});
 
 export default LanguagePage;

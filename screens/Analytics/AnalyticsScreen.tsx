@@ -2,11 +2,12 @@ import React from 'react';
 import { ScrollView, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { analyticsScreenStyles } from './AnalyticsScreenStyles';
 
 const AnalyticsScreen = () => {
   const navigation = useNavigation();
   
-  const navigateToAnalytics = (analyticsType) => {
+  const navigateToAnalytics = (analyticsType: string) => {
     let routeName = '';
     switch (analyticsType) {
       case 'spendings':
@@ -27,16 +28,16 @@ const AnalyticsScreen = () => {
     navigation.navigate(routeName);
   };
 
-  const StatisticCard = ({ title, desc, iconName, iconColor, analyticsType }) => {
+  const StatisticCard = ( {title, desc, iconName, iconColor, analyticsType} ) => {
     return (
       <TouchableOpacity
-        style={styles.card}
+        style={analyticsScreenStyles.card}
         onPress={() => navigateToAnalytics(analyticsType)}
       >
-        <View style={styles.cardContent}>
-          <View style={styles.cardText}>
-            <Text style={styles.cardTitle}>{title}</Text>
-            <Text style={styles.cardAmount}>{desc}</Text>
+        <View style={analyticsScreenStyles.cardContent}>
+          <View style={analyticsScreenStyles.cardText}>
+            <Text style={analyticsScreenStyles.cardTitle}>{title}</Text>
+            <Text style={analyticsScreenStyles.cardAmount}>{desc}</Text>
           </View>
           <FontAwesome5 name={iconName} size={24} color={iconColor} />
         </View>
@@ -52,7 +53,7 @@ const AnalyticsScreen = () => {
 
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={analyticsScreenStyles.container}>
       {statistics.map((stat, index) => (
         <StatisticCard
           key={index}
@@ -66,45 +67,5 @@ const AnalyticsScreen = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  cardText: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 19,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  cardAmount: {
-    fontSize: 15,
-    color: 'grey',
-  },
-});
 
 export default AnalyticsScreen;

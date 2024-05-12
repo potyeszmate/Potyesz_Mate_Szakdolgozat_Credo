@@ -9,8 +9,8 @@ import { AuthContext } from '../../store/auth-context';
 import { collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Move string to consts, and some methods to helper. Add to language options
+import { PaymentStyles } from './PaymentStyles';
+import { languages } from '../../commonConstants/sharedConstants';
 
 const PaymentScreen = () => {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
@@ -24,6 +24,7 @@ const PaymentScreen = () => {
   const email = route.params?.email;
   const firstName = route.params?.firstName;
   const lastName = route.params?.firstName;
+  const selectedLanguage = route.params?.selectedLanguage;
 
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
@@ -69,12 +70,12 @@ const PaymentScreen = () => {
       });
   
       if (response.error) {
-        Alert.alert('Something went wrong in first step');
+        Alert.alert(`${languages[selectedLanguage].firstStepError}`);
         return;
       }
   
       const initResponse = await initPaymentSheet({
-        merchantDisplayName: 'credpo',
+        merchantDisplayName: 'Credo', 
         paymentIntentClientSecret: response.data.paymentIntent,
       });
   
@@ -105,42 +106,42 @@ const PaymentScreen = () => {
   
 
 return (
-  <View style={styles.container}>
-    <Text style={styles.headerTitle}>Unlock Premium Features</Text>
+  <View style={PaymentStyles.container}>
+    <Text style={PaymentStyles.headerTitle}>{languages[selectedLanguage].unlockPremium}</Text>
 
-    <View style={styles.featuresContainer}>
+    <View style={PaymentStyles.featuresContainer}>
       <FeatureCard
         iconName="robot"
-        featureTitle="Advisor Chatbot"
-        featureDescription="Get personalized financial advice from our chatbot."
+        featureTitle={languages[selectedLanguage].advisorChatbot}
+        featureDescription={languages[selectedLanguage].chatbotDescPayment}
       />
       <FeatureCard
         iconName="chart-line"
-        featureTitle="Stock Market"
-        featureDescription="Track and analyze your stock portfolio with up-to-date information."
+        featureTitle={languages[selectedLanguage].stockMarket}
+        featureDescription={languages[selectedLanguage].stockMarketDesc}
       />
       <FeatureCard
         iconName="bitcoin"
-        featureTitle="Cryptocurrency Tracker"
-        featureDescription="Manage and track your cryptocurrency investments with real-time market data."
+        featureTitle={languages[selectedLanguage].cryptoMarket}
+        featureDescription={languages[selectedLanguage].cryptoMarketDesc}
       />
       <FeatureCard
         iconName="dollar-sign"
-        featureTitle="Currency Tracker"
-        featureDescription="Access real-time currency exchange rates and store your favorites for quick access."
+        featureTitle={languages[selectedLanguage].currencyTracker}
+        featureDescription={languages[selectedLanguage].currencyTrackerDesc}
       />
     </View>
 
     {loading ? (
       <ActivityIndicator size="large" color="#1CB854" />
     ) : (
-      <TouchableOpacity style={styles.subscribeButton} onPress={() => initializePaymentSheet()}>
+      <TouchableOpacity style={PaymentStyles.subscribeButton} onPress={() => initializePaymentSheet()}>
 
-        <Text style={styles.subscribeButtonText}>Subscribe for $9.99/month</Text>
+        <Text style={PaymentStyles.subscribeButtonText}>{languages[selectedLanguage].subscribe}</Text>
       </TouchableOpacity>
     )}
 
-    <SuccessModal visible={successModalVisible} onConfirm={handleModalConfirm} />
+    <SuccessModal visible={successModalVisible} onConfirm={handleModalConfirm} selectedLanguage={selectedLanguage} />
 
 
   </View>
@@ -148,147 +149,33 @@ return (
 };
 
 const FeatureCard = ({ iconName, featureTitle, featureDescription }) => {
+
 return (
-  <View style={styles.featureCard}>
-    <FontAwesome5 name={iconName} size={24} color="#1CB854" style={styles.cardIcon} />
-    <View style={styles.cardTextContainer}>
-      <Text style={styles.featureCardTitle}>{featureTitle}</Text>
-      <Text style={styles.featureCardDescription}>{featureDescription}</Text>
+  <View style={PaymentStyles.featureCard}>
+    <FontAwesome5 name={iconName} size={24} color="#1CB854" style={PaymentStyles.cardIcon} />
+    <View style={PaymentStyles.cardTextContainer}>
+      <Text style={PaymentStyles.featureCardTitle}>{featureTitle}</Text>
+      <Text style={PaymentStyles.featureCardDescription}>{featureDescription}</Text>
     </View>
   </View>
 );
 };
 
-const SuccessModal = ({ visible, onConfirm }) => {
+const SuccessModal = ({ visible, onConfirm, selectedLanguage }) => {
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Payment successful!</Text>
-          <Text style={styles.modalSubText}>You now have access to premium features.</Text>
-          <TouchableOpacity style={styles.okButton} onPress={onConfirm}>
-            <Text style={styles.okButtonText}>OK</Text>
+      <View style={PaymentStyles.centeredView}>
+        <View style={PaymentStyles.modalView}>
+          <Text style={PaymentStyles.modalText}>{languages[selectedLanguage].paymentSuccesful}</Text>
+          <Text style={PaymentStyles.modalSubText}>{languages[selectedLanguage].accesToPremium}</Text>
+          <TouchableOpacity style={PaymentStyles.okButton} onPress={onConfirm}>
+            <Text style={PaymentStyles.okButtonText}>OK</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   );
 };
-
-
-const styles = StyleSheet.create({
-container: {
-  flex: 1,
-  backgroundColor: '#F7F7F7',
-  alignItems: 'center',
-  justifyContent: 'center',
-},
-headerTitle: {
-  fontSize: 24,
-  fontWeight: 'bold',
-  color: '#1A1A2C',
-  marginBottom: 30,
-
-},
-centeredView: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: 22,
-},
-featuresContainer: {
-  width: '90%',
-},
-featureCard: {
-  backgroundColor: '#FFFFFF',
-  borderRadius: 10,
-  padding: 20,
-  flexDirection: 'row',
-  alignItems: 'center',
-  marginBottom: 15,
-  shadowColor: '#000',
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 3.84,
-  elevation: 5,
-},
-cardIcon: {
-  marginRight: 20,
-},
-cardTextContainer: {
-  flex: 1,
-},
-featureCardTitle: {
-  fontSize: 18,
-  fontWeight: '600',
-  marginBottom: 5,
-},
-featureCardDescription: {
-  fontSize: 14,
-  color: '#666',
-},
-subscribeButton: {
-  backgroundColor: '#1CB854',
-  paddingVertical: 15,
-  paddingHorizontal: 35,
-  borderRadius: 30,
-  shadowColor: '#1CB854',
-  shadowOffset: {
-    width: 0,
-    height: 4,
-  },
-  shadowOpacity: 0.3,
-  shadowRadius: 4.65,
-  elevation: 8,
-  marginTop: 20
-},
-subscribeButtonText: {
-  color: 'white',
-  fontSize: 18,
-  fontWeight: 'bold',
-  textAlign: 'center',
-},
-modalView: {
-  margin: 20,
-  backgroundColor: 'white',
-  borderRadius: 20,
-  padding: 35,
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOffset: {
-    width: 0,
-    height: 2
-  },
-  shadowOpacity: 0.25,
-  shadowRadius: 4,
-  elevation: 5
-},
-modalText: {
-  marginBottom: 15,
-  textAlign: 'center',
-  fontWeight: 'bold',
-  fontSize: 18
-},
-modalSubText: {
-  marginBottom: 20,
-  textAlign: 'center',
-  fontSize: 15
-},
-okButton: {
-  backgroundColor: '#1CB854',
-  borderRadius: 20,
-  padding: 10,
-  elevation: 2
-},
-okButtonText: {
-  color: 'white',
-  fontWeight: 'bold',
-  textAlign: 'center'
-},
-});
 
 export default PaymentScreen;
 

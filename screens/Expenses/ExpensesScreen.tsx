@@ -1,42 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../store/auth-context';
 import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Budget from '../../components/Budget/Budget';
-
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
-
-// TODO: Organise methods to helper component
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
+import { languages } from '../../commonConstants/sharedConstants';
+import { ExpensesScreenStyles } from './ExpensesSytles';
+import { db } from '../../firebaseConfig';
+import { Profile } from '../Profile/ProfileTypes';
 
 const ExpensesScreen: React.FC = () => {
   const navigation = useNavigation();
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-
+  const [conversionRate, setConversionRate] = useState<number | null>(null);
+  const [symbol, setSymbol] = useState<any>('');
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
+  const [profile, setProfile] = useState<Profile>(null as any);
+  const [loading, setLoading] = useState(true);
+
 
   const handleRecurringPaymentsClick = () => {
-      navigation.navigate('Recurrings', { userId: userId });
+      // @ts-ignore
+      navigation.navigate('Recurrings', { userId: userId, symbol: symbol, selectedLanguage: selectedLanguage, conversionRate: conversionRate, currency: profile.currency });
   };
 
   const handleLoansClick = () => {
     // @ts-ignore
-    navigation.navigate('Loans', { userID: userId });
+    navigation.navigate('Loans', { userID: userId, symbol: symbol, selectedLanguage: selectedLanguage, conversionRate: conversionRate, currency: profile.currency });
   };
 
   const handleBillsClick = () => {
     // @ts-ignore
-    navigation.navigate('Bills', { userID: userId });
+    navigation.navigate('Bills', { userID: userId, symbol: symbol, selectedLanguage: selectedLanguage, conversionRate: conversionRate, currency: profile.currency });
   };
 
   const getSelectedLanguage = async () => {
@@ -50,58 +46,104 @@ const ExpensesScreen: React.FC = () => {
     }
   };
 
-  const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
+  const getSelectedCurrency = async () => {
+    try {
+
+      const savedSymbol = await AsyncStorage.getItem('symbol');
+      const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+
+
+      if (savedSymbol && savedConversionRate !== null) {
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      } else {
+
+        const defaultsavedSymbol= "$";
+        const defaultConversionRate= 1;
+
+        await AsyncStorage.setItem('conversionRate', defaultConversionRate.toString());
+        await AsyncStorage.setItem('symbol', defaultsavedSymbol);
+
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      }
+
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
+    }
+  };
+
+  async function getUserSettings(uid: any) {
+    const settingsRef = collection(db, 'users');
+    const q = query(settingsRef, where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+        const userSettings = querySnapshot?.docs[0]?.data();
+        return userSettings;
+    }
+
+  }
+
+  const fetchSavedUserData = async () => {
+    await getSelectedCurrency()
+    await getSelectedLanguage();
+    const settings = await getUserSettings(userId);
+    setProfile(settings)
+    setLoading(false);
   };
 
   const isFocused = useIsFocused();
-
   
   useEffect(() => {
     if (isFocused) {
-      fetchLanguage();
+      fetchSavedUserData();
     }
   }, [isFocused]);
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
-    <View style={styles.rootContainer}>
+    <View style={ExpensesScreenStyles.rootContainer}>
 
-      <View style={styles.space}></View>
+      <View style={ExpensesScreenStyles.space}></View>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleRecurringPaymentsClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/subscriptions.png')} style={styles.icon} />
+      <TouchableOpacity style={ExpensesScreenStyles.recurringCard} onPress={handleRecurringPaymentsClick}>
+        <View style={ExpensesScreenStyles.cardContent}>
+          <View style={ExpensesScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/subscriptions.png')} style={ExpensesScreenStyles.icon} />
           </View>
-          <View style={[styles.textContainer, { width: '60%' }]}>
-            <Text style={styles.titleText}>{languages[selectedLanguage].subscriptionsTitle}</Text>
-            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].subscriptionDesc}</Text>
+          <View style={[ExpensesScreenStyles.textContainer, { width: '60%' }]}>
+            <Text style={ExpensesScreenStyles.titleText}>{languages[selectedLanguage].subscriptionsTitle}</Text>
+            <Text style={ExpensesScreenStyles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].subscriptionDesc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleBillsClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/bills.png')} style={styles.icon} />
+      <TouchableOpacity style={ExpensesScreenStyles.recurringCard} onPress={handleBillsClick}>
+        <View style={ExpensesScreenStyles.cardContent}>
+          <View style={ExpensesScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/bills.png')} style={ExpensesScreenStyles.icon} />
           </View>
-          <View style={[styles.textContainer, { width: '60%' }]}>
-            <Text style={styles.titleText}>{languages[selectedLanguage].billsTitle}</Text>
-            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].billsDesc}</Text>
+          <View style={[ExpensesScreenStyles.textContainer, { width: '60%' }]}>
+            <Text style={ExpensesScreenStyles.titleText}>{languages[selectedLanguage].billsTitle}</Text>
+            <Text style={ExpensesScreenStyles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].billsDesc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleLoansClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/loans.png')} style={styles.icon} />
+      <TouchableOpacity style={ExpensesScreenStyles.recurringCard} onPress={handleLoansClick}>
+        <View style={ExpensesScreenStyles.cardContent}>
+          <View style={ExpensesScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/loans.png')} style={ExpensesScreenStyles.icon} />
           </View>
-          <View style={[styles.textContainer, { width: '60%' }]}>
-            <Text style={styles.titleText}>{languages[selectedLanguage].loansTitle}</Text>
-            <Text style={styles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].loansDesc}</Text>
+          <View style={[ExpensesScreenStyles.textContainer, { width: '60%' }]}>
+            <Text style={ExpensesScreenStyles.titleText}>{languages[selectedLanguage].loansTitle}</Text>
+            <Text style={ExpensesScreenStyles.subtitleText} numberOfLines={2}>{languages[selectedLanguage].loansDesc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
@@ -111,54 +153,5 @@ const ExpensesScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  rootContainer: {
-    flex: 1,
-  },
-  space: {
-    marginBottom: 10,
-  },
-  recurringCard: {
-    backgroundColor: 'white',
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 20,
-    elevation: 2,
-    borderColor: '#F3F4F7',
-    borderWidth: 1
-    
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  textContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  titleText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingBottom: 4
-  },
-  iconContainer: {
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-    borderRadius: 14,
-  },
-  icon: {
-    width: 40,
-    height: 40,
-  },
-  
-  subtitleText: {
-    color: 'grey',
-  },
-  navigationArrow: {
-    fontSize: 24,
-    color: 'black',
-  },
-});
 
 export default ExpensesScreen;

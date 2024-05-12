@@ -27,7 +27,9 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
 
 const handleNavigation = () => {
   if (profile && profile.isPremiumUser) {
-    navigation.navigate('Chatbot');
+    // @ts-ignore
+    navigation.navigate('Chatbot', { selectedLanguage: profile.language});
+
   } else {
     navigation.navigate('Payment');
   }

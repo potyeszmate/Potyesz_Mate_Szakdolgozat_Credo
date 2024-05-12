@@ -1,9 +1,10 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import { languages } from "../../commonConstants/sharedConstants";
 
 
-const WelcomeCard = ({ email, firstName, lastName}) => {
+const WelcomeCard = ({ email, firstName, lastName, selectedLanguage}) => {
   const navigation = useNavigation();
 
     const handlePress = () => {
@@ -11,7 +12,8 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
       navigation.navigate('Payment', {
         email: email,
         firstName: firstName,
-        lastName: lastName
+        lastName: lastName,
+        selectedLanguage
       });
     };
   
@@ -19,12 +21,12 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
     <View style={styles.cardContainer}>
     <View style={styles.gradientTop} />
     <View style={styles.gradientBottom} />
-    <Text style={styles.advisorText}>Advisor chatbot</Text>
+    <Text style={styles.advisorText}>{languages[selectedLanguage].advisorChatbot}</Text>
     <Text style={styles.descriptionText}>
-        Credo+ gives you tailored financial advices
+    {languages[selectedLanguage].chatbotDesc}
     </Text>
     <TouchableOpacity onPress={handlePress} style={styles.credoButton}>
-        <Text style={styles.credoButtonText}>Get Credo+</Text>
+        <Text style={styles.credoButtonText}>{languages[selectedLanguage].getCredo}</Text>
     </TouchableOpacity>
     <View style={styles.semiCircle} />
     </View>
@@ -40,7 +42,9 @@ const WelcomeCard = ({ email, firstName, lastName}) => {
         padding: 15,
         position: 'relative',
         marginTop: 20,
-        marginBottom: 10 
+        marginBottom: 10, 
+        marginLeft: 15,
+        marginRight: 15
       },
       gradientTop: {
         position: 'absolute',

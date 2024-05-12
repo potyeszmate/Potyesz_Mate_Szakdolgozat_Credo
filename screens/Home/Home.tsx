@@ -1,191 +1,53 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable, ActivityIndicator, Alert } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { AuthContext } from '../../store/auth-context';
 import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, updateDoc, setDoc, doc, getDoc } from 'firebase/firestore';
+import { query, collection, where, getDocs, updateDoc, setDoc, doc, } from 'firebase/firestore';
 import YourBalance from '../../components/Balance/YourBalance';
 import UpcomingRecurring from '../../components/CommonComponents/UpcomingRecurring';
 import LatestTransactions from '../../components/Transactions/LatestTransactions';
 import BudgetSummary from '../../components/Budget/BudgetSummary';
 import YourPoints from '../../components/Achievements/YourPoints';
 import JoinedChallanges from '../../components/Challenges/JoinedChallanges';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import CustomHeader from '../../components/CommonComponents/CustomHeader';
-import MonthlyIncome from '../../components/Balance/MonthlyIncome';
 import WelcomeCard from '../../components/CommonComponents/PremiumPayment';
 import AddBudget from '../../components/Budget/AddBudget';
 import OnboardingModal from '../../components/CommonComponents/OnboardingModal';
 import Toast from 'react-native-toast-message';
+import { homeStyles } from './HomeStyles';
+import { languages } from '../../commonConstants/sharedConstants';
+import { RecurringTransactions } from '../Expenses/ExspensesTypes';
+import { Income, MonthlyIncomes, Points, Transaction } from './HomeTypes';
+import MonthlyIncome from '../../components/Balance/MonthlyIncome';
 
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
 
-// TODO Refactor this main component, move out styles, common methods to helpers, constants, and types
 function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isTransactionsLoading, setIsTransactionsLoading] = useState(false);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
-
   const [userSettings, setUserSettings] = useState(null as any);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [incomes, setIncomes] = useState<any[]>([]);
-  const [recurringTransactions, setRecurringTransactions] = useState<any[]>([]);
-  const [profilePicture, setProfilePicture] = useState(null as any);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [incomes, setIncomes] = useState<Income[]>([]);
+  const [recurringTransactions, setRecurringTransactions] = useState<RecurringTransactions[]>([]);
+  const [profilePicture, setProfilePicture] = useState(null);
   const authCtx: any = useContext(AuthContext);
-  const { userId, email } = authCtx as any;  
-  const [points, setPoints] = useState<any[]>([]);
+  const { userId, email } = authCtx;  
+  const [points, setPoints] = useState<Points[]>([]);
   const [challanges, setChallanges] = useState<any[]>([]);
-  const [userIncome, setUserIncome] = useState<any>([]);
+  const [userIncome, setUserIncome] = useState<MonthlyIncomes>([]);
   const [balance, setBalance] = useState<number | null>(null);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpense, setTotalExpense] = useState(0);
-  
-  const [prevCurrency, setPrevCurrency] = useState<string | null>(null);
   const [conversionRate, setConversionRate] = useState<number | null>(null);
-  const [symbol, setSymbol] = useState<any>('');
+  const [symbol, setSymbol] = useState<string>('');
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
-
   const [selectedLanguage, setSelectedLanguage] = useState('English');
-
   const [activeTab, setActiveTab] = useState('overview');
-  const snapPoints = useMemo(() => ['30%', '50%'], []);
 
   // authCtx.logout();
 
-  useEffect(() => {
-      async function fetchData() {
-        const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
-
-          if(isOnboarding == 'true'){
-            setIsLoading(false)
-            setShowOnboarding(true);
-
-            return; 
-
-          }
-
-          if (!userId) {
-            return
-          };
-         
-          setIsLoading(true);
-          try {
-              const [trans, recTrans, chall, points, income, incomes, balance, settings] = await Promise.all([
-                  fetchTransactions(userId),
-                  fetchRecurringTransactions(userId),
-                  fetchChallanges(userId),
-                  fetchPoints(userId),
-                  fetchIncome(userId),
-                  fetchIncomes(userId),
-                  fetchBalance(userId),
-                  getUserSettings(userId),
-
-                  await fetchLanguage(),
-                  await fetchCurrency(),
-
-              ]);
-
-              setTransactions(trans as any);
-              setRecurringTransactions(recTrans as any);
-              setChallanges(chall);
-              setPoints(points);
-              setUserIncome(income);
-              setIncomes(incomes as any);
-              setBalance(balance as any);
-              setUserSettings(settings)
-
-          } catch (error) {
-              console.error('Failed to fetch initial data:', error);
-              setIsLoading(false);
-
-          } finally {
-              setIsLoading(false);
-          }
-      }
-      fetchData();
-  }, [userId,isOnboardingComplete]);
-
-  const isFocused = useIsFocused();
-
-  useEffect(() => {
-    const checkDataAndUpdate = async () => {
-      const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
-
-        if(isOnboarding == 'true'){
-          return; 
-
-        }
-
-      if (isFocused) {
-        await fetchLanguage();
-        await fetchCurrency();
-  
-        const isTransactionChanged = await AsyncStorage.getItem('transactionsChanged');
-        const isIncomesChanged = await AsyncStorage.getItem('incomesChanged');
-        const isprofileChanged = await AsyncStorage.getItem('profileChanged');
-
-
-        if (isTransactionChanged == "true") {
-          setIsTransactionsLoading(true)
-
-          await AsyncStorage.setItem('transactionsChanged', 'false');
-          const newTransactions = await fetchTransactions(userId);
-          const newBalance = await fetchBalance(userId);
-
-          await setTransactions(newTransactions)
-          await setBalance(newBalance)
-
-          setIsTransactionsLoading(false)
-
-        }
-
-        if (isIncomesChanged == "true") {
-          setIsTransactionsLoading(true)
-
-          await AsyncStorage.setItem('incomesChanged', 'false');
-          const newIncomes = await fetchIncomes(userId);
-          const newBalance = await fetchBalance(userId);
-
-          await setBalance(newBalance)
-          await setIncomes(newIncomes)
-          setIsTransactionsLoading(false)
-
-        }
-
-        if (isprofileChanged == "true") {
-          setIsProfileLoading(true)
-
-          await AsyncStorage.setItem('profileChanged', 'false');
-          const newProfile = await getUserSettings(userId);
-          await setUserSettings(newProfile);
-          setIsProfileLoading(false)
-
-        }
-
-      }
-    };
-  
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Hello',
-      text2: 'This is some something 👋',
-      visibilityTime: 2000 
-    });
-    
-    
-    checkDataAndUpdate(); 
-  }, [isFocused]); 
-
-  async function getUserSettings(uid: any) {
+  async function getUserSettings(uid: string) {
     const settingsRef = collection(db, 'users');
     const q = query(settingsRef, where("uid", "==", uid));
     const querySnapshot = await getDocs(q);
@@ -199,7 +61,7 @@ function Home() {
     }
 }
 
-  async function fetchTransactions(uid: any) {
+  async function fetchTransactions(uid: string) {
       const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', uid));
       const snapshot = await getDocs(transactionsQuery);
       setIsTransactionsLoading(false)
@@ -207,57 +69,69 @@ function Home() {
         id: doc.id,
         ...doc.data(),
       }));  
-    }
+  }
 
-    async function fetchIncomes(uid: any) {
+  async function fetchIncomes(uid: string) {
       const incomesQuery = query(collection(db, 'incomes'), where('uid', '==', uid));
       const snapshot = await getDocs(incomesQuery);
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));  
-    }
+  }
 
-  async function fetchRecurringTransactions(uid: any) {
+  async function fetchRecurringTransactions(uid: string) {
       const recurringQuery = query(collection(db, 'recurring_payments'), where('uid', '==', uid));
       const snapshot = await getDocs(recurringQuery);
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));  
-    }
+  }
 
-  async function fetchPoints(uid: any) {
+  async function fetchPoints(uid: string) {
     const recurringQuery = query(collection(db, 'points'), where('uid', '==', uid));
     const snapshot = await getDocs(recurringQuery);
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
-    }
+  }
 
-  async function fetchChallanges(uid: any) {
+  async function fetchChallanges(uid: string) {
     const recurringQuery = query(collection(db, 'joinedChallenges'), where('uid', '==', uid));
     const snapshot = await getDocs(recurringQuery);
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
-    }
+  }
 
-  async function fetchIncome(uid: any) {
+  async function fetchIncome(uid: string) {
     const recurringQuery = query(collection(db, 'income'), where('uid', '==', uid));
     const snapshot = await getDocs(recurringQuery);
     return snapshot.docs[0]?.data().income ? snapshot.docs[0]?.data().income : 0
-    }
+  }
 
-    async function fetchBalance(uid: string) {
+  async function fetchBalance(uid: string) {
       const balanceQuery = query(collection(db, 'balance'), where('uid', '==', uid));
       const snapshot = await getDocs(balanceQuery);
       return snapshot.docs[0]?.data()?.balance ? snapshot.docs[0]?.data().balance : 0;
 
-    }
+  }
   
+  const fetchLanguage = async () => {
+    await getSelectedLanguage();
+  };
+
+  const fetchCurrency = async () => {
+    await getSelectedCurrency();
+  };
+
+  const updateProfilePicture = (imageUrl: string) => {
+    setProfilePicture(imageUrl);
+  };
+
   const getSelectedLanguage = async () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
@@ -295,25 +169,6 @@ function Home() {
       console.error('Error retrieving selected language:', error);
     }
   };
-  
-  const fetchLanguage = async () => {
-    await getSelectedLanguage();
-  };
-
-  const fetchCurrency = async () => {
-    await getSelectedCurrency();
-  };
-
-  const updateProfilePicture = (imageUrl: any) => {
-    setProfilePicture(imageUrl);
-  };
-
-  function getCurrencySymbol(currencyCode: any) {
-      const symbols: any = {
-          'USD': '$', 'EUR': '€', 'HUF': 'Ft', 'AUD': '$', 'CAD': '$', 'GBP': '£'
-      };
-      return symbols[currencyCode] || '';
-  }
 
   const updateIncome = async (newIncome: string) => {
   
@@ -335,7 +190,7 @@ function Home() {
     }
   };
 
-  const uploadUserData = async (data, userId) => {
+  const uploadUserData = async (data: any, userId: string) => {
     const {
       firstName,
       lastName,
@@ -378,9 +233,126 @@ function Home() {
     });
   };
   
+  useEffect(() => {
+    async function fetchData() {
+      const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
+  
+      if (isOnboarding == 'true') {
+        setIsLoading(false);
+        setShowOnboarding(true);
+        return;
+      }
+  
+      if (!userId) {
+        return;
+      }
+  
+      setIsLoading(true);
+      try {
+        const [trans, recTrans, chall, points, income, incomes, balance, settings] = await Promise.all([
+          fetchTransactions(userId),
+          fetchRecurringTransactions(userId),
+          fetchChallanges(userId),
+          fetchPoints(userId),
+          fetchIncome(userId),
+          fetchIncomes(userId),
+          fetchBalance(userId),
+          getUserSettings(userId),
+  
+          await fetchLanguage(),
+          await fetchCurrency(),
+        ]);
+  
+        setTransactions(trans);
+        setRecurringTransactions(recTrans);
+        setChallanges(chall);
+        setPoints(points);
+        setUserIncome(income);
+        setIncomes(incomes);
+        setBalance(balance);
+        setUserSettings(settings);
+  
+      } catch (error) {
+        console.error('Failed to fetch initial data:', error);
+        setIsLoading(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [userId, isOnboardingComplete]);
+  
+  const isFocused = useIsFocused();
+  
+  useEffect(() => {
+    const checkDataAndUpdate = async () => {
+      const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
+  
+      if (isOnboarding == 'true') {
+        return;
+      }
+  
+      if (isFocused) {
+        await fetchLanguage();
+        await fetchCurrency();
+  
+        const isTransactionChanged = await AsyncStorage.getItem('transactionsChanged');
+        const isIncomesChanged = await AsyncStorage.getItem('incomesChanged');
+        const isprofileChanged = await AsyncStorage.getItem('profileChanged');
+  
+        if (isTransactionChanged == "true") {
+          setIsTransactionsLoading(true);
+  
+          await AsyncStorage.setItem('transactionsChanged', 'false');
+          const newTransactions = await fetchTransactions(userId);
+          const newBalance = await fetchBalance(userId);
+  
+          setTransactions(newTransactions);
+          setBalance(newBalance);
+  
+          setIsTransactionsLoading(false);
+        }
+  
+        if (isIncomesChanged == "true") {
+          setIsTransactionsLoading(true);
+  
+          await AsyncStorage.setItem('incomesChanged', 'false');
+          const newIncomes = await fetchIncomes(userId);
+          const newBalance = await fetchBalance(userId);
+  
+          setIncomes(newIncomes);
+          setBalance(newBalance);
+  
+          setIsTransactionsLoading(false);
+        }
+  
+        if (isprofileChanged == "true") {
+          setIsProfileLoading(true);
+  
+          await AsyncStorage.setItem('profileChanged', 'false');
+          const newProfile = await getUserSettings(userId);
+          setUserSettings(newProfile);
+  
+          setIsProfileLoading(false);
+        }
+      }
+    };
+  
+    Toast.show({
+      type: 'success',
+      position: 'top',
+      text1: 'Hello',
+      text2: 'This is some something 👋',
+      visibilityTime: 2000
+    });
+  
+    checkDataAndUpdate();
+  }, [isFocused]);
+  
+
   if (!userId) {
     return <ActivityIndicator size="large" color="#0000ff" />
-  } ;
+  };
 
   if (isLoading) {
       return <ActivityIndicator size="large" color="#0000ff" />;
@@ -422,206 +394,156 @@ function Home() {
     }}
     
   />
-}
+  }
 
-  return (
+return (
+  <View style={homeStyles.container}>
+    <CustomHeader
+      authCtx={authCtx}
+      updateProfilePicture={updateProfilePicture}
+      profile={userSettings}
+      isLoading={isProfileLoading}
+    />
 
-    <View style={styles.container}>
-       <CustomHeader
-        authCtx={authCtx} updateProfilePicture={updateProfilePicture} profile={userSettings} isLoading={isProfileLoading}
-      />
-
-      <View style={styles.tabBarContainer}>
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'overview' && styles.activeTabButton,
-            ]}
-            onPress={() => setActiveTab('overview')}
-          >
-            <Text
-              style={[
-                styles.tabButtonText,
-                activeTab === 'overview' && styles.activeTabButtonText,
-              ]}
-            >
-              {languages[selectedLanguage].overview}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'budget' && styles.activeTabButton,
-            ]}
-            onPress={() => setActiveTab('budget')}
-          >
-            <Text
-              style={[
-                styles.tabButtonText,
-                activeTab === 'budget' && styles.activeTabButtonText,
-              ]}
-            >
-              {languages[selectedLanguage].budget}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.tabButton,
-              activeTab === 'progress' && styles.activeTabButton,
-            ]}
-            onPress={() => setActiveTab('progress')}
-          >
-            <Text
-              style={[
-                styles.tabButtonText,
-                activeTab === 'progress' && styles.activeTabButtonText,
-              ]}
-            >
-              {languages[selectedLanguage].progress}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContentContainer}
-        showsVerticalScrollIndicator={false}
+    <View style={homeStyles.tabBarContainer}>
+      <TouchableOpacity
+        style={[
+          homeStyles.tabButton,
+          activeTab === 'overview' && homeStyles.activeTabButton,
+        ]}
+        onPress={() => setActiveTab('overview')}
       >
-            
+        <Text
+          style={[
+            homeStyles.tabButtonText,
+            activeTab === 'overview' && homeStyles.activeTabButtonText,
+          ]}
+        >
+          {languages[selectedLanguage].overview}
+        </Text>
+      </TouchableOpacity>
 
-            {activeTab === 'overview' && balance !== null && incomes && transactions && (
-              <YourBalance
-                balance={balance}
-                incomes={incomes}
-                transactions={transactions}
-                selectedLanguage={selectedLanguage}
-                symbol={symbol}
-                conversionRate={conversionRate}
-                loading={isLoading}
-              />
-            )}
+      <TouchableOpacity
+        style={[
+          homeStyles.tabButton,
+          activeTab === 'budget' && homeStyles.activeTabButton,
+        ]}
+        onPress={() => setActiveTab('budget')}
+      >
+        <Text
+          style={[
+            homeStyles.tabButtonText,
+            activeTab === 'budget' && homeStyles.activeTabButtonText,
+          ]}
+        >
+          {languages[selectedLanguage].budget}
+        </Text>
+      </TouchableOpacity>
 
-        {activeTab === 'overview' && userSettings && !userSettings.isPremiumUser && (
-          <WelcomeCard 
-            email={email} 
-            firstName={userSettings.firstName} 
-            lastName={userSettings.lastName}
-          />
-        )}
-
-        {activeTab === 'overview' && userSettings && (
-           transactions && <LatestTransactions incomes={incomes} transactions={transactions} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency} isLoading={isTransactionsLoading}/>
-        )}
-
-        {activeTab === 'overview' && userSettings && (
-         <MonthlyIncome income={userIncome} updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
-        )}
-
-        {activeTab === 'overview' && (
-          <UpcomingRecurring recurringTransactions={recurringTransactions} />
-        )}
-
-        {activeTab === 'budget' && (
-          <AddBudget updateIncome={updateIncome} selectedLanguage={selectedLanguage} symbol={symbol} conversionRate={conversionRate} currency={userSettings.currency}/>
-        )}
-
-        {activeTab === 'budget' && (
-         transactions && <BudgetSummary transactions={transactions} selectedLanguage={selectedLanguage} currency={userSettings.currency} conversionRate={conversionRate} symbol={symbol}/>
-        )}
-
-
-        {activeTab === 'progress' && points && !!points[0] && (
-          <YourPoints score={points[0].score} total={points[0].total} selectedLanguage={selectedLanguage}/>
-        )}
-
-        {activeTab === 'progress' && challanges && !!challanges[0] &&(
-        <JoinedChallanges challanges={challanges[0]} selectedLanguage={selectedLanguage}/>
-        )}
-
-      </ScrollView>
-
-      
-
+      <TouchableOpacity
+        style={[
+          homeStyles.tabButton,
+          activeTab === 'progress' && homeStyles.activeTabButton,
+        ]}
+        onPress={() => setActiveTab('progress')}
+      >
+        <Text
+          style={[
+            homeStyles.tabButtonText,
+            activeTab === 'progress' && homeStyles.activeTabButtonText,
+          ]}
+        >
+          {languages[selectedLanguage].progress}
+        </Text>
+      </TouchableOpacity>
     </View>
 
-  );
+    <ScrollView
+      contentContainerStyle={homeStyles.scrollContentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {activeTab === 'overview' && balance !== null && incomes && transactions && (
+        <YourBalance
+          balance={balance}
+          incomes={incomes}
+          transactions={transactions}
+          selectedLanguage={selectedLanguage}
+          symbol={symbol}
+          conversionRate={conversionRate}
+          loading={isLoading}
+        />
+      )}
+
+      {activeTab === 'overview' && userSettings && !userSettings.isPremiumUser && (
+        <WelcomeCard 
+          email={email}
+          firstName={userSettings.firstName}
+          lastName={userSettings.lastName}
+          selectedLanguage={selectedLanguage}
+        />
+      )}
+
+      {activeTab === 'overview' && userSettings && transactions && (
+        <LatestTransactions
+          incomes={incomes}
+          transactions={transactions}
+          selectedLanguage={selectedLanguage}
+          symbol={symbol}
+          conversionRate={conversionRate}
+          currency={userSettings.currency}
+          isLoading={isTransactionsLoading}
+        />
+      )}
+
+      {activeTab === 'overview' && userSettings && (
+        <MonthlyIncome
+          income={userIncome}
+          updateIncome={updateIncome}
+          selectedLanguage={selectedLanguage}
+          symbol={symbol}
+          conversionRate={conversionRate}
+          currency={userSettings.currency}
+        />
+      )}
+
+      {activeTab === 'overview' && (
+        <UpcomingRecurring recurringTransactions={recurringTransactions} />
+      )}
+
+      {activeTab === 'budget' && (
+        <AddBudget
+          updateIncome={updateIncome}
+          selectedLanguage={selectedLanguage}
+          symbol={symbol}
+          conversionRate={conversionRate}
+          currency={userSettings.currency}
+        />
+      )}
+
+      {activeTab === 'budget' && transactions && (
+        <BudgetSummary
+          transactions={transactions}
+          selectedLanguage={selectedLanguage}
+          currency={userSettings.currency}
+          conversionRate={conversionRate}
+          symbol={symbol}
+        />
+      )}
+
+      {activeTab === 'progress' && points && !!points[0] && (
+        <YourPoints
+          score={points[0].score}
+          total={points[0].total}
+          selectedLanguage={selectedLanguage}
+        />
+      )}
+
+      {activeTab === 'progress' && challanges && !!challanges[0] && (
+        <JoinedChallanges challanges={challanges[0]} selectedLanguage={selectedLanguage} />
+      )}
+    </ScrollView>
+  </View>
+);
 }
-
-const styles = StyleSheet.create({
-  rootContainer: {
-    flex: 1,
-  },
-  scrollContentContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    paddingBottom: 20,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 35,
-  },
-  tabButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 38,
-    borderRadius: 99,
-    borderColor: '#149E53',
-    borderWidth: 0.6
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-
-  },
-  tabBarContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    gap: 5
-  },
-
-  tabButtonText: {
-    color: '#1A1A2C',
-    fontSize: 14,
-  },
-  activeTabButton: {
-    backgroundColor: '#35BA52',
-  },
-  activeTabButtonText: {
-    color: '#FFFFFF',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 18,
-    marginTop: 18,
-  },
-  text: {
-    marginBottom: 8,
-  },
-  listContainer: {
-    width: '100%',
-  },
-
-  bottomSheetBackground: {
-    backgroundColor: 'white',
-    flex: 1,
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  contentContainer: {
-  flex: 1,
-  alignItems: 'center',
-},
-
-});
 
 export default Home;

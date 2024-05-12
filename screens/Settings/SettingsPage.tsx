@@ -5,18 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { SettingsPageStyles } from './SettingsStyles';
+import { languages } from '../../commonConstants/sharedConstants';
 
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
 
 const SettingsPage = () => {
   const authCtx = useContext(AuthContext) as any;
@@ -24,40 +17,42 @@ const SettingsPage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const [showModal, setShowModal] = useState(false);
-  const [userSettings, setUserSettings] = useState<any[]>([]);
+  const [userSettings, setUserSettings] = useState<any>();
 
   const navigation = useNavigation();
 
-  const handleCurrencyClick = () => {
-    // @ts-ignore
-    navigation.navigate('Currency', { defaultCurrency: userSettings.currency });
-  };
+  
+ const handleCurrencyClick = (currency: any, language: any) => {
+  // @ts-ignore
+  navigation.navigate('Currency', { defaultCurrency: currency, selectedLanguage: language});
+};
 
-  const handleLanguageClick = () => {
-    // @ts-ignore    
-    navigation.navigate('Language', { defaultLanguage: userSettings.language });
-  };
+  const handleLanguageClick = (language: any ) => {
+  // @ts-ignore    
+  navigation.navigate('Language', { defaultLanguage: language });
+};
 
-  const handleNotificationsClick = () => {
-    // @ts-ignore    
-    navigation.navigate('Notifications');
-  };
+ const handleNotificationsClick = (language: any) => {
+  // @ts-ignore    
+  navigation.navigate('Notifications', { selectedLanguage: language });
+};
 
-  const handleBugReportClick = () => {
-    // @ts-ignore   
-    navigation.navigate('Report');
-  };
+ const handleBugReportClick = (language: any) => {
+  // @ts-ignore   
+  navigation.navigate('Report', { selectedLanguage: language });
+};
 
-  const handleConnectClick = () => {
-    // @ts-ignore   
-    navigation.navigate('Connect');
-  };
+ const handleConnectClick = (language: any) => {
+  // @ts-ignore   
+  navigation.navigate('Connect', { selectedLanguage: language });
+};
 
-  const handleFaqClick = () => {
-    // @ts-ignore    
-    navigation.navigate('FAQ');
-  };
+ const handleFaqClick = (language: any) => {
+  // @ts-ignore    
+  navigation.navigate('FAQ', { selectedLanguage: language });
+};
 
+ 
   const handleLogout = () => {
     setShowModal(true);
   };
@@ -113,12 +108,11 @@ const SettingsPage = () => {
   };
 
   const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
+    await getSelectedLanguage();
   };
 
   const isFocused = useIsFocused();
 
-  
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
@@ -126,54 +120,52 @@ const SettingsPage = () => {
   }, [isFocused]);
 
   return (
-    <ScrollView>
-    <View style={styles.container}>
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{languages[selectedLanguage].general}</Text>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleCurrencyClick}>
-          <Ionicons name="cash-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].currency}</Text>
+    <ScrollView style={SettingsPageStyles.background}>
+    <View style={SettingsPageStyles.container}>
+      <View style={SettingsPageStyles.sectionContainer}>
+        <Text style={SettingsPageStyles.sectionTitle}>{languages[selectedLanguage].general}</Text>
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={() => handleCurrencyClick(userSettings.currency, selectedLanguage)}>
+
+          <Ionicons name="cash-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].currency}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleLanguageClick}>
-          <Ionicons name="language-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].language}</Text>
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={() => handleLanguageClick(userSettings.language)}>
+          <Ionicons name="language-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].language}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleNotificationsClick}>
-          <Ionicons name="notifications-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].notifications}</Text>
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={ () => handleNotificationsClick(selectedLanguage)}>
+          <Ionicons name="notifications-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].notifications}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{languages[selectedLanguage].support}</Text >
-        <TouchableOpacity style={styles.optionContainer} onPress={handleBugReportClick}>
-          <Ionicons name="bug-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].bugReport}</Text>
+      <View style={SettingsPageStyles.sectionContainer}>
+        <Text style={SettingsPageStyles.sectionTitle}>{languages[selectedLanguage].support}</Text >
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={() => handleBugReportClick(selectedLanguage)}>
+          <Ionicons name="bug-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].bugReport}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleConnectClick}>
-          <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].connectWithUs}</Text>
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={() => handleConnectClick(selectedLanguage)}>
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].connectWithUs}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionContainer} onPress={handleFaqClick}>
-          <Ionicons name="information-circle-outline" size={24} color="black" style={styles.icon} />
-          <Text style={styles.optionText}>{languages[selectedLanguage].faq}</Text>
+        <TouchableOpacity style={SettingsPageStyles.optionContainer} onPress={() => handleFaqClick(selectedLanguage)}>
+          <Ionicons name="information-circle-outline" size={24} color="black" style={SettingsPageStyles.icon} />
+          <Text style={SettingsPageStyles.optionText}>{languages[selectedLanguage].faq}</Text>
           <Ionicons name="chevron-forward-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <TouchableOpacity
-        style={[ styles.logoutButton]}
+        style={[ SettingsPageStyles.logoutButton]}
         onPress={handleLogout}
       >
-        <Ionicons name="log-out-outline" size={24} color="white" style={styles.icon} />
-        <Text style={styles.logoutButtonText}>{languages[selectedLanguage].signOut}</Text>
+        <Ionicons name="log-out-outline" size={24} color="white" style={SettingsPageStyles.icon} />
+        <Text style={SettingsPageStyles.logoutButtonText}>{languages[selectedLanguage].signOut}</Text>
       </TouchableOpacity>
-
-
-
 
       {/* Logout confirmation modal */}
       <Modal
@@ -182,10 +174,10 @@ const SettingsPage = () => {
         visible={showModal}
         onRequestClose={handleCancelLogout}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Are you sure you want to sign out?</Text>
-            <View style={styles.modalButtons}>
+        <View style={SettingsPageStyles.modalContainer}>
+          <View style={SettingsPageStyles.modalContent}>
+            <Text style={SettingsPageStyles.modalText}>Are you sure you want to sign out?</Text>
+            <View style={SettingsPageStyles.modalButtons}>
               <Button title="Yes" onPress={handleConfirmLogout} />
               <Button title="Cancel" onPress={handleCancelLogout} />
             </View>
@@ -197,73 +189,5 @@ const SettingsPage = () => {
 
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 20,
-  },
-  sectionContainer: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  optionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  optionText: {
-    fontSize: 18,
-    color: '#333',
-    marginLeft: 10,
-    flex: 1,
-  },
-  icon: {
-    marginRight: 10,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  logoutButton: {
-    backgroundColor: '#b23b3b',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoutButtonText: {
-    color: 'white',
-    fontSize: 18,
-    marginLeft: 10,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-});
 
 export default SettingsPage;

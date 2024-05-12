@@ -7,30 +7,20 @@ import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { convertCurrencyToCurrency } from '../../../util/conversion';
 import Radio from '../../../components/CommonComponents/Radio';
+import { getCurrencySymbol, languages } from '../../../commonConstants/sharedConstants';
+import { currencies } from '../SettingsConstants';
+import { CurrencyStyles } from '../SettingsStyles';
 
 const CurrencyPage = () => {
   const authCtx = useContext(AuthContext) as any;
   const { userId } = authCtx as any;
 
-  const getCurrencySymbol = (currencyCode: any) => {
-    
-    switch (currencyCode) {
-      case 'USD':
-        return '$';
-      case 'EUR':
-        return '€';
-      case 'HUF':
-        return 'HUF';
-      case 'AUD':
-        return '$';
-      case 'CAD':
-        return '$';
-      case 'GBP':
-        return '£';
-      default:
-        return ''; 
-    }
-  };
+  const route: any = useRoute();
+
+  const defaultCurrency = route.params?.defaultCurrency ?? 'USD';
+  const selectedLanguage = route.params?.selectedLanguage ?? 'English';
+
+  const [selectedCurrency, setSelectedCurrency] = useState(defaultCurrency);
 
   const updateUserCurrency = async (newCurrency: string) => {
     try {
@@ -55,23 +45,6 @@ const CurrencyPage = () => {
     }
 };
 
-  
-  
-  const route: any = useRoute();
-
-  const defaultCurrency = route.params?.defaultCurrency ?? 'USD';
-
-  const currencies = [
-    { fullName: 'United States Dollar (USD)', shortName: 'USD' },
-    { fullName: 'Euro (EUR)', shortName: 'EUR' },
-    { fullName: 'Hungarian Forint (HUF)', shortName: 'HUF' },
-    { fullName: 'Australian Dollar (AUD)', shortName: 'AUD' },
-    { fullName: 'Canadian Dollar (CAD)', shortName: 'CAD' },
-    { fullName: 'British Pound (GBP)', shortName: 'GBP' }
-  ]; 
-
-  const [selectedCurrency, setSelectedCurrency] = useState(defaultCurrency);
-
   const handleCurrencySelect = (currency: any) => {
     setSelectedCurrency(currency.shortName);
     updateUserCurrency(currency.shortName);
@@ -82,45 +55,20 @@ const CurrencyPage = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Select a currency:</Text>
+    <View style={CurrencyStyles.container}>
+      <Text style={CurrencyStyles.header}>{languages[selectedLanguage].selectCurrency}:</Text>
       {currencies.map((currency) => (
         <TouchableOpacity
           key={currency.shortName}
-          style={styles.currencyOption}
+          style={CurrencyStyles.currencyOption}
           onPress={() => handleCurrencySelect(currency)}
         >
-          <Text style={styles.currencyText}>{currency.fullName}</Text>
+          <Text style={CurrencyStyles.currencyText}>{currency.fullName}</Text>
           <Radio selected={currency.shortName === selectedCurrency} />
         </TouchableOpacity>
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  currencyOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingBottom: 10,
-  },
-  currencyText: {
-    flex: 1,
-    fontSize: 16,
-  },
-});
 
 export default CurrencyPage;

@@ -1,4 +1,3 @@
-// TODO: Move the prompts, and basic message string to here from chatbot.tsx 
 
 export const prompts = {
     analyzeSpendingHabits: "Analyze the user's spending habits based on their transaction history. Highlight any significant spending patterns, like frequent purchases in a particular category or unusually large transactions. Consider seasonal variations or monthly trends.",
@@ -25,10 +24,53 @@ export const getSystemPromptForSpending = (userInput: any) => {
   };
 
 export const basicMessages = {
-    initialGreeting: "Hello! My name is CredoBot! First please select a topic that you want to ask questions from me!",
-    selectFromTopics: "Select a topic again that you want to ask questions about.",
-    askNewQuestonCheck: "Chatbot: Do you want to ask another question about Spendings? Type either 'yes' or 'no' please!"
-}
+  English: {
+      initialGreeting: "Hello! My name is CredoBot! First please select a topic that you want to ask questions from me!",
+      selectFromTopics: "Select a topic again that you want to ask questions about.",
+      askNewQuestonCheck: "Do you want to ask another question about Spendings? Type either 'yes' or 'no' please!"
+  },
+  German: {
+      initialGreeting: "Hallo! Mein Name ist CredoBot! Bitte wählen Sie zuerst ein Thema, über das Sie Fragen stellen möchten!",
+      selectFromTopics: "Wählen Sie erneut ein Thema, über das Sie Fragen stellen möchten.",
+      askNewQuestonCheck: "Möchten Sie eine weitere Frage zu Ausgaben stellen? Bitte antworten Sie mit 'ja' oder 'nein'!"
+  },
+  Hungarian: {
+      initialGreeting: "Szia! A nevem CredoBot! Először is válassz egy témát, amiről kérdezni szeretnél tőlem!",
+      selectFromTopics: "Válassz újra egy témát, amiről kérdezni szeretnél.",
+      askNewQuestonCheck: "Szeretnél további kérdést feltenni a kiadásokról? Kérlek, írj 'igen' vagy 'nem'!"
+  }
+};
+
+export const topicMessages = {
+  English: {
+      topicPrompt: "Sure, please ask me any question about your {topic}."
+  },
+  German: {
+      topicPrompt: "Klar, bitte stellen Sie mir eine Frage zu Ihrem {topic}."
+  },
+  Hungarian: {
+      topicPrompt: "Persze, kérdezzen bármilyen kérdést a {topic} témában."
+  }
+};
+
+
+export const topicsTranslations = {
+  English: {
+      "Spendings": "Spendings",
+      "Budgets": "Budgets",
+      "Goals": "Goals",
+  },
+  German: {
+      "Spendings": "Ausgaben",
+      "Budgets": "Budgets",
+      "Goals": "Ziele",
+  },
+  Hungarian: {
+      "Spendings": "Kiadások",
+      "Budgets": "Költségvetések",
+      "Goals": "Célok",
+  }
+};
 
 export const models = {
     gpt4Turbo	: "gpt-4-turbo",

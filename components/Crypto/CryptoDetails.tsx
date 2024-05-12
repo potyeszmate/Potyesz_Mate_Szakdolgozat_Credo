@@ -8,20 +8,15 @@ import { AuthContext } from "../../store/auth-context";
 import { Alert } from 'react-native';
 import CryptoChart from "./CryptoChart";
 import { FontAwesome } from '@expo/vector-icons';
-
-interface Crypto {
-  id: number;
-  name: string;
-  symbol: string;
-  price: number;
-  logo: string;
-  percent_change_24h: number;
-  description: string;
-}
+import { languages } from "../../commonConstants/sharedConstants";
 
 const CryptoDetails = () => {
+
   const route = useRoute();
-  const { id, name, symbol, onGoBack } = route.params;
+  const { id, name, currencySymbol, symbol, selectedLanguage, conversionRate, onGoBack } = route.params;
+
+  console.log( route.params)
+
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [amountOwned, setAmountOwned] = useState('');
@@ -32,7 +27,7 @@ const CryptoDetails = () => {
   const cryptoWatchlistDocRef = useRef(null);
 
   const [cryptoDetails, setCryptoDetails] = useState({
-    price: 0,
+    price: '0',
     percent_change_24h: 0,
     logo: '',
     description: '',
@@ -42,6 +37,7 @@ const CryptoDetails = () => {
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
   
+
   useEffect(() => {
     const fetchCryptoData = async () => {
       try {
@@ -92,11 +88,11 @@ const CryptoDetails = () => {
 
   const addWatchedListHandler = async () => {
     Alert.alert(
-      "Confirm Addition",
-      "Are you sure you want to add this cryptocurrency to your watchlist?",
+      `${languages[selectedLanguage].confirmAddition}`,
+      `${languages[selectedLanguage].addWatchlistQuestion}`,
       [
         {
-          text: "Cancel",
+          text: `${languages[selectedLanguage].cancel}`,
           style: "cancel"
         },
         { 
@@ -109,7 +105,7 @@ const CryptoDetails = () => {
               });
               cryptoWatchlistDocRef.current = docRef; 
               setIsInWatchlist(true); 
-              Alert.alert('Added to watchlist');
+              Alert.alert(`${languages[selectedLanguage].addedToWatchlist}`);
               route.params?.onGoBack?.(); 
             } catch (error) {
               console.error('Error adding to watchlist:', error.message);
@@ -122,10 +118,10 @@ const CryptoDetails = () => {
   
   const handleWatchlistToggle = async () => {
     if (isInWatchlist) {
-      Alert.alert("Confirm Removal", "Remove this cryptocurrency from your watchlist?", [
-        { text: "Cancel", style: "cancel" },
+      Alert.alert(`${languages[selectedLanguage].confirmRemoval}`, `${languages[selectedLanguage].removeWatchlistQuestion}`, [
+        { text: `${languages[selectedLanguage].cancel}`, style: "cancel" },
         {
-          text: "Remove",
+          text: `${languages[selectedLanguage].remove}`,
           onPress: async () => {
             try {
               const q = query(collection(db, 'watchedCryptoCurrencies'), where('id', '==', id), where('uid', '==', userId));
@@ -134,7 +130,7 @@ const CryptoDetails = () => {
                 const docRef = querySnapshot.docs[0].ref;
                 await deleteDoc(docRef);
                 setIsInWatchlist(false); 
-                Alert.alert('Removed from watchlist');
+                Alert.alert(`${languages[selectedLanguage].removedFromWatchlist}`);
                 route.params?.onGoBack?.(); 
               }
             } catch (error) {
@@ -153,7 +149,7 @@ const CryptoDetails = () => {
     const addedAmount = amount  / cryptoDetails.price 
 
     if (isNaN(addedAmount) || addedAmount <= 0) {
-      Alert.alert("Please enter a valid amount");
+      Alert.alert(`${languages[selectedLanguage].enterValidAmount}`);
       return;
     }
   
@@ -176,7 +172,7 @@ const CryptoDetails = () => {
       }
       route.params?.onGoBack?.(); 
       setModalVisible(false);
-      Alert.alert('Added crypto');
+      Alert.alert(`${languages[selectedLanguage].addedCrypto}`);
 
     } catch (error) {
       console.error('Error adding owned crypto:', error.message);
@@ -186,7 +182,7 @@ const CryptoDetails = () => {
   const sellCryptoHandler = async () => {
     const inputAmount = parseFloat(amountOwned);
     if (isNaN(inputAmount) || inputAmount <= 0) {
-      Alert.alert("Please enter a valid amount to sell");
+      Alert.alert(`${languages[selectedLanguage].enterValidAmount}`);
       return;
     }
   
@@ -202,12 +198,12 @@ const CryptoDetails = () => {
       const ownedAmount = stockDoc.data().amount;
   
       if (amountToSell > ownedAmount) {
-        Alert.alert("You cannot sell more than you own");
+        Alert.alert(`${languages[selectedLanguage].cantSellMore}`);
         return;
       }
   
       Alert.alert(
-        "Confirm Sale",
+        `${languages[selectedLanguage].confirmSale}`,
         `Are you sure you want to sell $${inputAmount} worth of this stock?`,
         [
           {
@@ -223,7 +219,7 @@ const CryptoDetails = () => {
                   route.params?.onGoBack?.(); 
 
                   setSellModalVisible(false);
-                  Alert.alert("Sold from crypto");
+                  Alert.alert(`${languages[selectedLanguage].soldFromCrypto}`);
                   setAmountOwned('');
                 } catch (error) {
                   console.error('Error selling stock:', error.message);
@@ -273,14 +269,17 @@ const CryptoDetails = () => {
         <Image source={{ uri: cryptoDetails.logo }} style={styles.logo} />
         <View style={styles.headerText}>
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.symbol}>{symbol}</Text>
+          <Text style={styles.symbol}>{currencySymbol}</Text>
         </View>
       </View>
 
       <View style={styles.statsContainer}>
         <View style={styles.priceContainer}>
-          <Text style={styles.label}>Current Price</Text>
-          <Text style={styles.price}>${cryptoDetails.price.toFixed(2)}</Text>
+          <Text style={styles.label}>{languages[selectedLanguage].currentPrice}</Text>
+          <Text style={styles.price}>
+            {/* ${cryptoDetails.price.toFixed(2)} */}
+            {(parseFloat(cryptoDetails.price) * conversionRate).toFixed(2)} {symbol}
+            </Text>
         </View>
         <View style={[styles.changeContainer, cryptoDetails.percent_change_24h < 0 ? styles.negativeChange : styles.positiveChange]}>
           <FontAwesome name={cryptoDetails.percent_change_24h < 0 ? "caret-down" : "caret-up"} size={20} color={"white"} />
@@ -288,7 +287,7 @@ const CryptoDetails = () => {
         </View>
       </View>
 
-      <CryptoChart symbol={symbol} />
+      <CryptoChart symbol={currencySymbol} selectedLanguage={selectedLanguage}/>
 
       <TouchableOpacity onPress={toggleDescription} style={styles.descriptionContainer}>
         <Text style={styles.descriptionText} numberOfLines={expanded ? undefined : 3}>
@@ -299,7 +298,7 @@ const CryptoDetails = () => {
 
       <View style={styles.buttonContainer}>
         <IconButton
-          title="Add to Portfolio"
+          title={languages[selectedLanguage].addToPortfolio}
           onPress={toggleModal}
           iconName="plus-circle"
           iconColor="#fff"
@@ -307,7 +306,7 @@ const CryptoDetails = () => {
         />
         {ownsCrypto && (
           <IconButton
-            title="Sell Crypto"
+            title={languages[selectedLanguage].sellCrypto}
             onPress={toggleSellModal}
             iconName="minus-circle"
             iconColor="#fff"
@@ -315,7 +314,7 @@ const CryptoDetails = () => {
           />
         )}
         <IconButton
-          title={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
+          title={isInWatchlist ? `${languages[selectedLanguage].removeFromWatchlist}` : `${languages[selectedLanguage].addToWatchlist}`}
           onPress={handleWatchlistToggle}
           iconName={isInWatchlist ? "star" : "star-o"}
           iconColor="#fff"
@@ -331,22 +330,22 @@ const CryptoDetails = () => {
         onRequestClose={toggleModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Enter your amount in USD</Text>
+            <Text style={styles.modalTitle}>{languages[selectedLanguage].enterInUSD}</Text>
             <TextInput
               style={styles.modalInput}
               onChangeText={setAmountOwned}
               value={amountOwned}
-              placeholder="Amount in USD"
+              placeholder={languages[selectedLanguage].amountInUSD}
               keyboardType="numeric"
               placeholderTextColor="#aaa" 
               clearButtonMode="while-editing"
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={addOwnedCryptoHandler} style={[styles.button, styles.modalButton]}>
-                <Text style={styles.buttonText}>Add</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].add}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -360,22 +359,22 @@ const CryptoDetails = () => {
         onRequestClose={toggleSellModal}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Enter the amount in USD to sell</Text>
+            <Text style={styles.modalTitle}>{languages[selectedLanguage].enterToSell}</Text>
             <TextInput
               style={styles.modalInput}
               onChangeText={setAmountOwned}
               value={amountOwned}
-              placeholder="Amount in USD"
+              placeholder={languages[selectedLanguage].amountInUSD}
               keyboardType="numeric"
               placeholderTextColor="#aaa" 
               clearButtonMode="while-editing" 
             />
             <View style={styles.modalButtonGroup}>
               <TouchableOpacity onPress={sellCryptoHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
-                <Text style={styles.buttonText}>Sell</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].sell}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleSellModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-                <Text style={styles.buttonText}>Cancel</Text>
+                <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -615,6 +614,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
+    marginBottom: 10
   },
   price: {
     fontSize: 22,

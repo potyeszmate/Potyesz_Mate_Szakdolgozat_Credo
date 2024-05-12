@@ -5,10 +5,8 @@ import AuthContent from '../../../components/Auth/AuthContent';
 import LoadingOverlay from '../../../components/CommonComponents/LoadingOverlay';
 import { AuthContext } from '../../../store/auth-context';
 import { createUser } from '../../../util/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { FIREBASE_AUTH, db } from '../../../firebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authStyles } from '../AuthenticationStyles';
 
 const SignupScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false); 
@@ -36,21 +34,13 @@ const SignupScreen: React.FC = () => {
     return <LoadingOverlay/>;
   }
   return (
-    <View style={styles.content}>
+    <View style={authStyles.content}>
 
     <AuthContent onAuthenticate={signupHandler} />
     </View>
 
   );
 
-
 }
-
-const styles = StyleSheet.create({
-  content: {
-   backgroundColor: "#FAFAFA",
-   height: '100%'
-  },
-});
 
 export default SignupScreen;

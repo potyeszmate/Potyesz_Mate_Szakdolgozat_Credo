@@ -5,8 +5,9 @@ import { getStockChartData } from '../../util/stocks';
 
 import moment from 'moment';
 import { getCryptoChartData } from '../../util/crypto';
+import { languages } from '../../commonConstants/sharedConstants';
 
-const TimeframeButtons = ({ activeInterval, onSelectInterval }) => {
+const TimeframeButtons = ({ activeInterval, onSelectInterval, selectedLanguage }) => {
   return (
     <View style={styles.timeframeButtonContainer}>
       {['1 DAY', '1 WEEK', '1 MONTH', '1 YEAR'].map((interval) => (
@@ -24,7 +25,8 @@ const TimeframeButtons = ({ activeInterval, onSelectInterval }) => {
               activeInterval === interval ? styles.activeText : null,
             ]}
           >
-            {interval}
+            {/* {interval} */}
+            {languages[selectedLanguage][interval]}
           </Text>
         </TouchableOpacity>
       ))}
@@ -32,10 +34,12 @@ const TimeframeButtons = ({ activeInterval, onSelectInterval }) => {
   );
 };
 
-const StockChart = ({ symbol }) => {
+const StockChart = ({ symbol, selectedLanguage }) => {
   const [chartData, setChartData] = useState(null);
   const [selectedInterval, setSelectedInterval] = useState('1 YEAR');
 
+  console.log("symbol", symbol)
+  
   useEffect(() => {
     const fetchData = async () => {
       const endDate = new Date().toISOString().split('T')[0]; 
@@ -110,6 +114,7 @@ const StockChart = ({ symbol }) => {
     <TimeframeButtons
       activeInterval={selectedInterval}
       onSelectInterval={(interval) => setSelectedInterval(interval)}
+      selectedLanguage= {selectedLanguage}
     />
     </View>
   );

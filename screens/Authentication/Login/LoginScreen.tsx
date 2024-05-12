@@ -1,14 +1,13 @@
 import { useContext, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
-
+import { Alert, View } from 'react-native';
 import AuthContent from '../../../components/Auth/AuthContent';
 import { AuthContext } from '../../../store/auth-context';
 import { login } from '../../../util/auth';
 import LoadingOverlay from '../../../components/CommonComponents/LoadingOverlay';
+import { authStyles } from '../AuthenticationStyles';
 
 const LoginScreen: React.FC = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-
   const authCtx: any = useContext(AuthContext);
 
   const loginHandler = async ({ email, password }: { email: any, password: any }) => {
@@ -31,20 +30,11 @@ const LoginScreen: React.FC = () => {
     return <LoadingOverlay/>;
   }
   return (
-    <View style={styles.content}>
+    <View style={authStyles.content}>
 
     <AuthContent isLogin onAuthenticate={loginHandler} />
     </View>
-
   );
-
 }
-
-const styles = StyleSheet.create({
-  content: {
-   backgroundColor: "#FAFAFA",
-   height: '100%'
-  },
-});
 
 export default LoginScreen;

@@ -21,6 +21,7 @@ import apiKeys from './../apiKeys.json';
   };
 
   export const getCompanyInfo = async (stock: string) => {
+    console.log("stock: ", stock)
     try {
       const apiUrl = `https://api.polygon.io/v3/reference/tickers/${stock}?apiKey=${apiKeys.StocksApiKey}`;
   
@@ -63,6 +64,7 @@ import apiKeys from './../apiKeys.json';
   };
 
   export const getStockChartData = async (symbol: string, startDate: any, endDate: any, interval: any) => {
+    console.log("symbol: ", symbol)
     try {
       const apiUrl = `https://api.twelvedata.com/time_series?&start_date=${startDate}&end_date=${endDate}&symbol=${symbol}&interval=${interval}&apikey=${apiKeys.chartsApiKey}`;
   

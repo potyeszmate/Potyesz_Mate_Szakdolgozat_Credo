@@ -12,6 +12,7 @@ import de from '../../../languages/de.json';
 import hu from '../../../languages/hu.json';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { goalStyles } from '../SavingsStyles';
 
 
 const languages: any = {
@@ -31,7 +32,6 @@ const GoalScreen = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<any | null>(null); 
   const [selectedLanguage, setSelectedLanguage] = useState('English'); 
-
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
 
@@ -74,7 +74,6 @@ const GoalScreen = () => {
   const deleteGoalHandler = async () => {
     try {
       if (!selectedGoal) {
-        console.error("THERE IS NO SELECTED GOAL")
         return;
       }
 
@@ -117,7 +116,7 @@ const GoalScreen = () => {
   };
 
   const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
+    await getSelectedLanguage();
   };
 
   const isFocused = useIsFocused();
@@ -157,16 +156,16 @@ const GoalScreen = () => {
 
 
   return (
-    <View style={styles.container}>
+    <View style={goalStyles.container}>
       {!loading &&
-        <View style={styles.totalSavedContainer}>
-          <Text style={styles.totalSavedText}>{languages[selectedLanguage].totalSaved}</Text>
-          <Text style={styles.totalSavedAmount}>${totalSaved}</Text>
+        <View style={goalStyles.totalSavedContainer}>
+          <Text style={goalStyles.totalSavedText}>{languages[selectedLanguage].totalSaved}</Text>
+          <Text style={goalStyles.totalSavedAmount}>${totalSaved}</Text>
         </View>
       }
 
       {!loading &&
-        <ScrollView style={styles.goalContainer}>
+        <ScrollView style={goalStyles.goalContainer}>
           {goals.map((goal) => (
             <GoalCard key={goal.id} goal={goal}
               onDelete={() => showDeleteModal(goal)} onEdit={() => showEditModal(goal)} selectedLanguage={selectedLanguage}
@@ -176,10 +175,10 @@ const GoalScreen = () => {
       }
 
       {!loading &&
-        <View style={styles.addButtonContainer}>
-          <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-            <Feather name="plus" size={24} color="#fff" style={styles.addIcon} />
-            <Text style={styles.addButtonText}>{languages[selectedLanguage].addGoal}</Text>
+        <View style={goalStyles.addButtonContainer}>
+          <TouchableOpacity style={goalStyles.addButton} onPress={() => setModalVisible(true)}>
+            <Feather name="plus" size={24} color="#fff" style={goalStyles.addIcon} />
+            <Text style={goalStyles.addButtonText}>{languages[selectedLanguage].addGoal}</Text>
           </TouchableOpacity>
         </View>
       }
@@ -190,15 +189,15 @@ const GoalScreen = () => {
         animationType="slide"
         onRequestClose={() => setDeleteModalVisible(false)}
       >
-        <View style={styles.deleteModalContainer}>
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalText}>{languages[selectedLanguage].delete}</Text>
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.deleteModalButton}>
-                <Text style={styles.deleteModalButtonText}>{languages[selectedLanguage].no}</Text>
+        <View style={goalStyles.deleteModalContainer}>
+          <View style={goalStyles.deleteModalContent}>
+            <Text style={goalStyles.deleteModalText}>{languages[selectedLanguage].delete}</Text>
+            <View style={goalStyles.deleteModalButtons}>
+              <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={goalStyles.deleteModalButton}>
+                <Text style={goalStyles.deleteModalButtonText}>{languages[selectedLanguage].no}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteGoalHandler()} style={[styles.deleteModalButton, styles.deleteModalButtonYes]}>
-                <Text style={styles.deleteModalButtonText}>{languages[selectedLanguage].yes}</Text>
+              <TouchableOpacity onPress={() => deleteGoalHandler()} style={[goalStyles.deleteModalButton, goalStyles.deleteModalButtonYes]}>
+                <Text style={goalStyles.deleteModalButtonText}>{languages[selectedLanguage].yes}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -212,7 +211,7 @@ const GoalScreen = () => {
         onRequestClose={() => setEditModalVisible(false)}
       >
         <Pressable
-          style={styles.modalBackground}
+          style={goalStyles.modalBackground}
           onPress={() => {
             setEditModalVisible(false);
           }}
@@ -226,10 +225,10 @@ const GoalScreen = () => {
               setEditModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
-              <View style={[style, styles.bottomSheetBackground]} />
+              <View style={[style, goalStyles.bottomSheetBackground]} />
             )}
           >
-            <View style={styles.contentContainer}>
+            <View style={goalStyles.contentContainer}>
               <GoalInput
                 onAddGoal={editGoalsHandler} initialGoal={selectedGoal} selectedLanguage={selectedLanguage}
               />
@@ -245,7 +244,7 @@ const GoalScreen = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable
-          style={styles.modalBackground}
+          style={goalStyles.modalBackground}
           onPress={() => {
             setModalVisible(false);
           }}
@@ -259,10 +258,10 @@ const GoalScreen = () => {
               setModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
-              <View style={[style, styles.bottomSheetBackground]} />
+              <View style={[style, goalStyles.bottomSheetBackground]} />
             )}
           >
-            <View style={styles.contentContainer}>
+            <View style={goalStyles.contentContainer}>
               <GoalInput
                 onAddGoal={addGoalHandler} selectedLanguage={selectedLanguage}
               />
@@ -275,112 +274,5 @@ const GoalScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  goalContainer: {
-    flex: 1,
-  },
-  totalSavedContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    marginVertical: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-  },
-  totalSavedText: {
-    fontSize: 18,
-    color: '#1A1A2C',
-  },
-  totalSavedAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1A1A2C',
-  },
-  addButtonContainer: {
-    padding: 16,
-  },
-  addButton: {
-    backgroundColor: '#35BA52',
-    borderRadius: 20,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginLeft: 16,
-    marginRight: 16,
-    marginBottom: 16
-  },
-  addIcon: {
-    marginRight: 8,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 8,
-    elevation: 5,
-  },
-  bottomSheetBackground: {
-    backgroundColor: 'white',
-    flex: 1,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  deleteModalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  deleteModalContent: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    elevation: 5,
-  },
-  deleteModalText: {
-    fontSize: 18,
-    marginBottom: 16,
-  },
-  deleteModalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  deleteModalButton: {
-    marginLeft: 16,
-    padding: 8,
-  },
-  deleteModalButtonYes: {
-    backgroundColor: '#FF5733',
-    borderRadius: 8,
-  },
-  deleteModalButtonText: {
-    fontSize: 16,
-    color: '#1A1A2C',
-  },
-});
 
 export default GoalScreen;

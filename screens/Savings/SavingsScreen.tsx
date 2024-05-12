@@ -10,6 +10,8 @@ import en from '../../languages/en.json';
 import de from '../../languages/de.json';
 import hu from '../../languages/hu.json';
 import { db } from '../../firebaseConfig';
+import { SavingScreenStyles } from './SavingsStyles';
+import { Profile } from '../Profile/ProfileTypes';
 
 
 const languages: any = {
@@ -18,39 +20,64 @@ const languages: any = {
   Hungarian: hu,
 };
 
-// TODO: Add to languages, move to styles and constants, move methods to helper, etc.
 const SavingsScreen: React.FC = () => {
   const navigation = useNavigation();
   const [selectedLanguage, setSelectedLanguage] = useState('English'); 
   const [isProfileLoading, setIsProfileLoading] = useState(false);
-  const [profile, setProfile] = useState(null as any);
-
+  const [profile, setProfile] = useState<Profile>(null as any);
+  const [conversionRate, setConversionRate] = useState<number | null>(null);
+  const [symbol, setSymbol] = useState<any>('');
   const authCtx: any = useContext(AuthContext);
   const { userId } = authCtx as any;  
 
   const handleGoalsClick = () => {
     // @ts-ignore
-    navigation.navigate('Goals');
+    navigation.navigate('Goals',   {
+      symbol: symbol,
+      selectedLanguage: selectedLanguage,
+      conversionRate: conversionRate,
+      currency: profile.currency
+    });
 
   };
 
   const handleCryptoCurrenciesClick = () => {
     if (profile && profile.isPremiumUser) {
       // @ts-ignore
-      navigation.navigate('Cryptocurrencies');
+      navigation.navigate('Cryptocurrencies', {
+        symbol: symbol,
+        selectedLanguage: selectedLanguage,
+        conversionRate: conversionRate,
+        currency: profile.currency
+      });
     } else {
       // @ts-ignore
-      navigation.navigate('Payment');
+      navigation.navigate('Payment', {
+        email: authCtx.email,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        selectedLanguage
+      });
     }
   };
   
   const handleStocksClick = () => {
     if (profile && profile.isPremiumUser) {
       // @ts-ignore
-      navigation.navigate('Stocks');
+      navigation.navigate('Stocks', {
+        symbol: symbol,
+        selectedLanguage: selectedLanguage,
+        conversionRate: conversionRate,
+        currency: profile.currency
+      });
     } else {
       // @ts-ignore
-      navigation.navigate('Payment');
+      navigation.navigate('Payment', {
+        email: authCtx.email,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        selectedLanguage
+      });
     }
   };
   
@@ -67,7 +94,34 @@ const SavingsScreen: React.FC = () => {
     }
     setIsProfileLoading(false)
 
-}
+  }
+
+  const getSelectedCurrency = async () => {
+    try {
+
+      const savedSymbol = await AsyncStorage.getItem('symbol');
+      const savedConversionRate: any = await AsyncStorage.getItem('conversionRate');
+
+
+      if (savedSymbol && savedConversionRate !== null) {
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      } else {
+
+        const defaultsavedSymbol= "$";
+        const defaultConversionRate= 1;
+
+        await AsyncStorage.setItem('conversionRate', defaultConversionRate.toString());
+        await AsyncStorage.setItem('symbol', defaultsavedSymbol);
+
+        setSymbol(savedSymbol);
+        setConversionRate(savedConversionRate);
+      }
+
+    } catch (error) {
+      console.error('Error retrieving selected language:', error);
+    }
+  };
 
   const getSelectedLanguage = async () => {
     try {
@@ -80,12 +134,12 @@ const SavingsScreen: React.FC = () => {
     }
   };
 
-  const fetchLanguage = async () => {
-    const language = await getSelectedLanguage();
+  const fetchSavedUserData = async () => {
+    await getSelectedCurrency()
+    await getSelectedLanguage();
   };
 
   const isFocused = useIsFocused();
-
   
   useEffect(() => {
     const checkDataAndUpdate = async () => {
@@ -97,12 +151,12 @@ const SavingsScreen: React.FC = () => {
         setIsProfileLoading(true)
 
         await AsyncStorage.setItem('profileChanged', 'false');
-        const newProfile = await getUserSettings(userId);
+        const newProfile: any = await getUserSettings(userId);
         await setProfile(newProfile);
         setIsProfileLoading(false)
 
       }
-      fetchLanguage();
+      fetchSavedUserData();
     }
   };
   
@@ -115,51 +169,51 @@ const SavingsScreen: React.FC = () => {
       setProfile(settings)
     };
     fetchProfile(); 
-  }, [userId]);
+  }, []);
 
   if (isProfileLoading || !profile) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
-    <View style={styles.rootContainer}>
+    <View style={SavingScreenStyles.rootContainer}>
 
-      <View style={styles.space}></View>
+      <View style={SavingScreenStyles.space}></View>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleGoalsClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/saving.png')} style={styles.icon} />
+      <TouchableOpacity style={SavingScreenStyles.recurringCard} onPress={handleGoalsClick}>
+        <View style={SavingScreenStyles.cardContent}>
+          <View style={SavingScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/saving.png')} style={SavingScreenStyles.icon} />
           </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.titleText}>Goals</Text>
-            <Text style={styles.subtitleText}>Your goals</Text>
+          <View style={SavingScreenStyles.textContainer}>
+            <Text style={SavingScreenStyles.titleText}>{languages[selectedLanguage].goals}</Text>
+            <Text style={SavingScreenStyles.subtitleText}>{languages[selectedLanguage].goalDesc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleCryptoCurrenciesClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/cryptocurrency.png')} style={styles.icon} />
+      <TouchableOpacity style={SavingScreenStyles.recurringCard} onPress={handleCryptoCurrenciesClick}>
+        <View style={SavingScreenStyles.cardContent}>
+          <View style={SavingScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/cryptocurrency.png')} style={SavingScreenStyles.icon} />
           </View>
-          <View style={styles.textContainer}>
-          <Text style={styles.titleText}>Cryptocurrencies</Text>
-            <Text style={styles.subtitleText}>Bitcoin, Ethereum, etc</Text>
+          <View style={SavingScreenStyles.textContainer}>
+          <Text style={SavingScreenStyles.titleText}>{languages[selectedLanguage].cryptos}</Text>
+            <Text style={SavingScreenStyles.subtitleText}>Bitcoin, Ethereum, {languages[selectedLanguage].etc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.recurringCard} onPress={handleStocksClick}>
-        <View style={styles.cardContent}>
-          <View style={styles.iconContainer}>
-            <Image source={require('../../assets/Recurrings/chart.png')} style={styles.icon} />
+      <TouchableOpacity style={SavingScreenStyles.recurringCard} onPress={handleStocksClick}>
+        <View style={SavingScreenStyles.cardContent}>
+          <View style={SavingScreenStyles.iconContainer}>
+            <Image source={require('../../assets/Recurrings/chart.png')} style={SavingScreenStyles.icon} />
           </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.titleText}>Stocks</Text>
-            <Text style={styles.subtitleText}>Apple, NVIDIA, Tesla, etc</Text>
+          <View style={SavingScreenStyles.textContainer}>
+            <Text style={SavingScreenStyles.titleText}>{languages[selectedLanguage].stocks}</Text>
+            <Text style={SavingScreenStyles.subtitleText}>Apple, NVIDIA, Tesla, {languages[selectedLanguage].etc}</Text>
           </View>
           <Image source={require('../../assets/angle-right.png')} />
         </View>
@@ -167,55 +221,5 @@ const SavingsScreen: React.FC = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  rootContainer: {
-    flex: 1,
-  },
-  space: {
-    marginBottom: 10,
-  },
-  recurringCard: {
-    backgroundColor: 'white',
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 20,
-    elevation: 2,
-    borderColor: '#F3F4F7',
-    borderWidth: 1
-    
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  textContainer: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  titleText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    paddingBottom: 4
-  },
-  iconContainer: {
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
-    borderRadius: 14,
-  },
-  icon: {
-    width: 40,
-    height: 40,
-  },
-  
-  subtitleText: {
-    color: 'grey',
-  },
-  navigationArrow: {
-    fontSize: 24,
-    color: 'black',
-  },
-});
 
 export default SavingsScreen;
