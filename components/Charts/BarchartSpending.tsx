@@ -2,26 +2,27 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
+import { languages } from '../../commonConstants/sharedConstants';
+import { BarchartSpendingStyles } from './ChartComponentsStyles';
 
-const BarChartSpending = ({ data }: { data: any[] }) => {
+const BarChartSpending = ({ data, symbol, selectedLanguage, conversionRate}: { data: any[], symbol: string, selectedLanguage: string, conversionRate: string }) => {
   if (!data || data.length === 0) {
-    return <Text style={styles.noDataText}>No data available</Text>;
+    return <Text style={BarchartSpendingStyles.noDataText}>{languages[selectedLanguage].noDataAvailable}</Text>;
   }
 
   const screenWidth = Dimensions.get('window').width;
 
   const sumsByCategory = data.reduce((acc, transaction) => {
-    const category = transaction.category;
+    const category = `${languages[selectedLanguage][transaction.category]}` ;
     if (!acc[category]) {
       acc[category] = 0;
     }
-    acc[category] += transaction.value/1000;
+    acc[category] += transaction.value/1000; 
     return acc;
   }, {});
 
   const chartLabels = Object.keys(sumsByCategory);
   const chartValues = Object.values(sumsByCategory);
-
 
   const chartConfig = {
     backgroundColor: '#ffffff',
@@ -35,28 +36,25 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
     strokeWidth: 10,
     paddingLeft: 25, 
   };
-
-  
-    
+ 
   const chartData = {
     labels: chartLabels,
     datasets: [
       {
-        data: chartValues.map(value => parseFloat(value)),
+        data: chartValues.map(value => parseFloat(value * conversionRate)),
       }
     ]
   };
 
   return (
-    <View style={styles.chartContainer}>
-    <View style={styles.card}>
-
+    <View style={BarchartSpendingStyles.chartContainer}>
+    <View style={BarchartSpendingStyles.card}>
 
       <BarChart
         data={chartData}
         width={screenWidth - 70}
         height={500}
-        yAxisLabel="$"
+        yAxisLabel={symbol}
         yAxisSuffix="k" 
         chartConfig={chartConfig}
         verticalLabelRotation={67}
@@ -70,36 +68,5 @@ const BarChartSpending = ({ data }: { data: any[] }) => {
 
   );
 };
-
-const styles = StyleSheet.create({
-  noDataText: {
-    textAlign: 'center',
-    marginVertical: 10,
-  },
-  chartContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1, 
-  },
-  barChartStyle: {
-    marginVertical: 8,
-    marginRight: 20,
-    marginLeft: 20, 
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    elevation: 5,
-    alignItems: 'center',
-    marginTop: 20
-  },
-});
 
 export default BarChartSpending;

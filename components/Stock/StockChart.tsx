@@ -2,26 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { getStockChartData } from '../../util/stocks';
-
 import moment from 'moment';
 import { languages } from '../../commonConstants/sharedConstants';
+import { StockChartStyles } from './StockComponentStyles';
 
 const TimeframeButtons = ({ activeInterval, onSelectInterval, selectedLanguage }) => {
   return (
-    <View style={styles.timeframeButtonContainer}>
+    <View style={StockChartStyles.timeframeButtonContainer}>
       {['1 DAY', '1 WEEK', '1 MONTH', '1 YEAR'].map((interval) => (
         <TouchableOpacity
           key={interval}
           style={[
-            styles.timeframeButton,
-            activeInterval === interval ? styles.activeTimeframe : null,
+            StockChartStyles.timeframeButton,
+            activeInterval === interval ? StockChartStyles.activeTimeframe : null,
           ]}
           onPress={() => onSelectInterval(interval)}
         >
           <Text
             style={[
-              styles.timeframeButtonText,
-              activeInterval === interval ? styles.activeText : null,
+              StockChartStyles.timeframeButtonText,
+              activeInterval === interval ? StockChartStyles.activeText : null,
             ]}
           >
           {languages[selectedLanguage][interval]}         
@@ -114,58 +114,5 @@ const StockChart = ({ symbol, selectedLanguage }) => {
     </View>
   );
 };
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 10,
-  },
-  timeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
-    borderRadius: 20,
-  },
-  activeButton: {
-    backgroundColor: '#35BA52',
-  },
-  inactiveButton: {
-    backgroundColor: '#ddd',
-  },
-  timeButtonText: {
-    color: 'white',
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  timeframeButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  timeframeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
-    borderRadius: 20,
-    backgroundColor: '#ddd', 
-  },
-  activeTimeframe: {
-    backgroundColor: '#35BA52', 
-  },
-  timeframeButtonText: {
-    color: '#000', 
-  },
-  activeText: {
-    color: 'white', 
-  },
-});
+
 export default StockChart;

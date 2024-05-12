@@ -5,6 +5,7 @@ import BudgetDetailsSummaryCard from './BudgetDetailSummaryCard';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import SpendingBudgetChart from '../Charts/SpendingBudgetChart';
 import SpendingHistoryBudgetsBarChart from '../Charts/SpendingHistoryBudgetsBarChart';
+import { BudgetDetailStyles } from './BudgetComponentStyles';
 
 const BudgetDetails = ({ route,  }) => {
   const { budgetId, conversionRate, symbol } = route.params; 
@@ -15,8 +16,10 @@ const BudgetDetails = ({ route,  }) => {
   const [remainingAmount, setRemainingAmount] = useState(0);
   const [filteredData, setFilteredData] = useState([]);
 
+  const handleEditPress = () => {
+  };
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchBudgetDetails = async () => {
       try {
         const budgetDocRef = doc(db, 'budgets', budgetId);
@@ -57,14 +60,10 @@ const BudgetDetails = ({ route,  }) => {
   
     fetchBudgetDetails();
   }, [budgetId]);
-  
-
-  const handleEditPress = () => {
-  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#F3F4F7' }}>
-      <Text style={styles.titleStyle}>{budget && budget.Category}</Text>
+      <Text style={BudgetDetailStyles.titleStyle}>{budget && budget.Category}</Text>
       {budget && (
         <BudgetDetailsSummaryCard
           currentMonth={new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
@@ -90,16 +89,5 @@ const BudgetDetails = ({ route,  }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  titleStyle: {
-    textAlign: 'center',
-    fontWeight: 'bold',  
-    fontSize: 20,        
-    marginVertical: 10, 
-    color: '#333',      
-  },
-});
-
 
 export default BudgetDetails;

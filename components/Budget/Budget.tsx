@@ -2,17 +2,8 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { AntDesign, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-const iconMapping: any = {
-  Entertainment: require('../../assets/Entertainment.png'),
-  Grocieries: require('../../assets/Grocieries.png'),
-  UtilityCosts: require('../../assets/UtilityCosts.png'),
-  Shopping: require('../../assets/Shopping.png'),
-  Food: require('../../assets/Food.png'),
-  Housing: require('../../assets/Housing.png'),
-  Transport: require('../../assets/Transport.png'),
-  Sport: require('../../assets/Sport.png'),
-};
+import { BudgetStyles } from './BudgetComponentStyles';
+import { BudgetIconMapping } from './BudgetComponentConstants';
 
 const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate, symbol, onDelete, onEdit }) => {
   const navigation = useNavigation(); 
@@ -26,7 +17,6 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
     navigateToBudgetDetails(budgetId);
   };
   
-  //selectedMonth
   const currentMonth = new Date().getMonth(); 
   const currentYear = new Date().getFullYear();
 
@@ -52,112 +42,35 @@ const Budget: React.FC<any> = ({ budget, transactions, currency, conversionRate,
 
 
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.leftSection}>
-        <Image style={styles.iconImage} source={iconMapping[budget.Category]} />
-        <View style={styles.textContainer}>
-          <Text style={styles.categoryText}>{budget.Category}</Text>
-          <Text style={styles.amountText}>
-            <Text style={styles.amountValueText}>
+    <View style={BudgetStyles.cardContainer}>
+      <View style={BudgetStyles.leftSection}>
+        <Image style={BudgetStyles.iconImage} source={BudgetIconMapping[budget.Category]} />
+        <View style={BudgetStyles.textContainer}>
+          <Text style={BudgetStyles.categoryText}>{budget.Category}</Text>
+          <Text style={BudgetStyles.amountText}>
+            <Text style={BudgetStyles.amountValueText}>
               {spentAmount.toFixed(0)}{symbol}  
             </Text>
-            <Text style={styles.amountOutOfText}> out of </Text>
-            <Text style={styles.Total_ammountText}>
+            <Text style={BudgetStyles.amountOutOfText}> out of </Text>
+            <Text style={BudgetStyles.Total_ammountText}>
               {totalAmount.toFixed(0)} {symbol} 
             </Text>
           </Text>
         </View>
-        <View style={styles.rightSection}>
-          <Text style={styles.leftText}>
-            <Text style={[styles.leftValueText, {color: remainingColor}]}>
+        <View style={BudgetStyles.rightSection}>
+          <Text style={BudgetStyles.leftText}>
+            <Text style={[BudgetStyles.leftValueText, {color: remainingColor}]}>
               {remainingAmount.toFixed(0)}{symbol} 
             </Text>
-            <Text style={styles.leftOutOfText}> left</Text>
+            <Text style={BudgetStyles.leftOutOfText}> left</Text>
           </Text>
         </View>
       </View>
-      <TouchableOpacity onPress={() => handleBudgetPress(budget.id)} style={styles.iconContainer}>
+      <TouchableOpacity onPress={() => handleBudgetPress(budget.id)} style={BudgetStyles.iconContainer}>
         <Feather name="chevron-right" size={24} color="#888" />
       </TouchableOpacity>
     </View>
   );
 };
-
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingTop: 13,
-    paddingBottom: 13,
-    marginHorizontal: 10, 
-
-    },
-    leftSection: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flex: 8,
-    },
-    iconImage: {
-      width: 35,
-      height: 35,
-      marginLeft: -13
-    },
-    categoryText: {
-      fontSize: 15,
-      fontWeight: 'bold',
-      marginBottom: 5,
-      flexWrap: 'nowrap', 
-    },
-    amountText: {
-      color: '#1A1A2C',
-      flexDirection: 'row',
-    },
-    amountValueText: {
-      color: '#1A1A2C',
-    },
-    amountOutOfText: {
-      color: '#7E8086',
-    },
-    Total_ammountText: {
-     color: '#7E8086',
-    },
-    rightSection: {
-      flex: 1,
-      alignItems: 'flex-end',
-    },
-    leftText: {
-      fontSize: 16,
-      paddingTop: 5,
-      flexDirection: 'row',
-      marginRight: -2
-    },
-    leftValueText: {
-      color: '#1A1A2C',
-    },
-      leftOutOfText: {
-      color: '#7E8086',
-    },
-    buttonRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-    },
-    textContainer: {
-      paddingLeft: 10
-    },
-    iconContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'flex-end',
-      marginRight: -11,
-      marginLeft: 1
-    },
-
-});
-
   export default Budget;
 

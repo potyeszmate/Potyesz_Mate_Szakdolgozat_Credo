@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { AuthContext } from '../../store/auth-context';
+import { languages } from '../../commonConstants/sharedConstants';
 
 const iconMapping: any = {
     twitter: require('../../assets/Recurrings/twitter.png'),
@@ -24,7 +25,7 @@ const iconMapping: any = {
   
   };
 
-  const UpcomingRecurring: React.FC<any> = ({ recurringTransactions }) => {
+  const UpcomingRecurring: React.FC<any> = ({ recurringTransactions,  selectedLanguage, symbol, conversionRate, currency }) => {
     const navigation = useNavigation();
     const currentDate = new Date();
 
@@ -71,16 +72,15 @@ const iconMapping: any = {
   
     const handleRecurringPaymentsClick = () => {
       // @ts-ignore
-      navigation.navigate('Recurrings', { userId: userId });
-
-    };
+      navigation.navigate('Recurrings', { userId: userId, symbol: symbol, selectedLanguage: selectedLanguage, conversionRate: conversionRate, currency: currency });
+  };
   
     return (
       <View style={styles.cardContainer}>
         <View style={styles.header}>
-          <Text style={styles.title}>Upcoming subscription</Text>
+          <Text style={styles.title}>{languages[selectedLanguage].upcomingSubs}</Text>
           <TouchableOpacity onPress={handleRecurringPaymentsClick} style={styles.viewAllButton}>
-            <Text style={styles.viewAllText}>View all ({recurringTransactions.length})</Text>
+            <Text style={styles.viewAllText}>{languages[selectedLanguage].viewall} ({recurringTransactions.length})</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.transactionItem}>
@@ -96,12 +96,14 @@ const iconMapping: any = {
               </Text>
             ) : (
               <Text style={styles.transactionCategory}>
-                On this week ({formatDate(firstUpcomingRecurring.Date)}.)
+                {languages[selectedLanguage].thisWeek} ({formatDate(firstUpcomingRecurring.Date)}.)
               </Text>
             )}
           </View>
           <View style={styles.transactionAmount}>
-            <Text style={styles.transactionAmountValue}>${parseInt(firstUpcomingRecurring.value)}</Text>
+            <Text style={styles.transactionAmountValue}>
+              {(parseFloat(firstUpcomingRecurring.value) * conversionRate).toFixed(2)} {symbol}
+              </Text>
           </View>
         </View>
       </View>

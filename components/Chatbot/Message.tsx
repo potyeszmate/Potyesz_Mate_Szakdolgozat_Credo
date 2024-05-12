@@ -12,7 +12,6 @@ const Message = ({ isUser, text }) => {
       </View>
     );
   };
-  
 
 const styles = StyleSheet.create({
     userContainer: {

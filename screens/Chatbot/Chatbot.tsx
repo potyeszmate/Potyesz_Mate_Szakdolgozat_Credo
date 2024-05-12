@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import OpenAI from 'openai'; 
 import prompts, { basicMessages, models, topicMessages, topicsTranslations } from '../../util/prompts';
-import axios from 'axios';
 import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc, Transaction } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
@@ -45,6 +43,8 @@ const Chatbot = () => {
       setConversation, setUserInput, setShowTopics, setCurrentTopic, basicMessages, api, models, apiKeys,
       fetchTransactions, fetchIncomes, selectedLanguage
   };
+
+  console.log(selectedLanguage)
 
     async function fetchTransactions(uid: string) {
       try {

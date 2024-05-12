@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import Budget from './Budget';
-import BudgetItem from './BudgetItem';
 import * as Progress from 'react-native-progress';
 import { Dimensions } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -10,21 +8,8 @@ import BudgetInput from './BudgetInput';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs, addDoc,deleteDoc,updateDoc, doc } from 'firebase/firestore';
 import { AuthContext } from '../../store/auth-context';
-import { Feather } from '@expo/vector-icons';
-import RNPickerSelect from 'react-native-picker-select';
-import { Ionicons } from '@expo/vector-icons';
-
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
-
-
+import { languages } from '../../commonConstants/sharedConstants';
+import { BudgetSummaryStyles } from './BudgetComponentStyles';
 
 const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency, conversionRate, symbol }) => {
   const [budgets, setBudgets] = useState<any[]>([]);
@@ -34,28 +19,19 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
   const [spentPercentage, setSpentPercentage] = useState<any>(0);
   const [loading, setLoading] = useState<any>(true);
   const bottomSheetRef = useRef<any>(null);
-  const [modalVisible, setModalVisible] = useState<any>(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState<any>(false);
   const [editModalVisible, setEditModalVisible] = useState<any>(false);
   const [selectedBudget, setSelectedBudget] = useState<any | null>(null);
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
-  const [selectedMonth, setSelectedMonth] = React.useState('January');
+  const snapPoints = useMemo(() => ['20%', '45%'], []);
 
-  const months = [
-    { label: 'January', value: 'January' },
-    { label: 'February', value: 'February' },
-    { label: 'March', value: 'March' },
-    { label: 'April', value: 'April' },
-    { label: 'May', value: 'May' },
-    { label: 'June', value: 'June' },
-    { label: 'July', value: 'July' },
-    { label: 'August', value: 'August' },
-    { label: 'September', value: 'September' },
-    { label: 'October', value: 'October' },
-    { label: 'November', value: 'November' },
-    { label: 'December', value: 'December' },
-  ];
+  let progressBarColor = '#35BA52'; 
+  if (spentPercentage / 100 >= 0.8) {
+    progressBarColor = '#FF5733'; 
+  } else if (spentPercentage / 100 >= 0.5) {
+    progressBarColor = '#FFA500';
+  }
 
   const fetchBudgets = async () => {
     try {
@@ -100,6 +76,39 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     }
   };
 
+  // const addBudgetHandler = async (newBudget: any) => {
+  //   try {
+  //     await addDoc(collection(db, 'budgets'), {
+  //       ...newBudget,
+  //       uid: userId,
+  //     });
+  //     fetchBudgets();
+  //     setModalVisible(false);
+  //   } catch (error: any) {
+  //     console.error('Error adding budget:', error.message);
+  //   }
+  // };
+
+  const showDeleteModal = (budget: any) => {
+    setSelectedBudget(budget);
+    setDeleteModalVisible(true);
+  };
+
+  const hideDeleteModal = () => {
+    setDeleteModalVisible(false);
+    setSelectedBudget(null);
+  };
+
+  const showEditModal = (budget: any) => {
+    setSelectedBudget(budget);
+    setEditModalVisible(true);
+  };
+
+  const hideEditModal = () => {
+    setEditModalVisible(false);
+    setSelectedBudget(null);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -111,7 +120,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
 
   useEffect(() => {
     if (!loading && budgets.length > 0) {
-      //selectedMonth
       const currentMonth = new Date().getMonth();
       const currentYear = new Date().getFullYear();
   
@@ -142,61 +150,20 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     }
   }, [loading, budgets, transactions]);
   
-  useEffect(() => {
+  // useEffect(() => {
    
-  }, [spentAmount, totalAmount, spentPercentage]);
+  // }, [spentAmount, totalAmount, spentPercentage]);
 
-  const snapPoints = useMemo(() => ['20%', '45%'], []);
-
-  const addBudgetHandler = async (newBudget: any) => {
-    try {
-      await addDoc(collection(db, 'budgets'), {
-        ...newBudget,
-        uid: userId,
-      });
-      fetchBudgets();
-      setModalVisible(false);
-    } catch (error: any) {
-      console.error('Error adding budget:', error.message);
-    }
-  };
-
-  const showDeleteModal = (budget: any) => {
-    setSelectedBudget(budget);
-    setDeleteModalVisible(true);
-  };
-
-  const hideDeleteModal = () => {
-    setDeleteModalVisible(false);
-    setSelectedBudget(null);
-  };
-
-  const showEditModal = (budget: any) => {
-    setSelectedBudget(budget);
-    setEditModalVisible(true);
-  };
-
-  const hideEditModal = () => {
-    setEditModalVisible(false);
-    setSelectedBudget(null);
-  };
-
-  let progressBarColor = '#35BA52'; 
-  if (spentPercentage / 100 >= 0.8) {
-    progressBarColor = '#FF5733'; 
-  } else if (spentPercentage / 100 >= 0.5) {
-    progressBarColor = '#FFA500';
-  }
 
   return (
     !loading && 
-    <View style={styles.container}>
+    <View style={BudgetSummaryStyles.container}>
       {!loading && spentPercentage > 0 && (
-      <View style={styles.summaryContainer}>
+      <View style={BudgetSummaryStyles.summaryContainer}>
         <View>
-          <Text style={styles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
+          <Text style={BudgetSummaryStyles.expenseSummaryText}>{languages[selectedLanguage].expenseSummary}</Text>
         </View>
-        <Text style={styles.amountLeftText}>
+        <Text style={BudgetSummaryStyles.amountLeftText}>
           {currency === 'HUF' ? 
             Math.round(parseFloat(remainingAmount) * conversionRate) :
             (parseFloat(remainingAmount) * conversionRate).toFixed(2)
@@ -224,14 +191,14 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
           <Text> No budgets created yet.</Text>
         </View>
         ) : ( 
-          <View style={styles.spentSetRow}>
-            <Text style={styles.spentText}>
+          <View style={BudgetSummaryStyles.spentSetRow}>
+            <Text style={BudgetSummaryStyles.spentText}>
               {currency === 'HUF' ? 
                 Math.round(parseFloat(spentAmount) * conversionRate) :
                 (parseFloat(spentAmount) * conversionRate).toFixed(0)
               }{symbol} {languages[selectedLanguage].spent}
             </Text>
-            <Text style={styles.setText}>
+            <Text style={BudgetSummaryStyles.setText}>
               {currency === 'HUF' ? 
                 Math.round(parseFloat(totalAmount) * conversionRate) :
                 (parseFloat(totalAmount) * conversionRate).toFixed(0)
@@ -242,7 +209,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
       )}
 
       
-      <View style={styles.separator} />
+      <View style={BudgetSummaryStyles.separator} />
        {budgets.map((budget, index) => (
           <View key={budget.id}>
             <Budget 
@@ -254,7 +221,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
               conversionRate = {conversionRate}
               symbol = {symbol}
             />
-            {index !== budgets.length - 1 && <View style={styles.separator} />}
+            {index !== budgets.length - 1 && <View style={BudgetSummaryStyles.separator} />}
           </View>
         ))}
 
@@ -264,15 +231,15 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         animationType="slide"
         onRequestClose={() => setDeleteModalVisible(false)}
       >
-        <View style={styles.deleteModalContainer}>
-          <View style={styles.deleteModalContent}>
-            <Text style={styles.deleteModalText}>Are you sure you want to delete this expense?</Text>
-            <View style={styles.deleteModalButtons}>
-              <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={styles.deleteModalButton}>
-                <Text style={styles.deleteModalButtonText}>No</Text>
+        <View style={BudgetSummaryStyles.deleteModalContainer}>
+          <View style={BudgetSummaryStyles.deleteModalContent}>
+            <Text style={BudgetSummaryStyles.deleteModalText}>Are you sure you want to delete this expense?</Text>
+            <View style={BudgetSummaryStyles.deleteModalButtons}>
+              <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={BudgetSummaryStyles.deleteModalButton}>
+                <Text style={BudgetSummaryStyles.deleteModalButtonText}>No</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => deleteBudgetHandler()} style={[styles.deleteModalButton, styles.deleteModalButtonYes]}>
-                <Text style={styles.deleteModalButtonText}>Yes</Text>
+              <TouchableOpacity onPress={() => deleteBudgetHandler()} style={[BudgetSummaryStyles.deleteModalButton, BudgetSummaryStyles.deleteModalButtonYes]}>
+                <Text style={BudgetSummaryStyles.deleteModalButtonText}>Yes</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -285,7 +252,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         onRequestClose={() => setEditModalVisible(false)}
       >
         <Pressable
-          style={styles.modalBackground}
+          style={BudgetSummaryStyles.modalBackground}
           onPress={() => {
           }}
         >
@@ -298,10 +265,10 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
               setEditModalVisible(false);
             }}
             backgroundComponent={({ style }) => (
-              <View style={[style, styles.bottomSheetBackground]} />
+              <View style={[style, BudgetSummaryStyles.bottomSheetBackground]} />
             )}
           >
-            <View style={styles.contentContainer}>
+            <View style={BudgetSummaryStyles.contentContainer}>
               <BudgetInput
                 onAddBudget={editBudgetHandler}
                 existingCategories={budgets.map(budget => budget.Category)}
@@ -314,169 +281,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
      
     </View>
   );
-};
-
-const styles = StyleSheet.create({
-    container: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 22,
-      padding: 16,
-      marginTop: 10,
-      width: '90%',
-      alignSelf: 'center',
-      elevation: 4, 
-      shadowColor: '#000', 
-      shadowOffset: { width: 0, height: 2 }, 
-      shadowOpacity: 0.1,
-      shadowRadius: 4, 
-      borderColor: '#E0E0E0', 
-    },
-    summaryContainer: {
-    },
-    expenseSummaryText: {
-      fontSize: 16,
-      color: '#888',
-    },
-    amountLeftText: {
-      fontSize: 25,
-      fontWeight: 'bold',
-      color: '#333',
-      marginTop: 8,
-      paddingBottom: 10, 
-    },
-    spentSetRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 10,
-      marginBottom: 20
-    },
-    spentText: {
-      fontSize: 16,
-      color: '#333',
-      marginLeft: 2
-    },
-    bottomSheetBackground: {
-      backgroundColor: 'white',
-      flex: 1,
-    },
-    modalBackground: {
-      flex: 1,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      justifyContent: 'flex-end',
-    },
-    setText: {
-        fontSize: 16,
-        color: '#888',
-        marginRight: 3
-    },
-    buttonsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-        paddingLeft: 4
-      },
-      separator: {
-        height: 1,
-        backgroundColor: '#EEEEEE',
-        marginBottom: 2, 
-        marginTop: 2, 
-      },
-      editButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 22,
-        borderWidth: 1,
-        borderColor: '#1A1A2C',
-        marginRight: 4, 
-        width: '50%', 
-        height: 45,
-      },      
-      editButtonText: {
-        color: '#1A1A2C',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
-      addButtonContainer: {
-        padding: 16,
-      },
-      addButton: {
-        backgroundColor: '#35BA52',
-        borderRadius: 8,
-        paddingVertical: 14,
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-      },
-      addIcon: {
-        marginRight: 8,
-      },
-      addButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-      },
-      contentContainer: {
-      flex: 1,
-      alignItems: 'center',
-    },
-    deleteModalContainer: {
-      flex: 1,
-      justifyContent: 'flex-end',
-    },
-    deleteModalContent: {
-      backgroundColor: '#fff',
-      padding: 16,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      elevation: 5,
-    },
-    deleteModalText: {
-      fontSize: 18,
-      marginBottom: 16,
-    },
-    deleteModalButtons: {
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-    },
-    deleteModalButton: {
-      marginLeft: 16,
-      padding: 8,
-    },
-    deleteModalButtonYes: {
-      backgroundColor: '#FF5733',
-      borderRadius: 8,
-    },
-    deleteModalButtonText: {
-      fontSize: 16,
-      color: '#1A1A2C',
-    },
-    monthSelectorContainer: {
-      position: 'absolute',
-      top: 0,
-      right: -3,
-      zIndex: 1,
-    },
-    monthSelectorCard: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: 20,
-      padding: 8,
-      borderWidth: 1,
-      borderColor: '#F0F0F0',
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    monthSelector: {
-      flex: 1,
-      color: '#000000',
-      paddingRight: 30,
-    },
-    monthSelectorIcon: {
-      position: 'absolute',
-      right: 10,
-    },
-  });
-    
+};    
 
 export default BudgetSummary;

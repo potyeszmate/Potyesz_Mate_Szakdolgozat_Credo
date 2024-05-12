@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { TransactionItemStyles } from './TransactionComponentStyles';
 
 const TransactionItem: React.FC<any> = ({ name, category, value, date, notes }) => {
   return (
-    <View style={styles.transactionItem}>
+    <View style={TransactionItemStyles.transactionItem}>
       <Text>Name: {name}</Text>
       <Text>Category: {category}</Text>
       <Text>Value: {value}</Text>
@@ -12,14 +13,5 @@ const TransactionItem: React.FC<any> = ({ name, category, value, date, notes }) 
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  transactionItem: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 10,
-  },
-});
 
 export default TransactionItem;

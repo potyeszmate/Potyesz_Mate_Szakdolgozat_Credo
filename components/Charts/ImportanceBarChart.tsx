@@ -2,10 +2,13 @@ import React from 'react';
 import { View, Text, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import Icon from 'react-native-vector-icons/FontAwesome5'; 
+import { languages } from '../../commonConstants/sharedConstants';
+import { ImportanceBarChartStyles } from './ChartComponentsStyles';
 
-const ImportanceBarChart = ({ data }) => {
+const ImportanceBarChart = ({ data, symbol, selectedLanguage, conversionRate }) => {
+  
   if (!data || data.length === 0) {
-    return <Text style={styles.noDataText}>No data available</Text>;
+    return <Text style={ImportanceBarChartStyles.noDataText}></Text>;
   }
 
   const screenWidth = Dimensions.get('window').width;
@@ -17,7 +20,7 @@ const ImportanceBarChart = ({ data }) => {
   });
 
   const chartData = {
-    labels: Object.keys(importanceCounts),
+    labels: Object.keys(importanceCounts).map(key => languages[selectedLanguage][key]),
     datasets: [{
       data: Object.values(importanceCounts),
       colors: [ 
@@ -44,9 +47,9 @@ const ImportanceBarChart = ({ data }) => {
   const mostNegligible = importanceCounts.negligible > Math.max(importanceCounts.mandatory, importanceCounts.necessary, importanceCounts.neutral);
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      <View style={styles.cardStyle}>
-        <Text style={styles.chartTitle}>Subscription Importance</Text>
+    <ScrollView contentContainerStyle={ImportanceBarChartStyles.scrollViewContent}>
+      <View style={ImportanceBarChartStyles.cardStyle}>
+        <Text style={ImportanceBarChartStyles.chartTitle}>{languages[selectedLanguage].subsciptionImportance}</Text>
         <BarChart
           data={chartData}
           width={chartWidth}
@@ -63,10 +66,10 @@ const ImportanceBarChart = ({ data }) => {
           }}
         />
         {mostNegligible && (
-          <View style={styles.warningContainer}>
+          <View style={ImportanceBarChartStyles.warningContainer}>
             <Icon name="exclamation-triangle" size={20} color="#FFA500" />
-            <Text style={styles.warningText}>
-              Most of your subscriptions are categorized as negligible. Consider reviewing them.
+            <Text style={ImportanceBarChartStyles.warningText}>
+            {languages[selectedLanguage].negligibleDesc}
             </Text>
           </View>
         )}
@@ -74,42 +77,5 @@ const ImportanceBarChart = ({ data }) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollViewContent: {
-    paddingBottom: 20,
-  },
-  cardStyle: {
-    borderRadius: 20,
-    padding: 10, 
-    margin: 20,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  warningContainer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 12,
-    marginRight: 12
-  },
-  warningText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: '#FFA500',
-  },
-});
 
 export default ImportanceBarChart;

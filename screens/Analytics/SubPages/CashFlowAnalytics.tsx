@@ -7,6 +7,7 @@ import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc } f
 import { db } from '../../../firebaseConfig';
 import { AuthContext } from "../../../store/auth-context";
 import CashFlowSummary from "../../../components/Analytics/CashFlowSummary";
+import { useRoute } from "@react-navigation/native";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -16,6 +17,9 @@ const SpendingAnalytics = () => {
     const [incomes, setIncomes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const route = useRoute();
+    const { symbol, selectedLanguage, conversionRate } = route.params || {}
+    
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
 
@@ -39,6 +43,8 @@ const SpendingAnalytics = () => {
 
     const fetchTransactions = async () => {
         try {
+          console.log("FETCHING transactions")
+
           const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
           const querySnapshot = await getDocs(transactionsQuery);
           const fetchedTransactions = querySnapshot.docs.map((doc) => ({
@@ -54,6 +60,8 @@ const SpendingAnalytics = () => {
 
     const fetchIncomes = async () => {
         try {
+          console.log("FETCHING incomes")
+
           const incomeQuery = query(collection(db, 'incomes'), where('uid', '==', userId));
           const querySnapshot = await getDocs(incomeQuery);
           const fetchedIcomes = querySnapshot.docs.map((doc) => ({
@@ -166,6 +174,7 @@ const SpendingAnalytics = () => {
       
       useEffect(() => {
         const fetchData = async () => {
+          console.log("IN USE EFFECT")
             setIsLoading(true);
             await Promise.all([fetchTransactions(), fetchIncomes()]);
             setIsLoading(false);
@@ -204,6 +213,9 @@ const SpendingAnalytics = () => {
                 totalIncome={cashFlowData.totalIncome} 
                 totalExpenses={cashFlowData.totalExpenses} 
                 netCashFlow={cashFlowData.netCashFlow} 
+                symbol = {symbol}
+                selectedLanguage = {selectedLanguage}
+                conversionRate = {conversionRate}
             />
             </ScrollView>
 

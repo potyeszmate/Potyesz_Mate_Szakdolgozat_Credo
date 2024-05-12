@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import FlatButton from '../CommonComponents/FlatButton';
 import AuthForm from './AuthForm';
 import { Colors } from '../../commonConstants/styles';
+import { AuthContentStyles } from './AuthComponentStyles';
 
 const AuthContent: React.FC<any> = ({ isLogin, onAuthenticate }) => {
   const navigation = useNavigation();
@@ -43,7 +44,7 @@ const AuthContent: React.FC<any> = ({ isLogin, onAuthenticate }) => {
   };
 
   return (
-    <View style={styles.authContent}>
+    <View style={AuthContentStyles.authContent}>
       <AuthForm
         isLogin={isLogin}
         onSubmit={submitHandler}
@@ -56,13 +57,3 @@ const AuthContent: React.FC<any> = ({ isLogin, onAuthenticate }) => {
 
 export default AuthContent;
 
-const styles = StyleSheet.create({
-  authContent: {
-    marginTop: 5,
-    marginHorizontal: 5,
-    padding: 16,
-    borderRadius: 8,
-    
-  },
- 
-});

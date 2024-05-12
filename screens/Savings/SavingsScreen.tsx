@@ -1,24 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import { AuthContext } from '../../store/auth-context';
 import { query, collection, where, getDocs, addDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Budget from '../../components/Budget/Budget';
-
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import { db } from '../../firebaseConfig';
 import { SavingScreenStyles } from './SavingsStyles';
 import { Profile } from '../Profile/ProfileTypes';
-
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
+import { languages } from '../../commonConstants/sharedConstants';
 
 const SavingsScreen: React.FC = () => {
   const navigation = useNavigation();

@@ -10,30 +10,19 @@ import StockChart from "./StockChart";
 import { FontAwesome } from '@expo/vector-icons';
 import apiKeys from './../../apiKeys.json';
 import { languages } from "../../commonConstants/sharedConstants";
-
-interface Stock {
-  symbol: string;
-  name: string;
-  price: number;
-  logo: string;
-  percent_change_24h: number;
-}
+import { StockDetailsStyles } from "./StockComponentStyles";
 
 const StockDetails = () => {
 
   const route = useRoute();
-  // const { name, symbol, onGoBack} = route.params;
   const { name, currencySymbol, symbol, selectedLanguage, conversionRate, onGoBack } = route.params;
-
   const [expanded, setExpanded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [amountOwned, setAmountOwned] = useState('');
   const [ownsStock, setOwnsStock] = useState(false);
   const [sellModalVisible, setSellModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
-  const watchlistDocRef = useRef(null);
-  
+  const watchlistDocRef = useRef(null); 
   const [stockDetails, setStockDetails] = useState({
     price: '0',
     percent_change_24h: 0,
@@ -41,7 +30,6 @@ const StockDetails = () => {
     description: '',
     loading: true,
   });
-
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx;
 
@@ -105,7 +93,6 @@ const StockDetails = () => {
       ]
     );
   };
-  
 
   const addOwnedStocksHandler = async () => {
     const amount = parseFloat(amountOwned);
@@ -221,7 +208,6 @@ const StockDetails = () => {
       addWatchedListHandler();
     }
   };
-  
 
   const toggleDescription = () => {
     setExpanded(!expanded);
@@ -257,57 +243,57 @@ const StockDetails = () => {
 
   if (stockDetails.loading) {
     return (
-      <View style={styles.container}>
+      <View style={StockDetailsStyles.container}>
         <ActivityIndicator size="large" />
       </View>
     );
   }
 
   const IconButton = ({ title, onPress, iconName, iconColor, backgroundColor }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.iconButton, { backgroundColor }]}>
-      <FontAwesome name={iconName} size={20} color={iconColor} style={styles.buttonIcon} />
-      <Text style={[styles.buttonText, { color: iconColor }]}>{title}</Text>
+    <TouchableOpacity onPress={onPress} style={[StockDetailsStyles.iconButton, { backgroundColor }]}>
+      <FontAwesome name={iconName} size={20} color={iconColor} style={StockDetailsStyles.buttonIcon} />
+      <Text style={[StockDetailsStyles.buttonText, { color: iconColor }]}>{title}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Image source={{ uri: stockDetails.logo }} style={styles.logo} />
-        <View style={styles.headerText}>
-          <Text style={styles.name}>{name}</Text>
-          <Text style={styles.symbol}>{currencySymbol}</Text>
+    <ScrollView contentContainerStyle={StockDetailsStyles.container}>
+      <View style={StockDetailsStyles.header}>
+        <Image source={{ uri: stockDetails.logo }} style={StockDetailsStyles.logo} />
+        <View style={StockDetailsStyles.headerText}>
+          <Text style={StockDetailsStyles.name}>{name}</Text>
+          <Text style={StockDetailsStyles.symbol}>{currencySymbol}</Text>
         </View>
       </View>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.priceContainer}>
-          <Text style={styles.label}>{languages[selectedLanguage].currentPrice}</Text>
-          <Text style={styles.price}>
+      <View style={StockDetailsStyles.statsContainer}>
+        <View style={StockDetailsStyles.priceContainer}>
+          <Text style={StockDetailsStyles.label}>{languages[selectedLanguage].currentPrice}</Text>
+          <Text style={StockDetailsStyles.price}>
             {/* ${stockDetails.price.toFixed(2)} */}
             {(parseFloat(stockDetails.price) * conversionRate).toFixed(2)} {symbol}
             </Text>
         </View>
-        <View style={[styles.changeContainer, stockDetails.percent_change_24h < 0 ? styles.negativeChange : styles.positiveChange]}>
+        <View style={[StockDetailsStyles.changeContainer, stockDetails.percent_change_24h < 0 ? StockDetailsStyles.negativeChange : StockDetailsStyles.positiveChange]}>
           <FontAwesome name={stockDetails.percent_change_24h < 0 ? "caret-down" : "caret-up"} size={20} color={"white"} />
-          <Text style={styles.changeText}>24h: {stockDetails.percent_change_24h.toFixed(2)}%</Text>
+          <Text style={StockDetailsStyles.changeText}>24h: {stockDetails.percent_change_24h.toFixed(2)}%</Text>
         </View>
       </View>
 
-      <View style={styles.chartPlaceholder}>
+      <View style={StockDetailsStyles.chartPlaceholder}>
         <StockChart symbol={currencySymbol} selectedLanguage={selectedLanguage}/>
       </View>
 
 
-      <TouchableOpacity onPress={toggleDescription} style={styles.descriptionContainer}>
-        <Text style={styles.descriptionText} numberOfLines={expanded ? undefined : 3}>
+      <TouchableOpacity onPress={toggleDescription} style={StockDetailsStyles.descriptionContainer}>
+        <Text style={StockDetailsStyles.descriptionText} numberOfLines={expanded ? undefined : 3}>
           {stockDetails.description}
         </Text>
         <FontAwesome name={expanded ? "angle-up" : "angle-down"} size={20} color={"#007bff"} />
       </TouchableOpacity>
 
 
-      <View style={styles.buttonContainer}>
+      <View style={StockDetailsStyles.buttonContainer}>
         <IconButton
           title={languages[selectedLanguage].addToPortfolio}
           onPress={toggleModal}
@@ -338,11 +324,11 @@ const StockDetails = () => {
       transparent={true}
       visible={modalVisible}
       onRequestClose={toggleModal}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>{languages[selectedLanguage].enterInUSD}</Text>
+      <View style={StockDetailsStyles.modalOverlay}>
+        <View style={StockDetailsStyles.modalView}>
+          <Text style={StockDetailsStyles.modalTitle}>{languages[selectedLanguage].enterInUSD}</Text>
           <TextInput
-            style={styles.modalInput}
+            style={StockDetailsStyles.modalInput}
             onChangeText={setAmountOwned}
             value={amountOwned}
             placeholder={languages[selectedLanguage].amountInUSD}
@@ -350,12 +336,12 @@ const StockDetails = () => {
             placeholderTextColor="#aaa" 
             clearButtonMode="while-editing" 
           />
-          <View style={styles.modalButtonGroup}>
-            <TouchableOpacity onPress={addOwnedStocksHandler} style={[styles.button, styles.modalButton]}>
-              <Text style={styles.buttonText}>{languages[selectedLanguage].add}</Text>
+          <View style={StockDetailsStyles.modalButtonGroup}>
+            <TouchableOpacity onPress={addOwnedStocksHandler} style={[StockDetailsStyles.button, StockDetailsStyles.modalButton]}>
+              <Text style={StockDetailsStyles.buttonText}>{languages[selectedLanguage].add}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={toggleModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-              <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
+            <TouchableOpacity onPress={toggleModal} style={[StockDetailsStyles.button, StockDetailsStyles.modalButton, StockDetailsStyles.modalCancelButton]}>
+              <Text style={StockDetailsStyles.buttonText}>{languages[selectedLanguage].cancel}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -367,11 +353,11 @@ const StockDetails = () => {
         transparent={true}
         visible={sellModalVisible}
         onRequestClose={toggleSellModal}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>{languages[selectedLanguage].enterToSell}</Text>
+        <View style={StockDetailsStyles.modalOverlay}>
+          <View style={StockDetailsStyles.modalView}>
+            <Text style={StockDetailsStyles.modalTitle}>{languages[selectedLanguage].enterToSell}</Text>
             <TextInput
-              style={styles.modalInput}
+              style={StockDetailsStyles.modalInput}
               onChangeText={setAmountOwned}
               value={amountOwned}
               placeholder={languages[selectedLanguage].amountInUSD}
@@ -379,12 +365,12 @@ const StockDetails = () => {
               placeholderTextColor="#aaa" 
              clearButtonMode="while-editing" 
             />
-            <View style={styles.modalButtonGroup}>
-              <TouchableOpacity onPress={sellStockHandler} style={[styles.button, styles.modalButton, styles.sellButton]}>
-                <Text style={styles.buttonText}>{languages[selectedLanguage].sell}</Text>
+            <View style={StockDetailsStyles.modalButtonGroup}>
+              <TouchableOpacity onPress={sellStockHandler} style={[StockDetailsStyles.button, StockDetailsStyles.modalButton, StockDetailsStyles.sellButton]}>
+                <Text style={StockDetailsStyles.buttonText}>{languages[selectedLanguage].sell}</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={toggleSellModal} style={[styles.button, styles.modalButton, styles.modalCancelButton]}>
-                <Text style={styles.buttonText}>{languages[selectedLanguage].cancel}</Text>
+              <TouchableOpacity onPress={toggleSellModal} style={[StockDetailsStyles.button, StockDetailsStyles.modalButton, StockDetailsStyles.modalCancelButton]}>
+                <Text style={StockDetailsStyles.buttonText}>{languages[selectedLanguage].cancel}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -393,268 +379,4 @@ const StockDetails = () => {
     </ScrollView>
   );
 };
-
-
-const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      backgroundColor: "#fff",
-      padding: 20,
-    },
-    header: {
-      flexDirection: "column",
-      alignItems: "center",
-      marginBottom: 20,
-    },
-    logo: {
-      width: 60,
-      height: 60,
-      borderRadius: 40, 
-    },
-    headerText: {
-      alignItems: "center",
-      marginTop: 10,
-    },
-    sellButton: {
-      backgroundColor: '#FF4136',
-      marginTop: 10,
-    },
-    name: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    symbol: {
-      fontSize: 18,
-      color: "#666",
-    },
-    details: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginBottom: 10,
-      paddingHorizontal: 10,
-    },
-    label: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#666',
-      marginBottom: 5,
-    },
-    value: {
-      fontSize: 18,
-    },
-    descriptionContainer: {
-      borderWidth: 1,
-      borderColor: '#ddd',
-      borderRadius: 10,
-      padding: 10,
-      marginTop: 15,
-    },
-    description: {
-      backgroundColor: "#f2f2f2",
-      borderRadius: 10,
-      padding: 15,
-      height: 80, 
-      overflow: "hidden",
-    },
-    expandedDescription: {
-      maxHeight: "auto",
-    },
-    readMoreButton: {
-      alignItems: "center",
-      marginTop: 10,
-    },
-    readMoreText: {
-      color: "#007bff",
-    },
-    red: {
-      color: "red",
-    },
-    green: {
-      color: "green",
-    },
-    removeButton: {
-      backgroundColor: '#FF4136',
-    },
-    centeredView: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 22,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-    },
-    chartPlaceholder: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: 200, 
-      borderRadius: 10,
-      marginTop: 50,
-      marginBottom: 40
-    },
-    chartPlaceholderText: {
-      color: '#888',
-      fontSize: 18,
-    },
-    detailsSection: {
-      backgroundColor: '#f8f8f8',
-      borderRadius: 10,
-      padding: 15,
-      marginTop: 20,
-    },
-    detailsRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-    },
-    button: {
-      flexDirection: 'row',
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      paddingVertical: 8, 
-      paddingHorizontal: 16, 
-      borderRadius: 20, 
-      marginBottom: 10, 
-      width: '100%', 
-      alignSelf: 'center', 
-      shadowOpacity: 0.1,
-      elevation: 3,
-    },
-    buttonIcon: {
-      marginRight: 10,
-    },
-    watchlistButton: {
-      backgroundColor: '#35BA52',
-    },
-    portfolioButton: {
-      backgroundColor: '#35BA52',
-    },
-    buttonText: {
-      flex: 1,
-      textAlign: 'center',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    modalOverlay: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    modalView: {
-      margin: 20,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 35,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-      width: '80%', 
-      maxWidth: 350, 
-    },
-    modalTitle: {
-      fontSize: 20,
-      marginBottom: 15,
-    },
-    iconButton: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 15,
-      borderRadius: 25,
-      marginVertical: 5,
-      width: '90%', 
-      alignSelf: 'center', 
-      elevation: 3,
-    },
-
-    input: {
-    },
-    modalButtonGroup: {
-      flexDirection: 'row',
-      justifyContent: 'center', 
-      width: '100%', 
-    },
-    modalButton: {
-      flex: 1, 
-      paddingVertical: 12,
-      paddingHorizontal: 10,
-      marginHorizontal: 5, 
-      borderRadius: 25,
-      backgroundColor: '#35BA52', 
-    },
-    modalCancelButton: {
-      backgroundColor: '#ccc',
-    },
-    modalInput: {
-      width: '100%', 
-      borderWidth: 1,
-      borderColor: '#ddd', 
-      borderRadius: 10,
-      padding: 15, 
-      fontSize: 16, 
-      color: '#000', 
-      backgroundColor: '#fff', 
-      marginBottom: 20, 
-      paddingVertical: 15,
-
-    },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    
-    backgroundColor: 'white',
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  price: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333', 
-  },
-    changeContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 5,
-      borderRadius: 5,
-    },
-    positiveChange: {
-      backgroundColor: '#21BA45',
-    },
-    negativeChange: {
-      backgroundColor: '#FF4136',
-    },
-    changeText: {
-      marginLeft: 5,
-      color: 'white',
-      fontSize: 16,
-    },
-
-    descriptionText: {
-      fontSize: 16,
-      color: '#666',
-    },
-   
-  });
-
   export default StockDetails;

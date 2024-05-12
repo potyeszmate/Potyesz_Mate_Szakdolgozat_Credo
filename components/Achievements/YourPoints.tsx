@@ -1,18 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import ProgressCircle from 'react-native-progress-circle';
 import { useNavigation } from '@react-navigation/native';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import { Feather } from '@expo/vector-icons';
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
+import { languages } from '../../commonConstants/sharedConstants';
+import { YourPointsStyles } from './AchievementsComponentStyles';
 
 const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
   const scorePoint = parseFloat(score);
@@ -26,8 +18,8 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
   };
 
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.leftContainer}>
+    <View style={YourPointsStyles.cardContainer}>
+      <View style={YourPointsStyles.leftContainer}>
         <ProgressCircle
           percent={progressPercentage}
           radius={40}
@@ -36,18 +28,17 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
           shadowColor="#F3F4F7" 
           bgColor="#fff"
         >
-          {/* <Text style={{ fontSize: 18 }}>{`${progressPercentage.toFixed(0)}%`}</Text> */}
         </ProgressCircle>
 
-        <View style={styles.pointsContainer}>
-          <Text style={styles.yourPointsText}>{languages[selectedLanguage].yourPoints}</Text>
-          <Text style={styles.pointsText}>
+        <View style={YourPointsStyles.pointsContainer}>
+          <Text style={YourPointsStyles.yourPointsText}>{languages[selectedLanguage].yourPoints}</Text>
+          <Text style={YourPointsStyles.pointsText}>
             <Text style={{ color: '#1A1A2C', fontWeight: 'bold' }}>{scorePoint}</Text> / <Text style={{ color: '#7E8086', fontWeight: 'bold' }}>{totalPoint}</Text>
           </Text>
         </View>
       </View>
 
-      <View style={styles.rightContainer}>
+      <View style={YourPointsStyles.rightContainer}>
         <TouchableOpacity onPress={handleGamificationClick}>
           <Feather name="chevron-right" size={24} color="#888" />
         </TouchableOpacity>
@@ -55,44 +46,5 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 16,
-    marginTop: 16,
-    width: '90%',
-    alignSelf: 'center',
-    elevation: 4, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.1, 
-    shadowRadius: 4, 
-    borderColor: '#E0E0E0', 
-  },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  yourPointsText: {
-    fontSize: 17,
-    color: '#1A1A2C',
-  },
-  pointsContainer: {
-    marginLeft: 17,
-    alignItems: 'center',
-
-  },
-  pointsText: {
-    fontSize: 20,
-    marginVertical: 2,
-    marginLeft: -10
-  },
-  rightContainer: {},
-});
 
 export default YourPoints;

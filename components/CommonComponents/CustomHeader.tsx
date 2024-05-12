@@ -4,11 +4,13 @@ import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
+import { languages } from '../../commonConstants/sharedConstants';
 
-const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
+const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading, selectedLanguage}) => {
   const { userId } = authCtx;
   const navigation = useNavigation();
 
+  console.log("selectedLanguage in CustomHeader: ",selectedLanguage )
   const [isProfileFetched, setIsProfileFetched] = useState(false); 
 
   const handleSettingsPage = () => {
@@ -28,10 +30,16 @@ const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading}) => {
 const handleNavigation = () => {
   if (profile && profile.isPremiumUser) {
     // @ts-ignore
-    navigation.navigate('Chatbot', { selectedLanguage: profile.language});
+    navigation.navigate('Chatbot', { selectedLanguage: selectedLanguage});
 
   } else {
-    navigation.navigate('Payment');
+    // @ts-ignore
+    navigation.navigate('Payment', {
+      email: authCtx.email,
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      selectedLanguage
+    });
   }
 };
 
@@ -67,8 +75,8 @@ const handleNavigation = () => {
           />
         )}
       </TouchableOpacity>
-      <View>
-        <Text style={styles.headerTextTop}>Good morning,</Text>
+      <View> 
+        <Text style={styles.headerTextTop}>{languages[selectedLanguage].goodMorning}</Text>
           <Text style={styles.headerTextBottom}>
             {profile.firstName} {profile.lastName}
           </Text>

@@ -1,0 +1,33 @@
+export const transactionIconMapping: any = {
+    Entertainment: require('../../assets/Entertainment.png'),
+    Grocieries: require('../../assets/Grocieries.png'),
+    UtilityCosts: require('../../assets/UtilityCosts.png'),
+    Shopping: require('../../assets/Shopping.png'),
+    Food: require('../../assets/Food.png'),
+    Housing: require('../../assets/Housing.png'),
+    Transport : require('../../assets/Transport.png'),
+    Sport : require('../../assets/Sport.png'),
+    Income: require('../../assets/incomeCategory.png'),
+  };
+
+ export const transactionInputCategories: any = [
+    { label: 'Entertainment', value: 2 },
+    { label: 'Grocieries', value: 3 },
+    { label: 'UtilityCosts', value: 4 },
+    { label: 'Shopping', value: 5 },
+    { label: 'Food', value: 6 },
+    { label: 'Housing', value: 7 },
+    { label: 'Transport', value: 8 },
+  ];
+
+  export const transactionInputIconMapping: any = {
+    Entertainment: require('../../assets/Entertainment.png'),
+    Grocieries: require('../../assets/Grocieries.png'),
+    UtilityCosts: require('../../assets/UtilityCosts.png'),
+    Shopping: require('../../assets/Shopping.png'),
+    Food: require('../../assets/Food.png'),
+    Housing: require('../../assets/Housing.png'),
+    Transport: require('../../assets/Transport.png'),
+    Sport: require('../../assets/Sport.png'),
+  };
+  

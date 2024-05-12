@@ -126,13 +126,13 @@
   "advisorChatbot": "Berater-Chatbot",
   "chatbotDesc": "Credo+ bietet Ihnen maßgeschneiderte finanzielle Ratschläge und Statistiken",
   "getCredo": "Holen Sie sich Credo+",
-  "utilityCosts": "Nebenkosten",
-  "shopping": "Einkaufen",
-  "entertainment": "Unterhaltung",
-  "food": "Lebensmittel",
-  "grocieries": "Lebensmittel",
-  "housing": "Wohnen",
-  "transport": "Transport",
+  "UtilityCosts": "Nebenkosten",
+  "Shopping": "Einkaufen",
+  "Entertainment": "Unterhaltung",
+  "Food": "Lebensmittel",
+  "Grocieries": "Lebensmittel",
+  "Housing": "Wohnen",
+  "Transport": "Transport",
   "subscriptionValue": "Abonnementwert",
   "billValue": "Rechnungsbetrag",
   "loanValue": "Darlehensbetrag",
@@ -243,6 +243,30 @@
   "Loans": "Darlehen",
   "Cryptos": "Kryptowährungen",
   "Stocks": "Aktien",
-  "askAnything": "Frag mich was..."
+  "askAnything": "Frag mich was...",
+  
+  "cashflow": "Cashflow",
+  "cashflowDesc": "Gebe ich weniger aus, als ich verdiene?",
+  "noDataAvailable": "There is no data available",
+  "subsciptionImportance": " Subscription Importance",
+
+  "negligibleDesc": "Die meisten Ihrer Abonnements sind als vernachlässigbar eingestuft. Erwägen Sie deren Überprüfung.",
+
+  "spendings": "Ausgaben",
+  "recurringPayments": "Wiederkehrende Zahlungen",
+  "stocksAndCrypto": "Aktien und Kryptowährungen",
+
+  "cashflowDesc2": "Haben Sie mehr verdient, als Sie ausgegeben haben?",
+  "recurringDesc": "Überprüfen Sie Ihre Analysen zu wiederkehrenden Zahlungen",
+  "portfolioDesc": "Überprüfen Sie Ihr Portfolio",
+  "spendingDesc": "Überprüfen Sie Ihre Ausgabenanalysen",
+  "estimatedLoan": "Geschätzte monatliche Kreditzahlungen",
+  "upcomingSubs": "Bevorstehendes Abonnement",
+  "viewall": "View all",
+  "thisWeek": "",
+  "budgetsForCat": "Budget für Kategorien",
+  "xMoreLeft": "weitere Kategorien übrig",
+  "setUpNew": "Neu einrichten"
+
 
 }

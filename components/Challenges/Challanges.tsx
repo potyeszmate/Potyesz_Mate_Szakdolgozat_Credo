@@ -4,26 +4,16 @@ import { query, collection, getDocs, where, addDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import ChallengesItem from './ChallengesItem';
 import { AuthContext } from '../../store/auth-context';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
+import { languages } from '../../commonConstants/sharedConstants';
+import { ChallengesStyles } from './ChallengesComponentStyles';
 
 const Challanges = () => {
   const [activeTab, setActiveTab] = useState<any>('active');
   const [challenges, setChallenges] = useState<any[]>([]);
   const [joinedChallenges, setJoinedChallenges] = useState<any[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState('English'); 
-
-
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
 
@@ -73,11 +63,6 @@ const Challanges = () => {
     }
   };
 
-  useEffect(() => {
-    fetchChallenges();
-    fetchJoinedChallenges();
-  }, []);
-
   const getSelectedLanguage = async () => {
     try {
       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
@@ -95,7 +80,11 @@ const Challanges = () => {
 
   const isFocused = useIsFocused();
 
-  
+  useEffect(() => {
+    fetchChallenges();
+    fetchJoinedChallenges();
+  }, []);
+
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
@@ -104,21 +93,21 @@ const Challanges = () => {
   
   return (
     <ScrollView
-      style={styles.rootContainer}
-      contentContainerStyle={styles.scrollContentContainer}
+      style={ChallengesStyles.rootContainer}
+      contentContainerStyle={ChallengesStyles.scrollContentContainer}
     >
-      <View style={styles.headerContainer}>
+      <View style={ChallengesStyles.headerContainer}>
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'active' && styles.activeTabButton,
+            ChallengesStyles.tabButton,
+            activeTab === 'active' && ChallengesStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('active')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'active' && styles.activeTabButtonText,
+              ChallengesStyles.tabButtonText,
+              activeTab === 'active' && ChallengesStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].active}
@@ -127,15 +116,15 @@ const Challanges = () => {
 
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'recommended' && styles.activeTabButton,
+            ChallengesStyles.tabButton,
+            activeTab === 'recommended' && ChallengesStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('recommended')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'recommended' && styles.activeTabButtonText,
+              ChallengesStyles.tabButtonText,
+              activeTab === 'recommended' && ChallengesStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].recommended}
@@ -144,15 +133,15 @@ const Challanges = () => {
 
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'completed' && styles.activeTabButton,
+            ChallengesStyles.tabButton,
+            activeTab === 'completed' && ChallengesStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('completed')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'completed' && styles.activeTabButtonText,
+              ChallengesStyles.tabButtonText,
+              activeTab === 'completed' && ChallengesStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].completed}
@@ -161,23 +150,23 @@ const Challanges = () => {
       </View>
 
       {activeTab === 'recommended' && (
-        <View style={styles.challengesContainer}>
+        <View style={ChallengesStyles.challengesContainer}>
           {challenges
             .filter(challenge => !joinedChallenges.some(activeChallenge => activeChallenge.id === challenge.id))
             .map((challenge, index) => (
-              <View key={challenge.id} style={[styles.challengeItemContainer, index !== challenges.length - 1 && styles.challengeItemSpacing]}>
-                <ChallengesItem challenge={challenge} showActive={false} onJoin={() => addJoinedChallenges(challenge)} selectedLanguage= {selectedLanguage}/>
+              <View key={challenge.id} style={[ChallengesStyles.challengeItemContainer, index !== challenges.length - 1 && ChallengesStyles.challengeItemSpacing]}>
+                <ChallengesItem challenge={challenge} showActive={false} onJoin={() => addJoinedChallenges(challenge)} selectedLanguage={selectedLanguage}/>
               </View>
             ))}
         </View>
       )}
 
       {activeTab === 'active' && (
-        <View style={styles.challengesContainer}>
+        <View style={ChallengesStyles.challengesContainer}>
           {joinedChallenges
             .filter(challenge => challenge.isActive)
             .map((joinedChallenges, index) => (
-              <View key={joinedChallenges.id} style={[styles.challengeItemContainer, index !== joinedChallenges.length - 1 && styles.challengeItemSpacing]}>
+              <View key={joinedChallenges.id} style={[ChallengesStyles.challengeItemContainer, index !== joinedChallenges.length - 1 && ChallengesStyles.challengeItemSpacing]}>
                 <ChallengesItem challenge={joinedChallenges} showActive={true} selectedLanguage= {selectedLanguage}/>
               </View>
             ))}
@@ -185,11 +174,11 @@ const Challanges = () => {
       )}
 
       {activeTab === 'completed' && (
-        <View style={styles.challengesContainer}>
+        <View style={ChallengesStyles.challengesContainer}>
           {joinedChallenges
             .filter(challenge => !challenge.isActive)
             .map((completedChallenge, index) => (
-              <View key={completedChallenge.id} style={[styles.challengeItemContainer, index !== joinedChallenges.length - 1 && styles.challengeItemSpacing]}>
+              <View key={completedChallenge.id} style={[ChallengesStyles.challengeItemContainer, index !== joinedChallenges.length - 1 && ChallengesStyles.challengeItemSpacing]}>
                 <ChallengesItem challenge={completedChallenge} showCompleted={true} selectedLanguage= {selectedLanguage}/>
               </View>
             ))}
@@ -199,60 +188,5 @@ const Challanges = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  rootContainer: {
-    flex: 1,
-  },
-  scrollContentContainer: {
-    alignItems: 'center',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    paddingTop: 30
-  },
-  tabButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 38,
-    borderRadius: 99,
-  },
-  tabButtonText: {
-    color: '#1A1A2C',
-    fontSize: 14,
-  },
-  activeTabButton: {
-    backgroundColor: '#149E53',
-  },
-  activeTabButtonText: {
-    color: '#FFFFFF',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 18,
-    marginTop: 18,
-  },
-  text: {
-    marginBottom: 8,
-  },
-  listContainer: {
-    width: '100%',
-  },
-  challengesContainer: {
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  challengeItemContainer: {
-    marginBottom: 12, 
-  },
-  challengeItemSpacing: {
-    marginBottom: 0,
-  },
-  });
 
 export default Challanges;

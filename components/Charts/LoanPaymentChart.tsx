@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions, StyleSheet } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import moment from 'moment'; 
+import { languages } from '../../commonConstants/sharedConstants';
+import { LoanPaymentChartsStyles } from './ChartComponentsStyles';
 
-const LoanPaymentChart = ({ loans }) => {
+const LoanPaymentChart = ({ loans, symbol, selectedLanguage, conversionRate }) => {
   const [dataPoints, setDataPoints] = useState({ labels: [], values: [] });
   const screenWidth = Dimensions.get('window').width;
 
@@ -69,75 +71,36 @@ const LoanPaymentChart = ({ loans }) => {
     }
   };
 
-
   useEffect(() => {
     calculatePayments();
   }, [loans]);
 
   return (
-    <View style={styles.container}>
-    <View style={styles.innerChartContainer}>
+    <View style={LoanPaymentChartsStyles.container}>
+    <View style={LoanPaymentChartsStyles.innerChartContainer}> 
 
-      <Text style={styles.chartTitle}>Estimated Monthly Loan Payments</Text>
+      <Text style={LoanPaymentChartsStyles.chartTitle}>{languages[selectedLanguage].estimatedLoan}</Text>
       {dataPoints.values.length > 0 ? (
         <LineChart
           data={{
             labels: dataPoints.labels,
-            datasets: [{ data: dataPoints.values }]
+            datasets: [{ data: dataPoints.values }] 
           }}
           width={screenWidth - 45}
           height={250}
-          yAxisLabel="$"
+          yAxisLabel={symbol}
           yAxisSuffix=""
           chartConfig={chartConfig}
           bezier
-          style={styles.chart}
+          style={LoanPaymentChartsStyles.chart}
         />
       ) : (
-        <Text style={styles.noDataText}>No data available for display.</Text>
+        <Text style={LoanPaymentChartsStyles.noDataText}>{languages[selectedLanguage].noDataAvailable}</Text>
       )}
     </View>
     </View>
 
   );
 };
-
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1, 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      marginTop: 20, 
-    },
-    chart: {
-      marginVertical: 10,
-      borderRadius: 20, 
-      borderWidth: 1, 
-      borderColor: 'transparent', 
-    },
-    chartTitle: {
-      textAlign: 'center',
-      fontSize: 18,
-      marginBottom: 10, 
-      marginTop: 16
-    },
-    noDataText: {
-      marginTop: 20, 
-    },
-    innerChartContainer: {
-        position: 'relative',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 20,
-        padding: 1,
-        elevation: 3, 
-        shadowColor: '#000', 
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        backgroundColor: '#35BA52'
-      },
-  });
   
 export default LoanPaymentChart;

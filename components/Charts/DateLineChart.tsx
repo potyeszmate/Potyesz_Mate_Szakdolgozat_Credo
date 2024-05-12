@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { isValid, format } from 'date-fns';
+import { DateLineChartStyles } from './ChartComponentsStyles';
 
 const DateLineChart: React.FC<any> = ({ data }) => {
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -44,13 +45,13 @@ const DateLineChart: React.FC<any> = ({ data }) => {
   }, []);
 
   if (chartData.length === 0) {
-    return <Text style={styles.noDataText}></Text>;
+    return <Text style={DateLineChartStyles.noDataText}></Text>;
   }
 
   return (
-    <View style={styles.chartContainer}>
-      <Text style={styles.cardTitle}>Monthly Transactions</Text>
-      <View style={styles.card}>
+    <View style={DateLineChartStyles.chartContainer}>
+      <Text style={DateLineChartStyles.cardTitle}>Monthly Transactions</Text>
+      <View style={DateLineChartStyles.card}>
         <BarChart
           data={{
             labels: chartData.map((item: any) => item.label),
@@ -65,7 +66,7 @@ const DateLineChart: React.FC<any> = ({ data }) => {
             decimalPlaces: 2,
             color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
           }}
-          style={styles.chart}
+          style={DateLineChartStyles.chart}
           yAxisLabel="$"
           yAxisSuffix=""
         />
@@ -73,31 +74,5 @@ const DateLineChart: React.FC<any> = ({ data }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  chartContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 15,
-    elevation: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  chart: {
-    marginTop: 10,
-  },
-  noDataText: {
-    fontSize: 16,
-  },
-});
 
 export default DateLineChart;

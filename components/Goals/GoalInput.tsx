@@ -1,39 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { TextInput, Button, StyleSheet, Text, Platform, View, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { TextInput, Button, Text, Platform, View, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
-
-interface GoalInputProps {
-  onAddGoal: (goalData: any) => void;
-  initialGoal?: any;
-  selectedLanguage: string
-}
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
+import { languages } from '../../commonConstants/sharedConstants';
+import { GoalInputStyles } from './GoalComponentStyles';
+import { GoalInputProps } from './GoalComponentTypes';
 
 const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedLanguage }) => {
   const [goalName, setGoalName] = useState('');
   const [goalTotalAmount, setGoalTotalAmount] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const valueInputRef = useRef<TextInput>(null);
-
-  useEffect(() => {
-    const isValidDate = initialGoal && initialGoal.Date && !isNaN(initialGoal.Date.toDate());
-
-    if (initialGoal) {
-      setGoalName(initialGoal.Name || '');
-      setGoalTotalAmount(initialGoal && initialGoal.Total_Ammount ? initialGoal.Total_Ammount.toString() : '');
-      setSelectedDate(isValidDate ? new Date(initialGoal.Date.toDate()) : new Date());
-
-    }
-  }, [initialGoal]);
+  // const valueInputRef = useRef<TextInput>(null);
 
   const addOrUpdateGoalsHandler = () => {
     if (!goalName || !goalTotalAmount) {
@@ -57,38 +34,49 @@ const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedL
     setGoalTotalAmount('');
   };
 
+  useEffect(() => {
+    const isValidDate = initialGoal && initialGoal.Date && !isNaN(initialGoal.Date.toDate());
+
+    if (initialGoal) {
+      setGoalName(initialGoal.Name || '');
+      setGoalTotalAmount(initialGoal && initialGoal.Total_Ammount ? initialGoal.Total_Ammount.toString() : '');
+      setSelectedDate(isValidDate ? new Date(initialGoal.Date.toDate()) : new Date());
+
+    }
+  }, [initialGoal]);
+
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>
-          {/* {initialGoal ? 'Edit Goal' : 'New Goal'} */}
+      <View style={GoalInputStyles.modalContainer}>
+        <Text style={GoalInputStyles.modalTitle}>
           {initialGoal ? languages[selectedLanguage].editSaving : languages[selectedLanguage].newSaving}
 
           </Text>
 
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>{languages[selectedLanguage].goalName}</Text>
+        <View style={GoalInputStyles.inputWrapper}>
+          <Text style={GoalInputStyles.label}>{languages[selectedLanguage].goalName}</Text>
           <TextInput
             placeholder={languages[selectedLanguage].enterGoalName}
-            style={styles.input}
+            style={GoalInputStyles.input}
             value={goalName}
             onChangeText={(text) => setGoalName(text)}
           />
         </View>
 
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>{languages[selectedLanguage].totalAmmount}</Text>
+        <View style={GoalInputStyles.inputWrapper}>
+          <Text style={GoalInputStyles.label}>{languages[selectedLanguage].totalAmmount}</Text>
           <TextInput
             placeholder={languages[selectedLanguage].enterGoalAmmount}
-            style={styles.input}
+            style={GoalInputStyles.input}
             keyboardType="numeric"
             value={goalTotalAmount}
             onChangeText={(text) => setGoalTotalAmount(text)}
           />
         </View>
 
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>{languages[selectedLanguage].selectDate}</Text>
+        <View style={GoalInputStyles.inputWrapper}>
+          <Text style={GoalInputStyles.label}>{languages[selectedLanguage].selectDate}</Text>
           {Platform.OS === 'ios' ? (
             <DateTimePicker
               value={selectedDate}
@@ -120,40 +108,5 @@ const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedL
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  modalContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    elevation: 5,
-    width: '80%',
-    alignSelf: 'center',
-    marginTop: 'auto',
-    marginBottom: 'auto',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: 'grey',
-    marginTop: -50
-  },
-  inputWrapper: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#333',
-  },
-  input: {
-    borderBottomWidth: 1,
-    padding: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-});
 
 export default GoalInput;

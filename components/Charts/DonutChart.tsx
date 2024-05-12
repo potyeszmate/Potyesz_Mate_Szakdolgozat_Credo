@@ -1,22 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
+import { languages } from '../../commonConstants/sharedConstants';
+import { DonutChartStyles } from './ChartComponentsStyles';
+import { DonutchartCategoryColors } from './ChartComponentStyles';
 
-
-const categoryColors: any = { 
-  Food: "#4793AF",
-  Entertainment: "#FFC470",
-  Grocieries: "#DD5746",
-  Shopping: "#8B322C",
-  UtilityCosts: "#416D19",
-  Transportation: "#C4E4FF",
-  Housing: "#121481"
-
-};
-
-const DonutChart = ({ data }: { data: any[] }) => {
+const DonutChart = ({ data, symbol, selectedLanguage, conversionRate }: { data: any[], symbol: string, selectedLanguage: string, conversionRate: string }) => {
   if (!data || data.length === 0) {
-    return <Text style={styles.noDataText}>No data available</Text>;
+    return <Text style={DonutChartStyles.noDataText}>{languages[selectedLanguage].noDataAvailable}</Text>;
   }
   
   const screenWidth = Dimensions.get('window').width;
@@ -37,15 +28,15 @@ const DonutChart = ({ data }: { data: any[] }) => {
 
   const chartData = aggregatedData.map((category: any) => ({
     name: category.name,
-    value: category.value,
+    value: category.value, 
     percentage: ((category.value / totalAmount) * 100).toFixed(2),
-    color: categoryColors[category.name] || '#999999', 
+    color: DonutchartCategoryColors[category.name] || '#999999', 
   }));
 
   return (
-    <View style={styles.chartContainer}>
+    <View style={DonutChartStyles.chartContainer}>
       
-      <View style={styles.card}>
+      <View style={DonutChartStyles.card}>
 
         <PieChart
           data={chartData}
@@ -64,12 +55,14 @@ const DonutChart = ({ data }: { data: any[] }) => {
           absolute
           hasLegend={false} 
         />
-        <Text style={styles.totalAmountText}>Total Amount: ${totalAmount.toFixed(2)}</Text>
-        <View style={styles.legendContainer}>
+        <Text style={DonutChartStyles.totalAmountText}>
+        {languages[selectedLanguage].totalAmount}: {(parseFloat(totalAmount) * conversionRate).toFixed(2)} {symbol}
+          </Text>
+        <View style={DonutChartStyles.legendContainer}>
           {chartData.map((category: any, index: number) => (
-            <View key={index} style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: category.color }]} />
-              <Text>{category.name}: {category.percentage}% - {category.value}$</Text>
+            <View key={index} style={DonutChartStyles.legendItem}>
+              <View style={[DonutChartStyles.legendColor, { backgroundColor: category.color }]} />
+              <Text>{languages[selectedLanguage][category.name]} : {category.percentage}% - {(parseFloat(category.value) * conversionRate).toFixed(2)} {symbol}</Text>
             </View>
           ))}
         </View>
@@ -77,52 +70,5 @@ const DonutChart = ({ data }: { data: any[] }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  chartContainer: {
-    alignItems: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  totalAmountText: {
-    marginTop: 10,
-    marginBottom: 20,
-    fontSize: 16,
-  },
-  legendContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-    width: '100%',
-    marginBottom: 10, 
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 40,
-    marginBottom: 10
-  },
-  noDataText: {
-    fontSize: 16,
-  },
- 
-  legendColor: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 5,
-  },
-});
 
 export default DonutChart;

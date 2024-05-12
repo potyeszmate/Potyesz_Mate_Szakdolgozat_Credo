@@ -6,14 +6,18 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import RecurringDonutChart from '../../../components/Recurrings/RecurringDonutChart';
 import ImportanceBarChart from '../../../components/Charts/ImportanceBarChart';
 import LoanPaymentChart from '../../../components/Charts/LoanPaymentChart';
+import { useRoute } from '@react-navigation/native';
+import { languages } from '../../../commonConstants/sharedConstants';
 
 const RecurringAnalytics = () => {
-
     const [subscriptions, setSubscriptions] = useState<any[]>([]);
     const [bills, setBills] = useState<any[]>([]);
     const [loans, setLoans] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('subscription');
 
+    const route = useRoute();
+    const { symbol, selectedLanguage, conversionRate } = route.params || {}
+    
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
 
@@ -132,7 +136,7 @@ const RecurringAnalytics = () => {
               activeTab === 'subscription' && styles.activeTabButtonText,
             ]}
           >
-            Subscription
+          {languages[selectedLanguage].subscriptionsTitle}
           </Text>
         </TouchableOpacity>
 
@@ -149,7 +153,7 @@ const RecurringAnalytics = () => {
               activeTab === 'bills' && styles.activeTabButtonText,
             ]}
           >
-            Bills
+          {languages[selectedLanguage].billsTitle}
           </Text>
         </TouchableOpacity>
 
@@ -166,7 +170,7 @@ const RecurringAnalytics = () => {
               activeTab === 'loans' && styles.activeTabButtonText,
             ]}
           >
-            Loans
+            {languages[selectedLanguage].loansTitle}
           </Text>
         </TouchableOpacity>
        </View>
@@ -177,7 +181,10 @@ const RecurringAnalytics = () => {
             <RecurringDonutChart
               data={generateChartData(subscriptions)}
               total={calculateTotal(subscriptions)}
-              recurringType= "Subscriptions"
+              recurringType={languages[selectedLanguage].subscriptionsTitle}
+              symbol= {symbol}
+              selectedLanguage= {selectedLanguage}
+              conversionRate= {conversionRate}
             />
           )}
 
@@ -186,7 +193,10 @@ const RecurringAnalytics = () => {
             <RecurringDonutChart
               data={generateChartData(bills)}
               total={calculateTotal(bills)}
-              recurringType= "Bills"
+              recurringType={languages[selectedLanguage].billsTitle}
+              symbol= {symbol}
+              selectedLanguage= {selectedLanguage}
+              conversionRate= {conversionRate}
 
             />
           )}
@@ -196,19 +206,28 @@ const RecurringAnalytics = () => {
             <RecurringDonutChart
               data={generateChartData(loans)}
               total={calculateTotal(loans)}
-              recurringType= "Loand and Debts"
+              recurringType={languages[selectedLanguage].loansTitle}
+              symbol= {symbol}
+              selectedLanguage= {selectedLanguage}
+              conversionRate= {conversionRate}
             />
           )}
 
           {activeTab === 'loans' &&(
             <LoanPaymentChart
               loans={generateLoanData(loans)}
+              symbol= {symbol}
+              selectedLanguage= {selectedLanguage}
+              conversionRate= {conversionRate}
             />
           )}
 
         {activeTab === 'subscription' && (
           <ImportanceBarChart
               data={subscriptions}
+              symbol= {symbol}
+              selectedLanguage= {selectedLanguage}
+              conversionRate= {conversionRate}
             />
         )}
 

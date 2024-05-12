@@ -30,7 +30,7 @@
     "yes": "yes",
     "subscriptionsTitle": "Subscriptions",
     "subscriptionDesc": "Subscriptions you pay each month",
-    "loansTitle": "Loans and debt",
+    "loansTitle": "Loans",
     "loansDesc": "Interest rates, pay back",
     "billsTitle": "Bills",
     "billsDesc": "Internet, rent, phone, etc.",
@@ -126,13 +126,13 @@
     "advisorChatbot": "Advisor Chatbot",
     "chatbotDesc": "Credo+ gives you tailored financial advices and statistics",
     "getCredo": "Get Credo+",
-    "utilityCosts": "Utility costs",
-    "shopping": "Shopping",
-    "entertainment": "Entertainment",
-    "food": "Food",
-    "grocieries": "Grocieries",
-    "housing": "Housing",
-    "transport": "Transport",
+    "UtilityCosts": "Utility costs",
+    "Shopping": "Shopping",
+    "Entertainment": "Entertainment",
+    "Food": "Food",
+    "Grocieries": "Grocieries",
+    "Housing": "Housing",
+    "Transport": "Transport",
     "subscriptionValue": "Subscription value",
     "billValue": "Bill value",
     "loanValue": "Loan value",
@@ -147,7 +147,6 @@
     "goalName": "Goal name",
     "totalAmmount": "Goal ammount",
     "signOut": "Sign out",
-
     "subject": "Subject",
     "description": "Description",
     "reportbug": "Report a bug",
@@ -244,9 +243,36 @@
     "Loans": "Loans",
     "Cryptos": "Cryptos",
     "Stocks": "Stocks",
-    "askAnything": "Ask me anything..."
+    "askAnything": "Ask me anything...",
+    "totalAmount": "Total Amount",
+
+    "cashflow": "Cash Flow",
+    "cashflowDesc": "Am I spending less than I earn?",
+    "noDataAvailable": "There is no data available",
+    "subsciptionImportance": " Subscription Importance",
+    "mandatory": "Mandatory",
+    "necessary": "Necessary",
+    "neutral": "Neutral",
+    "negligible": "Negligible",
+    "negligibleDesc": "Most of your subscriptions are categorized as negligible. Consider reviewing them.",
+
+    "spendings": "Spendings",
+    "recurringPayments": "Recurring Payments",
+    "stocksAndCrypto": "Stocks And Cryptos",
+
+    "cashflowDesc2": "Have you earned more than you spent?",
+    "recurringDesc": "Check your recurring payments analytics",
+    "portfolioDesc": "Check your portfolio",
+    "spendingDesc": "Check your spendings analytics",
+    "estimatedLoan": "Estimated Monthly Loan Payments",
+    "upcomingSubs": "Upcoming subscription",
+    "viewall": "View all",
+    "thisWeek": "On this week",
+    "budgetsForCat": "Budget for categories",
+    "xMoreLeft": "more categories left",
+    "setUpNew": "Set up new"
 
     
-    
+
   }
   

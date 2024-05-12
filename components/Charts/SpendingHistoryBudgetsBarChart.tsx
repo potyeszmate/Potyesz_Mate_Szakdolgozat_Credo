@@ -9,6 +9,22 @@ const SpendingHistoryBudgetsBarChart = ({ budgetId, category, conversionRate, sy
   const [isLoading, setIsLoading] = useState(true);
   const screenWidth = Dimensions.get('window').width;
 
+  const chartData = {
+    labels: spendingData.map((data) => data.month),
+    datasets: [{
+      data: spendingData.map((data) => data.total.toFixed(2))
+    }]
+  };
+
+  const chartConfig = {
+    backgroundColor: '#fff',
+    backgroundGradientFrom: '#fff',
+    backgroundGradientTo: '#fff',
+    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, 
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barPercentage: 0.5,
+  };
+
   useEffect(() => {
     const fetchSpendingData = async () => {
       setIsLoading(true);
@@ -47,22 +63,7 @@ const SpendingHistoryBudgetsBarChart = ({ budgetId, category, conversionRate, sy
     fetchSpendingData();
   }, [budgetId, category]);
 
-  const chartData = {
-    labels: spendingData.map((data) => data.month),
-    datasets: [{
-      data: spendingData.map((data) => data.total.toFixed(2))
-    }]
-  };
-
-  const chartConfig = {
-    backgroundColor: '#fff',
-    backgroundGradientFrom: '#fff',
-    backgroundGradientTo: '#fff',
-    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, 
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    barPercentage: 0.5,
-  };
-
+  
   if (isLoading) {
     return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size="large" />

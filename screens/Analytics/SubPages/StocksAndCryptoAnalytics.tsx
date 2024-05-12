@@ -9,6 +9,8 @@ import LoanPaymentChart from '../../../components/Charts/LoanPaymentChart';
 import { getStockPrice } from '../../../util/stocks';
 import { getCryptoValues } from '../../../util/crypto';
 import PieChartComponent from '../../../components/Charts/PieChartStockAndCrypto';
+import { useRoute } from '@react-navigation/native';
+import { languages } from '../../../commonConstants/sharedConstants';
 
 const StocksAndCryptoAnalytics = () => {
 
@@ -16,10 +18,12 @@ const StocksAndCryptoAnalytics = () => {
     const [cryptocurrencies, setCryptocurrencies] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState('stocks');
     const [isLoading, setIsLoading] = useState(true);
-
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
 
+    const route = useRoute();
+    const { symbol, selectedLanguage, conversionRate } = route.params || {}
+    
     const fetchCryptocurrencies = async () => {
         try {
           const cryptocurrenciesQuery = query(collection(db, 'cryptocurrencies'), where('uid', '==', userId));
@@ -121,7 +125,7 @@ const StocksAndCryptoAnalytics = () => {
               activeTab === 'stocks' && styles.activeTabButtonText,
             ]}
           >
-            Stocks
+            {languages[selectedLanguage].stocks}
           </Text>
         </TouchableOpacity>
 
@@ -138,14 +142,14 @@ const StocksAndCryptoAnalytics = () => {
               activeTab === 'cryptocurrencies' && styles.activeTabButtonText,
             ]}
           >
-            Cryptocurrencies
+            {languages[selectedLanguage].cryptos}
           </Text>
         </TouchableOpacity>
        </View>
 
         <ScrollView style={{ flexDirection: 'column' }}>
-            {activeTab === 'stocks' && <PieChartComponent data={stocks} />} 
-            {activeTab === 'cryptocurrencies' && <PieChartComponent data={cryptocurrencies} />}
+            {activeTab === 'stocks' && <PieChartComponent data={stocks} symbol={symbol} selectedLanguage={selectedLanguage} conversionRate={conversionRate} />} 
+            {activeTab === 'cryptocurrencies' && <PieChartComponent data={cryptocurrencies} symbol={symbol} selectedLanguage={selectedLanguage} conversionRate={conversionRate} />}
         </ScrollView>
       </View>
       );

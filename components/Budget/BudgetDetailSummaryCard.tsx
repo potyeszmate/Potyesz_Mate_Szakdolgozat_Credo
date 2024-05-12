@@ -66,5 +66,4 @@ const BudgetDetailsSummaryCard = ({ currentMonth, totalAmount, spentPercentage, 
   );
 };
 
-
 export default BudgetDetailsSummaryCard;

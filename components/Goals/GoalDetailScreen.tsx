@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { db } from '../../firebaseConfig';
 import { collection, addDoc, Timestamp, writeBatch, doc } from 'firebase/firestore';
 import { AuthContext } from "../../store/auth-context";
+import { GoalDetailStyles } from './GoalComponentStyles';
 
 const GoalDetailScreen = ({ route, navigation }) => {
   const { goal } = route.params;
@@ -58,12 +59,12 @@ const GoalDetailScreen = ({ route, navigation }) => {
   
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{goal.Name}</Text>
+    <View style={GoalDetailStyles.container}>
+      <Text style={GoalDetailStyles.title}>{goal.Name}</Text>
       <Text>Current Amount: ${goal.Current_Ammount}</Text>
       <Text>Total Amount: ${goal.Total_Ammount}</Text>
       <TextInput 
-        style={styles.input} 
+        style={GoalDetailStyles.input} 
         value={amountToAdd} 
         onChangeText={setAmountToAdd} 
         placeholder="Enter amount to add" 
@@ -73,24 +74,5 @@ const GoalDetailScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  input: {
-    borderColor: 'gray',
-    borderWidth: 1,
-    padding: 10,
-    marginBottom: 20,
-  },
-});
 
 export default GoalDetailScreen;

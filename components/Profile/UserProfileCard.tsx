@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, ProgressBarAndroid, Dimensions, ActivityIndicator } from 'react-native';
 import * as Progress from 'react-native-progress';
+import { ProfileCardStyles } from './ProfileComponentStyles';
 
 const UserProfileCard = ({ userData }) => {
   const {
@@ -11,8 +12,6 @@ const UserProfileCard = ({ userData }) => {
     level,
     profilePicUrl
   } = userData;
-
-  const [loadingProfilePic, setLoadingProfilePic] = useState(true);
 
   const getColor = (percentage: any) => {
     if (percentage < 0.25) {
@@ -25,20 +24,20 @@ const UserProfileCard = ({ userData }) => {
       return '#008000'; 
     }
   };
-
+  
   const progress = score / total;
   
   return (
-    <View style={styles.card}>
-      <View style={styles.profileSection}>
+    <View style={ProfileCardStyles.card}>
+      <View style={ProfileCardStyles.profileSection}>
       <Image
         source={profilePicUrl ? { uri: profilePicUrl } : require('../../assets/avatar.png')}
-        style={styles.profilePic}
+        style={ProfileCardStyles.profilePic}
       />
       </View>
-      <View style={styles.detailsSection}>
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.rank}>{rank}</Text>
+      <View style={ProfileCardStyles.detailsSection}>
+        <Text style={ProfileCardStyles.name}>{name}</Text>
+        <Text style={ProfileCardStyles.rank}>{rank}</Text>
         <Progress.Bar
             progress={progress}
             width={Math.round(Dimensions.get('window').width * 0.59)}
@@ -48,68 +47,13 @@ const UserProfileCard = ({ userData }) => {
             borderColor="#FFFFFF"
             unfilledColor="#F3F4F7"
         />
-        <View style={styles.levelDetails}>
-          <Text style={styles.level}>LEVEL {level}</Text>
-          <Text style={styles.pointsNeeded}>{total - score} points needed</Text>
+        <View style={ProfileCardStyles.levelDetails}>
+          <Text style={ProfileCardStyles.level}>LEVEL {level}</Text>
+          <Text style={ProfileCardStyles.pointsNeeded}>{total - score} points needed</Text>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginTop: 20,
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 20
-  },
-  profileSection: {
-    marginRight: 20,
-  },
-  profilePic: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-  },
-  detailsSection: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 2
-  },
-  rank: {
-    fontSize: 16,
-    color: 'grey',
-    marginBottom: 2
-  },
-  progressBar: {
-    height: 20,
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  levelDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 5
-  },
-  level: {
-    fontWeight: 'bold',
-  },
-  pointsNeeded: {
-    color: 'grey',
-  },
-});
 
 export default UserProfileCard;

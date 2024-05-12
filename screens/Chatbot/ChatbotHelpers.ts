@@ -12,22 +12,30 @@ export  const handleSend = async (params: any) => {
     const isAwaitingFollowUp = conversation.length > 0 && conversation[conversation.length - 1].includes("Do you want to ask another question about");
 
     if (isAwaitingFollowUp) {
+      console.log("In phase: isAwaitingFollowUp")
       const userResponse = userInput.trim().toLowerCase();
       if (userResponse === 'yes') {
+        console.log("Typed yes")
+
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, `Chatbot: What else would you like to know about ${currentTopic}?`]);
         setUserInput(''); 
       } else if (userResponse === 'no') {
+        console.log("Typed no")
+
         setShowTopics(true); 
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, basicMessages[selectedLanguage].selectFromTopics]);
         setCurrentTopic(''); 
         setUserInput(''); 
       } else {
+        console.log("Typed other then yes or no")
+
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, `Chatbot: I didn't really catch that, can you answer again with 'yes' or 'no', please?`]);
         setUserInput(''); 
-        return; 
+        return;   // bug, first if he types other then yes or no and then he types no it wont show the starting phase
       }
     } 
-    else {
+    else {      
+      console.log("not in isAwaitingFollowUp phase")
       setConversation((prev: string[]) => [...prev, `You: ${userInput}`]);
       setUserInput('');
       let systemMessageContent = "";

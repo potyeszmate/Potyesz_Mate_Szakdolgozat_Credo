@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 import GoalItem from './GoalItem';
+import { GoalListStyles } from './GoalComponentStyles';
 
 const GoalList: React.FC<any> = ({ goals }) => {
   return (
     <ScrollView
-      contentContainerStyle={styles.listContainer}
+      contentContainerStyle={GoalListStyles.listContainer}
       showsVerticalScrollIndicator={false}
     >
       <FlatList
@@ -24,18 +25,4 @@ const GoalList: React.FC<any> = ({ goals }) => {
   );
 };
 
-
-const styles = StyleSheet.create({
-  listContainer: {
-    marginVertical: 20,
-    width: '80%',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    maxHeight: 250, 
-  },
-  listContentContainer: {
-    alignItems: 'center',
-    
-  },
-});
 export default GoalList;

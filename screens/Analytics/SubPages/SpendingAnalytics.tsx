@@ -9,20 +9,33 @@ import { AuthContext } from "../../../store/auth-context";
 import DonutChart from "../../../components/Charts/DonutChart";
 import DateLineChart from "../../../components/Charts/DateLineChart";
 import BarChartSpending from "../../../components/Charts/BarchartSpending";
+import { Transaction } from "../../Home/HomeTypes";
+import { useRoute } from "@react-navigation/native";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [filterModalVisible, setFilterModalVisible] = useState(false);
     const [filterType, setFilterType] = useState('monthly');
-    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+  
+    const route = useRoute();
+    const { symbol, selectedLanguage, conversionRate } = route.params || {}
+
+    console.log(route.params)
 
     const authCtx = useContext(AuthContext);
     const { userId } = authCtx as any;
     
     const fetchTransactions = async () => {
+     
         try {
           setIsLoading(true);
+
+          let transactionsCount = 0
+          transactionsCount++
+    
+          console.log("transaction fetching, count: ", transactionsCount)
 
           const transactionsQuery = query(collection(db, 'transactions'), where('uid', '==', userId));
           const querySnapshot = await getDocs(transactionsQuery);
@@ -31,7 +44,7 @@ const SpendingAnalytics = () => {
             ...doc.data(),
           })) as any[];
     
-          setTransactions(fetchedTransactions);
+          setTransactions(fetchedTransactions as any);
 
         } catch (error: any) {
           console.error('Error fetching transactions:', error.message);
@@ -114,7 +127,7 @@ const SpendingAnalytics = () => {
 
       useEffect(() => {
         fetchTransactions();
-      }, [userId, filterType, currentDate, []]);
+      }, [userId, filterType, currentDate]);
       
     
     return (
@@ -132,8 +145,8 @@ const SpendingAnalytics = () => {
         </View>
 
         <ScrollView >
-            <DonutChart data={memoizedFilteredTransactions} />
-            <BarChartSpending data={memoizedFilteredTransactions} />
+            <DonutChart data={memoizedFilteredTransactions} symbol={symbol} selectedLanguage={selectedLanguage} conversionRate={conversionRate} />
+            <BarChartSpending data={memoizedFilteredTransactions} symbol={symbol} selectedLanguage={selectedLanguage} conversionRate={conversionRate} />
         </ScrollView>
 
         <Modal

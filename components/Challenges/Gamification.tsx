@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
+import { ScrollView, ActivityIndicator } from 'react-native';
 import UserProfileCard from '../Profile/UserProfileCard';
 import { db } from '../../firebaseConfig';
 import { query, collection, where, getDocs } from 'firebase/firestore';
@@ -11,29 +11,10 @@ const Gamification: React.FC = () => {
   const [userSettings, setUserSettings] = useState<any>({});
   const [userGamification, setUserGamification] = useState<any>({});
   const [joinedChallanges, setJoinedChallenges] = useState<any>({});
-
   const [loading, setLoading] = useState(true);
-
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx;
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      try {
-        await Promise.all([fetchUserSettings(), fetchUserGamification(), fetchJoinedChallenges()]);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
-
-    return () => {
-    };
-  }, []);
+  const fullName = `${userSettings.firstName} ${userSettings.lastName}`;
 
   const fetchUserSettings = async () => {
     const settingsQuery = query(collection(db, 'users'), where('uid', '==', userId));
@@ -71,12 +52,28 @@ const Gamification: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([fetchUserSettings(), fetchUserGamification(), fetchJoinedChallenges()]);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    return () => {
+    };
+  }, []);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  const fullName = `${userSettings.firstName} ${userSettings.lastName}`;
   return (
     <ScrollView>
       <UserProfileCard userData={{
@@ -97,8 +94,6 @@ const Gamification: React.FC = () => {
       <AchivementsList joinedChallenges={joinedChallanges}
        />
     </ScrollView>
-
-
   );
 };
 

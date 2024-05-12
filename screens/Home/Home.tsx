@@ -48,6 +48,7 @@ function Home() {
   // authCtx.logout();
 
   async function getUserSettings(uid: string) {
+    console.log("CALLED GETUSERSETTINGS")
     const settingsRef = collection(db, 'users');
     const q = query(settingsRef, where("uid", "==", uid));
     const querySnapshot = await getDocs(q);
@@ -200,6 +201,7 @@ function Home() {
       monthlyIncome,
     } = data;
       
+    console.log("UPLOADING THIS USERDATA: ", data)
     if (!userId) {
       throw new Error("User ID is null or undefined.");
     }
@@ -289,6 +291,7 @@ function Home() {
       const isOnboarding = await AsyncStorage.getItem('setOnboardingModal');
   
       if (isOnboarding == 'true') {
+        console.log("IN ONBOARDING PHASE")
         return;
       }
   
@@ -396,6 +399,10 @@ function Home() {
   />
   }
 
+  if (!userSettings){
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
 return (
   <View style={homeStyles.container}>
     <CustomHeader
@@ -403,6 +410,7 @@ return (
       updateProfilePicture={updateProfilePicture}
       profile={userSettings}
       isLoading={isProfileLoading}
+      selectedLanguage={selectedLanguage}
     />
 
     <View style={homeStyles.tabBarContainer}>
@@ -507,7 +515,13 @@ return (
       )}
 
       {activeTab === 'overview' && (
-        <UpcomingRecurring recurringTransactions={recurringTransactions} />
+        <UpcomingRecurring 
+        recurringTransactions={recurringTransactions} 
+        selectedLanguage={selectedLanguage}
+        symbol={symbol}
+        conversionRate={conversionRate} 
+        currency = {userSettings.currency}
+        />
       )}
 
       {activeTab === 'budget' && (

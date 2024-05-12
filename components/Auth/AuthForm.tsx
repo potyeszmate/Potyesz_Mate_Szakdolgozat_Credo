@@ -1,18 +1,14 @@
 import { useState } from 'react';
 import { Alert, StyleSheet, View, Text, Modal, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-
 import Input from './Input';
 import GoogleButton from '../CommonComponents/GoogleButton';
-import FacebookButton from '../CommonComponents/FacebookButton';
-import IOSButton from '../CommonComponents/IOSButton';
 import Separator from '../CommonComponents/Separator';
 import FlatButton from '../CommonComponents/FlatButton';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../../firebaseConfig';
 import { Ionicons } from '@expo/vector-icons'; 
 import Button from '../CommonComponents/Button';
-
-
+import { AuthFormStyles } from './AuthComponentStyles';
 
 const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
   const [enteredEmail, setEnteredEmail] = useState('');
@@ -77,17 +73,16 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
     });
   };
   
-  
   return (
-      <View style={styles.content}>
+      <View style={AuthFormStyles.content}>
 
       {!isLogin ? (
         <View>
-          <Text style={styles.headerText}>Please create an account to sign in</Text>
+          <Text style={AuthFormStyles.headerText}>Please create an account to sign in</Text>
         </View> ) 
       : (
           <View>
-            <Text style={styles.headerText}>Login to Your Account</Text>
+            <Text style={AuthFormStyles.headerText}>Login to Your Account</Text>
           </View>
       )}
 
@@ -111,10 +106,10 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
         />
 
         {isLogin && (
-         <View style={styles.forgotPasswordContainer}>
+         <View style={AuthFormStyles.forgotPasswordContainer}>
           
           <FlatButton onPress={() => setIsResetPasswordModalVisible(true)}>
-            <Text style={styles.forgotPassword}>Forgot password?</Text>
+            <Text style={AuthFormStyles.forgotPassword}>Forgot password?</Text>
           </FlatButton>
         
         </View>
@@ -146,13 +141,7 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
           <Separator isLogin={isLogin} />
         </View>
 
-        {/* <View style={styles.buttonContainer}>
-          <FacebookButton>
-            {'Continute with Facebook'}
-          </FacebookButton>
-        </View> */}
-
-        <View style={styles.buttonContainer}>
+        <View style={AuthFormStyles.buttonContainer}>
           <GoogleButton>
             {'Continute with Google'}
           </GoogleButton>
@@ -167,33 +156,34 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
         >
           <KeyboardAvoidingView 
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.centeredView}
+            style={AuthFormStyles.centeredView}
           >
-          <View style={styles.modalView}>
+          <View style={AuthFormStyles.modalView}>
           <TouchableOpacity
-            style={styles.modalCloseButton}
+            style={AuthFormStyles.modalCloseButton}
             onPress={closeModalHandler}
           >
             <Ionicons name="close" size={24} color="#000" />
           </TouchableOpacity>
-            <Text style={styles.modalText}>Forgot your password?</Text>
+            <Text style={AuthFormStyles.modalText}>Forgot your password?</Text>
             <TextInput
               placeholder="Enter email address here"
               value={resetEmail}
               onChangeText={text => setResetEmail(text)}
-              style={styles.modalInput}
+              style={AuthFormStyles.modalInput}
               keyboardType="email-address"
             />
              <TouchableOpacity
-              style={styles.button}
+              style={AuthFormStyles.button}
               onPress={() => {
                 forgotPassword(resetEmail.trim());
                 setIsResetPasswordModalVisible(false);
               }}
             >
-              <Text style={styles.buttonText}>Send password reset link</Text>
+              <Text style={AuthFormStyles.buttonText}>Send password reset link</Text>
             </TouchableOpacity>
-            <Text style={styles.modalNote}>
+            
+            <Text style={AuthFormStyles.modalNote}>
               Check your email spam folder to find password reset link
             </Text>
             <Button
@@ -208,90 +198,6 @@ const AuthForm: React.FC<any> = ({ isLogin, onSubmit, credentialsInvalid }) => {
       </View>
   );
 }
-
-
-const styles = StyleSheet.create({
-  loginButton: {
-    height: 48,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10
-  },
-  content: {
-  },
-  headerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#333', 
-    marginBottom: 20,
-    marginTop: 30
-
-  },
-  button: {
-    color: 'black',
-  },
-  buttonText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  buttonContainer: {
-    marginTop: 20,
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalCloseButton: {
-    alignSelf: 'flex-end', 
-    padding: 10, 
-  },
-  forgotPasswordContainer: {
-    marginBottom: 5,
-    alignSelf: 'flex-end', 
-  },
-  forgotPassword: {
-    fontSize: 15,
-    color: '#149E53',
-    textAlign: 'right',
-  },
-  modalView: {
-    marginTop: 'auto', 
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center"
-  },
-  modalInput: {
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    borderRadius: 5,
-    width: '100%',
-  },
-  modalNote: {
-    fontSize: 12,
-    color: 'grey',
-    marginTop: 15
-  }
-});
 
 export default AuthForm;
 

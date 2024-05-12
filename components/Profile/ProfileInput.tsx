@@ -10,24 +10,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
-
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DropDownPicker from 'react-native-dropdown-picker';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
-
-const genders: any = [
-  { label: 'Select gender', value: null },
-  { label: 'Male', value: 'Male' },
-  { label: 'Female', value: 'Female' },
-];
+import { languages } from '../../commonConstants/sharedConstants';
+import { genders } from './ProfileComponentConstants';
+import { ProfileInputStyles } from './ProfileComponentStyles';
 
 const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLanguage }) => {
   const [profileFirstName, setProfileFirstName] = useState('');
@@ -35,26 +22,9 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
   const [selectedGender, setSelectedGender] = useState<string | null>(null);
   const [mobileNumber, setMobileNumber] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
- 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [openProvider, setOpenProvider] = useState(false);
   const valueInputRef = useRef<TextInput>(null);
-
-  console.log(initialProfile)
-  useEffect(() => {
-    const isValidDate = initialProfile && initialProfile.birthday && !isNaN(initialProfile.birthday.toDate());
-
-    if (initialProfile) {
-
-      setProfileFirstName(initialProfile.firstName || '');
-      setProfileLastName(initialProfile.lastName || '');
-
-      setSelectedGender(initialProfile.gender ? initialProfile.gender : null);
-      setMobileNumber(initialProfile.mobile || '');
-      setSelectedDate(isValidDate ? new Date(initialProfile.birthday.toDate()) : new Date());
-
-    }
-  }, [initialProfile]);
 
   const addOrUpdateProfileHandler = () => {
     if (!profileFirstName || !profileLastName || !selectedGender || !mobileNumber) {
@@ -83,25 +53,39 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
     setSelectedDate(new Date());
   };
 
+  useEffect(() => {
+    const isValidDate = initialProfile && initialProfile.birthday && !isNaN(initialProfile.birthday.toDate());
+
+    if (initialProfile) {
+
+      setProfileFirstName(initialProfile.firstName || '');
+      setProfileLastName(initialProfile.lastName || '');
+
+      setSelectedGender(initialProfile.gender ? initialProfile.gender : null);
+      setMobileNumber(initialProfile.mobile || '');
+      setSelectedDate(isValidDate ? new Date(initialProfile.birthday.toDate()) : new Date());
+
+    }
+  }, [initialProfile]);
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={styles.modalContainer}>
-        {/* ... */}
+      <View style={ProfileInputStyles.modalContainer}>
         {openProvider === true && (
-          <View style={styles.debug}>
+          <View style={ProfileInputStyles.debug}>
           </View>
         )}
 
-        <Text style={styles.modalTitle}>Edit Profile</Text>
+        <Text style={ProfileInputStyles.modalTitle}>Edit Profile</Text>
 
         {openProvider === false && (
 
-        <View style={styles.inputWrapper}>
-        <Text style={styles.label}>{languages[selectedLanguage].firstName}</Text>
+        <View style={ProfileInputStyles.inputWrapper}>
+        <Text style={ProfileInputStyles.label}>{languages[selectedLanguage].firstName}</Text>
         <TextInput
             ref={valueInputRef}
             placeholder="Enter your firstname"
-            style={styles.input}
+            style={ProfileInputStyles.input}
             value={profileFirstName}
             onChangeText={(text) => setProfileFirstName(text)}
         />
@@ -110,20 +94,20 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
 
         {openProvider === false && (
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>{languages[selectedLanguage].lastName}</Text>
+          <View style={ProfileInputStyles.inputWrapper}>
+            <Text style={ProfileInputStyles.label}>{languages[selectedLanguage].lastName}</Text>
             <TextInput
               ref={valueInputRef}
               placeholder="Enter your lastname"
-              style={styles.input}
+              style={ProfileInputStyles.input}
               value={profileLastName}
               onChangeText={(text) => setProfileLastName(text)}
             />
           </View>
         )}
 
-        <View style={styles.inputWrapper}>
-          <Text style={styles.label}>{languages[selectedLanguage].selectGender}</Text>
+        <View style={ProfileInputStyles.inputWrapper}>
+          <Text style={ProfileInputStyles.label}>{languages[selectedLanguage].selectGender}</Text>
           <DropDownPicker
             open={openProvider}
             value={selectedGender}
@@ -134,8 +118,8 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
               setOpenProvider(false);
             }}
             setItems={() => {}}
-            style={styles.pickerContainer}
-            containerStyle={styles.pickerContainer}
+            style={ProfileInputStyles.pickerContainer}
+            containerStyle={ProfileInputStyles.pickerContainer}
             placeholder={languages[selectedLanguage].selectGender}
     
           />
@@ -143,11 +127,11 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
 
         {openProvider === false && (
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>{languages[selectedLanguage].mobile}</Text>
+          <View style={ProfileInputStyles.inputWrapper}>
+            <Text style={ProfileInputStyles.label}>{languages[selectedLanguage].mobile}</Text>
             <TextInput
               placeholder="Enter name"
-              style={styles.input}
+              style={ProfileInputStyles.input}
               keyboardType="phone-pad"
               value={mobileNumber}
               onChangeText={(text) => setMobileNumber(text)}
@@ -157,8 +141,8 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
 
         {openProvider === false && (
 
-          <View style={styles.inputWrapper}>
-            <Text style={styles.label}>{languages[selectedLanguage].selectBirthday}</Text>
+          <View style={ProfileInputStyles.inputWrapper}>
+            <Text style={ProfileInputStyles.label}>{languages[selectedLanguage].selectBirthday}</Text>
             {Platform.OS === 'ios' ? (
               <DateTimePicker
                 value={selectedDate}
@@ -169,7 +153,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
               />
             ) : (
               <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                <Text style={styles.dateText}>{selectedDate.toDateString()}</Text>
+                <Text style={ProfileInputStyles.dateText}>{selectedDate.toDateString()}</Text>
               </TouchableOpacity>
             )}
             {showDatePicker && Platform.OS === 'android' && (
@@ -194,64 +178,5 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  modalContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    elevation: 5,
-    width: '80%',
-    alignSelf: 'center',
-    marginTop: 'auto',
-    marginBottom: 'auto',
-  },
-  dateText: {
-    borderBottomWidth: 1,
-    paddingVertical: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-  pickerContainer: {
-    height: 40,
-    marginBottom: 10,
-  },
-  dropDownStyle: {
-    backgroundColor: '#fafafa',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
-    color: 'grey',
-    marginTop: -60
-  },
-  inputWrapper: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#333',
-  },
-  input: {
-    borderBottomWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    color: '#333',
-  },
-  addButton: {
-    marginTop: 20,
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    borderRadius: 4,
-  },
-  debug: {
-    marginTop: -272.5
-  },
-
-});
 
 export default ProfileInput;

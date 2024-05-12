@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Keyboard, Pressable } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { languages } from '../../commonConstants/sharedConstants';
+import { MonthlyIncomeStyles } from './BalanceComponentStyles';
 
 const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, conversionRate, currency}) => {
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -14,12 +16,6 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
       : (parseFloat(income) * conversionRate).toFixed(2).toString();
   };
 
-  useEffect(() => {
-    if (editModalVisible || income) {
-      setNewIncome(formatIncome(income));
-    }
-  }, [editModalVisible, income, conversionRate, symbol]);
-
   const handleUpdate = async () => {
     await updateIncome(newIncome);
     setEditModalVisible(false);
@@ -29,17 +25,23 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
     return textInputFocused ? ['55%'] : [ '30%'];
   }, [textInputFocused]); 
 
+  useEffect(() => {
+    if (editModalVisible || income) {
+      setNewIncome(formatIncome(income));
+    }
+  }, [editModalVisible, income, conversionRate, symbol]);
+
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.leftSide}>
-        <Text style={styles.headerText}>Monthly income</Text>
-        <Text style={styles.incomeText}>
+    <View style={MonthlyIncomeStyles.cardContainer}>
+      <View style={MonthlyIncomeStyles.leftSide}>
+        <Text style={MonthlyIncomeStyles.headerText}>{languages[selectedLanguage].upcomingSubs}</Text>
+        <Text style={MonthlyIncomeStyles.incomeText}>
           {formatIncome(income)}{' '}{symbol}
         </Text>      
       </View>
-      <View style={styles.rightSide}>
-        <TouchableOpacity style={styles.editButton} onPress={() => setEditModalVisible(true)}>
-          <Text style={styles.editButtonText}>Edit</Text>
+      <View style={MonthlyIncomeStyles.rightSide}>
+        <TouchableOpacity style={MonthlyIncomeStyles.editButton} onPress={() => setEditModalVisible(true)}>
+          <Text style={MonthlyIncomeStyles.editButtonText}>{languages[selectedLanguage].edit}</Text>
         </TouchableOpacity>
       </View>
 
@@ -52,7 +54,7 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
             setEditModalVisible(false);
         }}>
         <Pressable
-            style={styles.modalBackground}
+            style={MonthlyIncomeStyles.modalBackground}
             onPress={() => {
               setEditModalVisible(false);
               Keyboard.dismiss();
@@ -66,12 +68,12 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
                 setEditModalVisible(false);
               }}            
               backgroundComponent={({ style }) => (
-                <View style={[style, styles.bottomSheetBackground]} />
+                <View style={[style, MonthlyIncomeStyles.bottomSheetBackground]} />
               )}>
-              <View style={styles.sheetHeader}>
-                <Text style={styles.sheetTitle}>Edit Monthly Income in {currency}</Text>
+              <View style={MonthlyIncomeStyles.sheetHeader}>
+                <Text style={MonthlyIncomeStyles.sheetTitle}>Edit Monthly Income in {currency}</Text>
                 <TouchableOpacity
-                  style={styles.closeButton}
+                  style={MonthlyIncomeStyles.closeButton}
                   onPress={() => {
                     setEditModalVisible(false);
                     Keyboard.dismiss();
@@ -79,9 +81,9 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
                   <Icon name="close" size={24} color="#000" />
                 </TouchableOpacity>
               </View>
-              <View style={styles.contentContainer}>
+              <View style={MonthlyIncomeStyles.contentContainer}>
                 <TextInput
-                  style={styles.input}
+                  style={MonthlyIncomeStyles.input}
                   value={newIncome}
                   onChangeText={setNewIncome}
                   keyboardType="numeric"
@@ -90,8 +92,8 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
                 />
                 <TouchableOpacity
                   onPress={handleUpdate}
-                  style={styles.updateButtonTouchable}>
-                  <Text style={styles.updateButtonText}>Update</Text>
+                  style={MonthlyIncomeStyles.updateButtonTouchable}>
+                  <Text style={MonthlyIncomeStyles.updateButtonText}>Update</Text>
                 </TouchableOpacity>
               </View>
             </BottomSheet>
@@ -100,107 +102,5 @@ const MonthlyIncome = ({ income, updateIncome, selectedLanguage, symbol, convers
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 16,
-    marginTop: 20,
-    width: '90%',
-    alignSelf: 'center',
-    elevation: 4, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.1,
-    shadowRadius: 4, 
-    borderColor: '#E0E0E0', 
-    flexDirection: 'row',
-  },
-  leftSide: {
-    flex: 1,
-  },
-  rightSide: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 15,
-    color: '#7E8086',
-    fontWeight: 'bold'
-  },
-  incomeText: {
-    fontSize: 20,
-    color: '#000',
-    marginTop: 4,
-    fontWeight: 'bold'
-  },
-  editButton: {
-    borderWidth: 1,
-    borderColor: '#149E53',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#FFF',
-    height: 35,
-    width: 66,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  editButtonText: {
-    color: '#149E53',
-    fontSize: 14,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  bottomSheetBackground: {
-    backgroundColor: 'white',
-    flex: 1,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    overflow: 'hidden',
-    alignItems: 'center',
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  input: {
-    borderColor: '#CCC',
-    borderWidth: 1,
-    marginBottom: 18,
-    padding: 8,
-    fontSize: 16,
-    borderRadius: 10,
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-  },
-  sheetTitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  closeButton: {
-  },
-  updateButtonTouchable: {
-    backgroundColor: '#35BA52',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    alignSelf: 'stretch',
-    marginTop: 20
-  },
-  updateButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
-});
 
 export default MonthlyIncome;
