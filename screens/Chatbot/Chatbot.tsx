@@ -37,14 +37,13 @@ const Chatbot = () => {
     const [cryptocurrencies, setCryptocurrencies] = useState<Crypto[]>([]);
     const [stocks, setStocks] = useState<Stock[]>([]);
     const [goals, setGoals] = useState<any[]>([]);
+    const [isAnswerLoading, setIsAnswerLoading] = useState(false);
 
     const sendParams = {
       userInput, conversation, currentTopic, transactions, incomes, subscriptions, loansAndDebts, bills, cryptocurrencies, stocks, goals,
       setConversation, setUserInput, setShowTopics, setCurrentTopic, basicMessages, api, models, apiKeys,
-      fetchTransactions, fetchIncomes, selectedLanguage
-  };
-
-  console.log(selectedLanguage)
+      fetchTransactions, fetchIncomes, selectedLanguage, setIsAnswerLoading
+    };
 
     async function fetchTransactions(uid: string) {
       try {
@@ -133,15 +132,16 @@ const Chatbot = () => {
       }));  
     }
 
-  const handleTopicSelection = (topicKey: string) => {
-    const topic = topicsTranslations[selectedLanguage][topicKey];
-    const messageTemplate = topicMessages[selectedLanguage].topicPrompt;
-    const message = messageTemplate.replace('{topic}', topic);
+    const handleTopicSelection = (topicKey: string) => {
+      console.log("topicKey: ", topicKey)
+      const topic = topicsTranslations[selectedLanguage][topicKey];
+      const messageTemplate = topicMessages[selectedLanguage].topicPrompt;
+      const message = messageTemplate.replace('{topic}', topic);
 
-    setConversation(prev => [...prev, `Chatbot: ${message}`]);
-    setCurrentTopic(topicKey);
-    setShowTopics(false);
-};
+      setConversation(prev => [...prev, `Chatbot: ${message}`]);
+      setCurrentTopic(topicKey);
+      setShowTopics(false);
+    };
 
     
     useEffect(() => {
@@ -197,6 +197,7 @@ const Chatbot = () => {
               {conversation.map((text, index) => (
                   <Message key={index} text={text} isUser={text.startsWith("You:")} />
               ))}
+              {isAnswerLoading && <ActivityIndicator size="large" color="#0000ff" />}  
           </ScrollView>
   
           {showTopics && (

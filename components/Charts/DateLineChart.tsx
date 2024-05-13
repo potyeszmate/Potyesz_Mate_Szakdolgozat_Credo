@@ -6,7 +6,7 @@ import { DateLineChartStyles } from './ChartComponentsStyles';
 
 const DateLineChart: React.FC<any> = ({ data }) => {
   if (!data || !Array.isArray(data) || data.length === 0) {
-    return <Text style={styles.noDataText}></Text>;
+    return <Text style={DateLineChartStyles.noDataText}></Text>;
   }
 
   const sortedData = data

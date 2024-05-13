@@ -11,6 +11,7 @@ import DateLineChart from "../../../components/Charts/DateLineChart";
 import BarChartSpending from "../../../components/Charts/BarchartSpending";
 import { Transaction } from "../../Home/HomeTypes";
 import { useRoute } from "@react-navigation/native";
+import { SpendingAnalyticsStyles } from "../AnalyticsScreenStyles";
 
 const SpendingAnalytics = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -132,12 +133,12 @@ const SpendingAnalytics = () => {
     
     return (
     <View> 
-        <View style={styles.filterBar}>
+        <View style={SpendingAnalyticsStyles.filterBar}>
             <TouchableOpacity onPress={() => navigateDate(-1)}>
                 <Feather name="chevron-left" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setFilterModalVisible(true)}>
-                <Text style={styles.dateDisplay}>{formatDateDisplay()}</Text>
+                <Text style={SpendingAnalyticsStyles.dateDisplay}>{formatDateDisplay()}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateDate(1)}>
                 <Feather name="chevron-right" size={24} color="black" />
@@ -155,95 +156,27 @@ const SpendingAnalytics = () => {
         transparent={true}
         onRequestClose={() => setFilterModalVisible(false)}
         >
-        <View style={styles.modalContent}>
-        <View style={styles.modalHeader}>
-            <Text style={styles.modalHeaderText}>Choose Filtering</Text>
-            <TouchableOpacity onPress={() => setFilterModalVisible(false)} style={styles.closeButton}>
+        <View style={SpendingAnalyticsStyles.modalContent}>
+        <View style={SpendingAnalyticsStyles.modalHeader}>
+            <Text style={SpendingAnalyticsStyles.modalHeaderText}>Choose Filtering</Text>
+            <TouchableOpacity onPress={() => setFilterModalVisible(false)} style={SpendingAnalyticsStyles.closeButton}>
                 <Feather name="x" size={24} color="black" />
             </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => handleFilterChange('monthly')} style={styles.modalOption}>
-            <Text style={styles.modalOptionText}>Monthly</Text>
+        <TouchableOpacity onPress={() => handleFilterChange('monthly')} style={SpendingAnalyticsStyles.modalOption}>
+            <Text style={SpendingAnalyticsStyles.modalOptionText}>Monthly</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('weekly')} style={styles.modalOption}>
-            <Text style={styles.modalOptionText}>Weekly</Text>
+        <TouchableOpacity onPress={() => handleFilterChange('weekly')} style={SpendingAnalyticsStyles.modalOption}>
+            <Text style={SpendingAnalyticsStyles.modalOptionText}>Weekly</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('yearly')} style={styles.modalOption}>
-            <Text style={styles.modalOptionText}>Yearly</Text>
+        <TouchableOpacity onPress={() => handleFilterChange('yearly')} style={SpendingAnalyticsStyles.modalOption}>
+            <Text style={SpendingAnalyticsStyles.modalOptionText}>Yearly</Text>
         </TouchableOpacity>
         </View>
         </Modal>
     </View>
     );
 };
-
-const styles = StyleSheet.create({
-    dateNavigation: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-      },
-      dateDisplay: {
-        marginHorizontal: 10,
-        fontSize: 18,
-      },
-      centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      modalContent: {
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        padding: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 20,
-      },
-      modalOption: {
-        padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E0E0E0',
-      },
-      modalOptionText: {
-        fontSize: 18,
-      },
-      filterBar: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 10,
-        margin: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
-        shadowRadius: 6,
-        elevation: 5, 
-      },
-      modalHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',    
-      },
-      modalHeaderText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginLeft: 'auto',
-        marginRight: 'auto'
-      },
-      closeButton: {
-        padding: 10, 
-      },
-});
 
 export default SpendingAnalytics;
 

@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
-import { AuthContext } from '../../store/auth-context';
 import { languages } from '../../commonConstants/sharedConstants';
+import { CustomHeaderStyles } from './CommonComponentStyles';
 
 const CustomHeader: React.FC<any> = ({ authCtx, route, profile, isLoading, selectedLanguage}) => {
   const { userId } = authCtx;
@@ -46,7 +44,7 @@ const handleNavigation = () => {
 <TouchableOpacity onPress={handleNavigation}>
   <Image
     source={require('../../assets/chatBot.png')}
-    style={[styles.settingsIcon, { marginLeft: 20, marginRight: 10 }]}
+    style={[CustomHeaderStyles.settingsIcon, { marginLeft: 20, marginRight: 10 }]}
   />
 </TouchableOpacity>
 
@@ -59,25 +57,25 @@ const handleNavigation = () => {
   }
 
   return (
-    <View style={styles.headerContainer}>
+    <View style={CustomHeaderStyles.headerContainer}>
   {profile ? (
-    <View style={styles.leftSection}>
+    <View style={CustomHeaderStyles.leftSection}>
       <TouchableOpacity onPress={handleProfilePage}>
         {profile?.profilePicture ? (
           <Image
             source={{ uri: profile.profilePicture }}
-            style={styles.avatar}
+            style={CustomHeaderStyles.avatar}
           />
         ) : (
           <Image
             source={require('../../assets/avatar.png')}
-            style={styles.avatar}
+            style={CustomHeaderStyles.avatar}
           />
         )}
       </TouchableOpacity>
       <View> 
-        <Text style={styles.headerTextTop}>{languages[selectedLanguage].goodMorning}</Text>
-          <Text style={styles.headerTextBottom}>
+        <Text style={CustomHeaderStyles.headerTextTop}>{languages[selectedLanguage].goodMorning}</Text>
+          <Text style={CustomHeaderStyles.headerTextBottom}>
             {profile.firstName} {profile.lastName}
           </Text>
       </View>
@@ -88,12 +86,12 @@ const handleNavigation = () => {
     </View>
   )}
 
-<View style={[styles.rightSection, { flexDirection: 'row' }]}> 
+<View style={[CustomHeaderStyles.rightSection, { flexDirection: 'row' }]}> 
 {profile && ( 
     <TouchableOpacity onPress={handleNavigation}>
       <Image
         source={require('../../assets/chatBot.png')}
-        style={[styles.settingsIcon, { marginLeft: 20, marginRight: 10}]}
+        style={[CustomHeaderStyles.settingsIcon, { marginLeft: 20, marginRight: 10}]}
       />
     </TouchableOpacity>
   )}
@@ -101,7 +99,7 @@ const handleNavigation = () => {
   <TouchableOpacity onPress={handleSettingsPage}>
     <Image
       source={require('../../assets/settings.png')}
-      style={styles.settingsIcon}
+      style={CustomHeaderStyles.settingsIcon}
     />
   </TouchableOpacity>
 
@@ -114,46 +112,5 @@ const handleNavigation = () => {
   );
   
 };
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 50, 
-    height: 100,
-    paddingBottom: 10,
-    backgroundColor: '#F5F6F5',
-    borderRadius: 7
-  },
-  leftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 100,
-    marginRight: 9,
-    marginLeft: 5
-  },
-  headerTextTop: {
-    color: 'gray',
-    fontSize: 12,
-    paddingBottom: 1
-  },
-  headerTextBottom: {
-    color: '#1A1A2C',
-    fontSize: 17,
-  },
-  rightSection: {},
-  settingsIcon: {
-    width: 26,
-    height: 26,
-    marginRight: 3,
-    marginLeft: 2
-  },
-});
-
 
 export default CustomHeader;

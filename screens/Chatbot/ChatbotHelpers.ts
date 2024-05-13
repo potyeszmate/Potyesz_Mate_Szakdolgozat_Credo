@@ -1,17 +1,22 @@
 import axios from "axios";
 
-export  const handleSend = async (params: any) => {
+export const handleSend = async (params: any) => {
 
     const {
         userInput, conversation, currentTopic, transactions, incomes, subscriptions, loansAndDebts, bills, cryptocurrencies, stocks, goals,
-        setConversation, setUserInput, setShowTopics, setCurrentTopic, basicMessages, api, models, apiKeys, selectedLanguage
+        setConversation, setUserInput, setShowTopics, setCurrentTopic, basicMessages, api, models, apiKeys, selectedLanguage, setIsAnswerLoading
     } = params;
 
+    console.log(currentTopic)
+
     if (!userInput.trim()) return;
-  
+
+    setIsAnswerLoading(true);
+
     const isAwaitingFollowUp = conversation.length > 0 && conversation[conversation.length - 1].includes("Do you want to ask another question about");
 
     if (isAwaitingFollowUp) {
+      setIsAnswerLoading(false);
       console.log("In phase: isAwaitingFollowUp")
       const userResponse = userInput.trim().toLowerCase();
       if (userResponse === 'yes') {
@@ -31,7 +36,7 @@ export  const handleSend = async (params: any) => {
 
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, `Chatbot: I didn't really catch that, can you answer again with 'yes' or 'no', please?`]);
         setUserInput(''); 
-        return;   // bug, first if he types other then yes or no and then he types no it wont show the starting phase
+        return;  
       }
     } 
     else {      
@@ -42,6 +47,10 @@ export  const handleSend = async (params: any) => {
 
       if (currentTopic === 'Spendings') {
         if (transactions.length > 0) {
+
+        const today = new Date();
+        const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+        const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
         // @ts-ignore
         const formattedTransactions = transactions.map(transaction => {
             const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -49,7 +58,7 @@ export  const handleSend = async (params: any) => {
             return `Date: ${date.replace(/ /g, ' ')} - Name: ${transaction.name} - Category: (${transaction.category}) Spent ammount: $${transaction.value}`;
           }).join(", ");
           
-        systemMessageContent = `The user's incomes and earnings are the following earning transactions: ${formattedTransactions}`;
+        systemMessageContent = `As of today, ${todayFormatted}, the user's spendings are the following transactions: ${formattedTransactions}`;
         }
       else {
         systemMessageContent = "The user has no recent transactions.";
@@ -57,7 +66,7 @@ export  const handleSend = async (params: any) => {
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in finance management and transaction analysis." },
             { role: "user", content: userInput },
@@ -76,44 +85,55 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
       }
       if (currentTopic === 'Incomes') {
         if (incomes.length > 0) {
-            // @ts-ignore
-          const formattedIncomes = incomes.map(transaction => {
+          const today = new Date();
+          const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+          const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
+           // @ts-ignore
+          const formattedIncomes = incomes.map(income => {
             const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
-            const date = new Date(transaction.date.seconds * 1000).toLocaleDateString('en-US', dateOptions);
-            return `Date: ${date.replace(/ /g, ' ')} - Name: ${transaction.name} - Earned amount: $${transaction.value}`;
+            const date = new Date(income.date.seconds * 1000).toLocaleDateString('en-US', dateOptions);
+            return `Date: ${date.replace(/ /g, ' ')} - Name: ${income.name} - Earned amount: $${income.value}`;
           }).join(", ");
           
-          systemMessageContent = `The user's incomes and earnings are the following earning transactions: ${formattedIncomes}`;
+          console.log("formattedIncomes: ", formattedIncomes)
+          systemMessageContent = `As of today, ${todayFormatted}, the user's incomes and earnings are the following earning transactions: ${formattedIncomes}`;
         } else {
-          systemMessageContent = "The user has no recorded income transactions. Let the user know he has no income yet.";
+          systemMessageContent = "The user has no recorded income incomes. Let the user know he has no income yet.";
         }
 
       try {
 
         const response = await axios.post(api, {
-          model: models.gpt3_5Turbo,
+          model: models.latestModel,
           messages: [
-            { role: "system", content: "You are a helpful assistant, skilled in finance management, income and expense analysis." },
+            { role: "system", content: "You are a helpful assistant, skilled in finance management and income analysis." },
             { role: "user", content: userInput },
             { role: "system", content: systemMessageContent }
           ],
-          headers: {
-            'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
-            'Content-Type': 'application/json'
-          }
-        });
-    
+          max_tokens: 700,
+          }, {
+            headers: {
+              'Authorization': `Bearer ${apiKeys.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json'
+            }
+          });
+  
         setConversation((prev: string[]) => [...prev, `Chatbot: ${response.data.choices[0].message.content.trim()}`]);
         setConversation((prev: string[]) => [...prev, basicMessages[selectedLanguage].askNewQuestonCheck]);
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+        
+      } finally{
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -122,6 +142,9 @@ export  const handleSend = async (params: any) => {
         let formattedSubscriptions = "";
         try {
           if (subscriptions.length > 0) {
+            const today = new Date();
+            const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
             // @ts-ignore
             formattedSubscriptions = subscriptions.map(subscription => {
               const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -129,20 +152,19 @@ export  const handleSend = async (params: any) => {
               const value = Math.trunc(subscription.value);
               return `Date: ${date.replace(/ /g, ' ')} - Name: ${subscription.name} - Importance: ${subscription.Importance} - Value: $${value} - Frequency: ${subscription.category}`;
             }).join(", ");
-            systemMessageContent = `The user's subscriptions details are as follows: ${formattedSubscriptions}`;
+            systemMessageContent = `As of today, ${todayFormatted}, the user's subscriptions details are as follows: ${formattedSubscriptions}`;
           }
           else{
             systemMessageContent = "The user has no recorded subscriptions yet. Let the user know he has no subscription yet.";
 
           }
         } catch (error) {
-
           console.error("Error formatting subscriptions: ", error);
         }
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in subscription management and analysis. You can identify subscription patterns, suggest optimizations, and advise on managing recurring payments or answer other questions." },
             { role: "user", content: userInput },
@@ -161,6 +183,8 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      }  finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -169,6 +193,9 @@ export  const handleSend = async (params: any) => {
         let formattedLoansAndDebts = "";
         try {
           if (loansAndDebts.length > 0) {
+            const today = new Date();
+            const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
             // @ts-ignore
             formattedLoansAndDebts = loansAndDebts.map(loan => {
               const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -181,20 +208,19 @@ export  const handleSend = async (params: any) => {
               const value = Math.trunc(loan.value);
               return `Creation Date: ${createDate} - Due Date: ${dueDate} - Name: ${loan.name} - Value: $${value} - Frequency: ${loan.category}`;
             }).join(", ");
-            systemMessageContent = `The user's loans and debts details are as follows: ${formattedLoansAndDebts}`;
+            systemMessageContent = `As of today, ${todayFormatted}, the user's loans and debts details are as follows: ${formattedLoansAndDebts}`;
           }
           else{
             systemMessageContent = "The user has no recorded loans or debts yet. Let the user know he has no loans or debts yet so he is lucky.";
 
           }
         } catch (error) {
-
           console.error("Error formatting loans: ", error);
-        }
+        } 
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in loans and debt management and analysis. You can identify patterns, suggest optimizations, and advise on managing debts or answer other related questions." },
             { role: "user", content: userInput },
@@ -213,6 +239,8 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -221,6 +249,9 @@ export  const handleSend = async (params: any) => {
         let formattedBills = "";
         try {
           if (bills.length > 0) {
+            const today = new Date();
+            const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
             // @ts-ignore
             formattedBills = bills.map(bill => {
               const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -237,13 +268,12 @@ export  const handleSend = async (params: any) => {
 
           }
         } catch (error) {
-
           console.error("Error formatting loans: ", error);
-        }
+        } 
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in bill management and analysis. You can suggest payment strategies, and help prioritize bills and answer other questions" },
             { role: "user", content: userInput },
@@ -262,6 +292,8 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -270,12 +302,16 @@ export  const handleSend = async (params: any) => {
         let formattedCryptos = "";
         try {
           if (cryptocurrencies.length > 0) {
+            const today = new Date();
+            const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
+
             // @ts-ignore
             formattedCryptos = cryptocurrencies.map(crypto => {
               const amountFormatted = crypto.amount.toFixed(3);
               return `Cryptocurrency Name: ${crypto.name} - Share amount: ${amountFormatted}`;
             }).join(", ");
-            systemMessageContent = `The user's cryptocurrency portfolio is detailed below: ${formattedCryptos}. Please provide the current value analysis based on these holdings.`;
+            systemMessageContent = `As of today, ${todayFormatted}, the user's cryptocurrency portfolio is detailed below: ${formattedCryptos}. Please provide the current value analysis based on these holdings.`;
           }
           else{
             systemMessageContent = "The user has no cryptos yet. Let the user know he has no cryptocurrencies yet.";
@@ -288,7 +324,7 @@ export  const handleSend = async (params: any) => {
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in cryptocurrency portfolio management and valuation analysis. You can count how much money the user has in his owned crypto based on his share of that crypto" },
             { role: "user", content: userInput },
@@ -307,6 +343,8 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -315,27 +353,29 @@ export  const handleSend = async (params: any) => {
         let formattedStocks  = "";
         try {
           if (stocks.length > 0) {
+            const today = new Date();
+            const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
+            
             // @ts-ignore
             formattedStocks = stocks.map(stock => {
               const amountFormatted = stock.amount.toFixed(3);
               return `Stock Name: ${stock.name} - Share amount: ${amountFormatted}`;
             }).join(", ");
-            systemMessageContent = `The user's stock portfolio is detailed below: ${formattedStocks}. Please provide the current value analysis based on these holdings.`;
+            systemMessageContent = `As of today, ${todayFormatted}, the user's stock portfolio is detailed below: ${formattedStocks}. Please provide the current value analysis based on these holdings.`;
           }
           else{
             systemMessageContent = "The user has no cryptos yet. Let the user know he has no cryptocurrencies yet.";
 
           }
         } catch (error) {
-
           console.error("Error formatting loans: ", error);
-        }
-
+        } 
       try {
         const response = await axios.post(api, {
-          model: models.gpt4Turbo,
+          model: models.latestModel,
           messages: [
-            { role: "system", content: "You are a helpful assistant, skilled in stock portfolio management and valuation analysis. You can count how much money the user has in his owned stock based on his share of that stock" },
+            { role: "system", content: "You are a helpful assistant, skilled in stock portfolio management and valuation analysis. Its currently 2024. May. You can count how much money the user has in his owned stock based on his share of that stock" },
             { role: "user", content: userInput },
             { role: "system", content: systemMessageContent }
           ],
@@ -352,6 +392,8 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
@@ -385,7 +427,7 @@ export  const handleSend = async (params: any) => {
 
       try {
         const response = await axios.post(api, {
-          model: models.gpt3_5Turbo,
+          model: models.latestModel,
           messages: [
             { role: "system", content: "You are a helpful assistant, skilled in financial goal planning and advising on saving strategies." },
             { role: "user", content: userInput },
@@ -405,12 +447,13 @@ export  const handleSend = async (params: any) => {
       } catch (error) {
         console.error('Failed to fetch response:', error);
         setConversation((prev: string[]) => [...prev, `Chatbot: Sorry, I couldn't fetch the response.`]);
+      } finally {
+        setIsAnswerLoading(false);
       }
     
       setUserInput('');
       }
-    
-    setUserInput('');
 
+      setUserInput('');
   };
 }

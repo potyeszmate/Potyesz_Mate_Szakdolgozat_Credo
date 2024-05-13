@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { FontAwesome } from '@expo/vector-icons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { LinearGradient } from 'react-native-svg';
+import { OnBoardingStyles } from './CommonComponentStyles';
 
 const OnboardingModal = ({ isVisible, onComplete }) => {
   const [firstName, setFirstName] = useState('');
@@ -54,17 +55,17 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
   };
 
   const renderHeader = () => (
-    <View style={styles.header}>
-      <View style={styles.textContainer}>
-        <Text style={styles.welcomeText}>Welcome to Credo!</Text>
-        <Text style={styles.instructionsText}>
+    <View style={OnBoardingStyles.header}>
+      <View style={OnBoardingStyles.textContainer}>
+        <Text style={OnBoardingStyles.welcomeText}>Welcome to Credo!</Text>
+        <Text style={OnBoardingStyles.instructionsText}>
           We're excited to have you on board. Please tell us about yourself.
         </Text>
       </View>
 
 
       {step === 2 && (
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+        <TouchableOpacity style={OnBoardingStyles.backButton} onPress={handleBack}>
           <FontAwesome5 name="arrow-left" size={20} color="#35BA52" />
         </TouchableOpacity>
       )}
@@ -74,13 +75,13 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
   const renderSubmitButton = () => (
     <TouchableOpacity
       style={[
-        styles.button,
+        OnBoardingStyles.button,
         { backgroundColor: isFinancialFormValid() ? '#35BA52' : '#ccc' },
       ]}
       onPress={handleSubmit}
       disabled={!isFinancialFormValid()}
     >
-      <Text style={styles.buttonText}>{step === 1 ? 'Next' : 'Submit'}</Text>
+      <Text style={OnBoardingStyles.buttonText}>{step === 1 ? 'Next' : 'Submit'}</Text>
       {step === 2 && isFinancialFormValid() && (
         <FontAwesome name="check" size={24} color="white" />
       )}
@@ -106,40 +107,40 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
   return (
     <Modal visible={isVisible} animationType="slide" transparent={true}>
       <KeyboardAvoidingView
-        style={styles.flexOne}
+        style={OnBoardingStyles.flexOne}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.onboardingContainer}>
+          <View style={OnBoardingStyles.onboardingContainer}>
        
             {renderHeader()}
 
             {step === 1 && (
               <>
-            <View style={styles.formGroup}>
-              <Text style={styles.inputLabel}>First name</Text>
+            <View style={OnBoardingStyles.formGroup}>
+              <Text style={OnBoardingStyles.inputLabel}>First name</Text>
               <TextInput
-                style={styles.input}
+                style={OnBoardingStyles.input}
                 placeholder="Enter your first name"
                 value={firstName}
                 onChangeText={setFirstName}
               />           
             </View>
 
-            <View style={styles.formGroup}>
+            <View style={OnBoardingStyles.formGroup}>
 
-            <Text style={styles.inputLabel}>Last name</Text>
+            <Text style={OnBoardingStyles.inputLabel}>Last name</Text>
             <TextInput
-              style={styles.input}
+              style={OnBoardingStyles.input}
               placeholder="Enter your last name"
               value={lastName}
               onChangeText={setLastName}
             />
               </View>
 
-              <View style={styles.formGroup}>
+              <View style={OnBoardingStyles.formGroup}>
 
-                <Text style={styles.inputLabel}>Gender</Text>
+                <Text style={OnBoardingStyles.inputLabel}>Gender</Text>
                 <DropDownPicker
                   open={showDatePicker}
                   value={selectedGender}
@@ -147,18 +148,18 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                   setOpen={setShowDatePicker}
                   setValue={setSelectedGender}
                   setItems={() => {}}
-                  style={styles.picker}
+                  style={OnBoardingStyles.picker}
                   placeholder="Select gender"
                 />
                   </View>
 
 
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: isPersonalFormValid() ? '#35BA52' : '#ccc' }]}
+                  style={[OnBoardingStyles.button, { backgroundColor: isPersonalFormValid() ? '#35BA52' : '#ccc' }]}
                   onPress={handleNext}
                   disabled={!isPersonalFormValid()}
                 >
-                  <Text style={styles.buttonText}>Next</Text>
+                  <Text style={OnBoardingStyles.buttonText}>Next</Text>
                 </TouchableOpacity>
               </>
 
@@ -167,9 +168,9 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
             {step === 2 && (
               <>
                 
-                <View style={styles.formGroup}>
+                <View style={OnBoardingStyles.formGroup}>
 
-                <Text style={styles.inputLabel}>Date of Birth</Text>
+                <Text style={OnBoardingStyles.inputLabel}>Date of Birth</Text>
                 {Platform.OS === 'ios' && (
                   <DateTimePicker
                     value={dateOfBirth}
@@ -178,17 +179,17 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                     onChange={(event, date) =>
                       setDateOfBirth(date || dateOfBirth)
                     }
-                    style={styles.datePicker}
+                    style={OnBoardingStyles.datePicker}
                   />
 
                 )}
                 </View>
-                <View style={styles.formGroup}>
+                <View style={OnBoardingStyles.formGroup}>
 
                 {/* Financial Details Form */}
-                <Text style={styles.inputLabel}>Current Estimated Balance in USD</Text>
+                <Text style={OnBoardingStyles.inputLabel}>Current Estimated Balance in USD</Text>
                 <TextInput
-                  style={styles.input}
+                  style={OnBoardingStyles.input}
                   placeholder="Enter current estimated balance"
                   keyboardType="numeric"
                   value={estimatedBalance}
@@ -196,11 +197,11 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                 />
                  </View>
 
-                 <View style={styles.formGroup}>
+                 <View style={OnBoardingStyles.formGroup}>
 
-                <Text style={styles.inputLabel}>Estimated Monthly Income in USD</Text>
+                <Text style={OnBoardingStyles.inputLabel}>Estimated Monthly Income in USD</Text>
                 <TextInput
-                  style={styles.input}
+                  style={OnBoardingStyles.input}
                   placeholder="Enter estimated monthly income"
                   keyboardType="numeric"
                   value={monthlyIncome}
@@ -210,7 +211,7 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
 
                  <TouchableOpacity
                     style={[
-                      styles.button,
+                      OnBoardingStyles.button,
                       { backgroundColor: isFinancialFormValid() ? '#35BA52' : '#ccc' },
                     ]}
                     onPress={handleSubmit}
@@ -219,7 +220,7 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                   >
                    
                   <FontAwesome name="check" size={24} color="white" />
-                  <Text style={styles.buttonText}>Submit</Text>
+                  <Text style={OnBoardingStyles.buttonText}>Submit</Text>
                 </TouchableOpacity>
               </>
             )}
@@ -229,129 +230,5 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  flexOne: {
-    flex: 1,
-  },
-  onboardingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 20, 
-    backgroundColor: 'white',
-    borderRadius: 25, 
-    padding: 20, 
-    shadowColor: '#000', 
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.1,
-    elevation: 5,
-  },
-  textContainer: {
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    width: '100%', 
-    marginBottom: 16, 
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#35BA52',
-    marginBottom: 15, 
-    textAlign: 'center',
-  },
-  instructionsText: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center', 
-  },
-  formGroup: {
-    width: '100%',
-    alignItems: 'center', 
-    marginBottom: 16,
-  },
-  inputLabel: {
-    alignSelf: 'flex-start',
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#555', 
-    marginBottom: 8,
-  },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  input: {
-    width: '90%',
-    borderWidth: 1,
-    borderColor: '#ddd', 
-    borderRadius: 10, 
-    padding: 15, 
-    marginBottom: 20, 
-    backgroundColor: '#f7f7f7',
-    },
-    picker: {
-      width: '90%',
-      alignSelf: 'center',
-      backgroundColor: '#f7f7f7',
-      borderColor: '#ddd',
-      borderRadius: 10,
-      paddingHorizontal: 10,
-      marginBottom: 70,
-      zIndex: 1000, 
-    },
-    datePicker: {
-      width: '90%',
-      borderRadius: 10,
-      padding: 15,
-      marginBottom: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: '#ddd',
-      backgroundColor: '#f7f7f7',
-    },
-    backButton: {
-      position: 'absolute',
-      left: 0,
-      top: 0,
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-    },
-    button: {
-      flexDirection: 'row',
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      paddingVertical: 12,
-      paddingHorizontal: 30,
-      borderRadius: 25,
-      marginTop: 20,
-      marginBottom: 20,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 6,
-      shadowOpacity: 0.1,
-      elevation: 5,
-      width: '90%', 
-      alignSelf: 'center', 
-    },
-    buttonIcon: {
-      marginRight: 8, 
-    },
-    buttonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 16,
-      textAlign: 'center', 
-      flex: 1, 
-    },
-});
 
 export default OnboardingModal;

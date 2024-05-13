@@ -11,6 +11,7 @@ import { getCryptoValues } from '../../../util/crypto';
 import PieChartComponent from '../../../components/Charts/PieChartStockAndCrypto';
 import { useRoute } from '@react-navigation/native';
 import { languages } from '../../../commonConstants/sharedConstants';
+import { StocksAndCryptoAnalyticsStyles } from '../AnalyticsScreenStyles';
 
 const StocksAndCryptoAnalytics = () => {
 
@@ -103,7 +104,7 @@ const StocksAndCryptoAnalytics = () => {
         
       if (isLoading) {
         return (
-          <View style={styles.centered}>
+          <View style={StocksAndCryptoAnalyticsStyles.centered}>
             <ActivityIndicator size="large" color="#0000ff" />
           </View>
         );
@@ -111,18 +112,18 @@ const StocksAndCryptoAnalytics = () => {
       
       return (
       <View>
-        <View style={styles.tabBarContainer}>
+        <View style={StocksAndCryptoAnalyticsStyles.tabBarContainer}>
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'stocks' && styles.activeTabButton,
+            StocksAndCryptoAnalyticsStyles.tabButton,
+            activeTab === 'stocks' && StocksAndCryptoAnalyticsStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('stocks')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'stocks' && styles.activeTabButtonText,
+              StocksAndCryptoAnalyticsStyles.tabButtonText,
+              activeTab === 'stocks' && StocksAndCryptoAnalyticsStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].stocks}
@@ -131,15 +132,15 @@ const StocksAndCryptoAnalytics = () => {
 
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'cryptocurrencies' && styles.activeTabButton,
+            StocksAndCryptoAnalyticsStyles.tabButton,
+            activeTab === 'cryptocurrencies' && StocksAndCryptoAnalyticsStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('cryptocurrencies')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'cryptocurrencies' && styles.activeTabButtonText,
+              StocksAndCryptoAnalyticsStyles.tabButtonText,
+              activeTab === 'cryptocurrencies' && StocksAndCryptoAnalyticsStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].cryptos}
@@ -155,39 +156,4 @@ const StocksAndCryptoAnalytics = () => {
       );
     };
       
-    const styles = StyleSheet.create({
-      tabBarContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5,
-        paddingHorizontal: 24,
-        paddingTop: 10,
-        gap: 5,
-      },
-      centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      tabButtonText: {
-        color: '#1A1A2C',
-        fontSize: 14,
-      },
-      activeTabButton: {
-        backgroundColor: '#35BA52',
-      },
-      activeTabButtonText: {
-        color: '#FFFFFF',
-      },
-      tabButton: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 38,
-        borderRadius: 99,
-        borderColor: '#149E53',
-        borderWidth: 0.6
-      },
-    });
-
 export default StocksAndCryptoAnalytics;

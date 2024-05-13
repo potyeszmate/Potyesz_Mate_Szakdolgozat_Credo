@@ -8,6 +8,7 @@ import ImportanceBarChart from '../../../components/Charts/ImportanceBarChart';
 import LoanPaymentChart from '../../../components/Charts/LoanPaymentChart';
 import { useRoute } from '@react-navigation/native';
 import { languages } from '../../../commonConstants/sharedConstants';
+import { RecurringAnalyticsStyles } from '../AnalyticsScreenStyles';
 
 const RecurringAnalytics = () => {
     const [subscriptions, setSubscriptions] = useState<any[]>([]);
@@ -122,18 +123,18 @@ const RecurringAnalytics = () => {
 
       return (
       <View>
-        <View style={styles.tabBarContainer}>
+        <View style={RecurringAnalyticsStyles.tabBarContainer}>
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'subscription' && styles.activeTabButton,
+            RecurringAnalyticsStyles.tabButton,
+            activeTab === 'subscription' && RecurringAnalyticsStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('subscription')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'subscription' && styles.activeTabButtonText,
+              RecurringAnalyticsStyles.tabButtonText,
+              activeTab === 'subscription' && RecurringAnalyticsStyles.activeTabButtonText,
             ]}
           >
           {languages[selectedLanguage].subscriptionsTitle}
@@ -142,15 +143,15 @@ const RecurringAnalytics = () => {
 
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'bills' && styles.activeTabButton,
+            RecurringAnalyticsStyles.tabButton,
+            activeTab === 'bills' && RecurringAnalyticsStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('bills')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'bills' && styles.activeTabButtonText,
+              RecurringAnalyticsStyles.tabButtonText,
+              activeTab === 'bills' && RecurringAnalyticsStyles.activeTabButtonText,
             ]}
           >
           {languages[selectedLanguage].billsTitle}
@@ -159,15 +160,15 @@ const RecurringAnalytics = () => {
 
         <TouchableOpacity
           style={[
-            styles.tabButton,
-            activeTab === 'loans' && styles.activeTabButton,
+            RecurringAnalyticsStyles.tabButton,
+            activeTab === 'loans' && RecurringAnalyticsStyles.activeTabButton,
           ]}
           onPress={() => setActiveTab('loans')}
         >
           <Text
             style={[
-              styles.tabButtonText,
-              activeTab === 'loans' && styles.activeTabButtonText,
+              RecurringAnalyticsStyles.tabButtonText,
+              activeTab === 'loans' && RecurringAnalyticsStyles.activeTabButtonText,
             ]}
           >
             {languages[selectedLanguage].loansTitle}
@@ -236,36 +237,4 @@ const RecurringAnalytics = () => {
       );
     };
       
-
-    const styles = StyleSheet.create({
-      tabBarContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5,
-        paddingHorizontal: 24,
-        paddingTop: 10,
-        gap: 5
-      },
-    
-      tabButtonText: {
-        color: '#1A1A2C',
-        fontSize: 14,
-      },
-      activeTabButton: {
-        backgroundColor: '#35BA52',
-      },
-      activeTabButtonText: {
-        color: '#FFFFFF',
-      },
-      tabButton: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 38,
-        borderRadius: 99,
-        borderColor: '#149E53',
-        borderWidth: 0.6
-      },
-    });
-
 export default RecurringAnalytics;

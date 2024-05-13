@@ -59,20 +59,39 @@ export const topicsTranslations = {
       "Spendings": "Spendings",
       "Budgets": "Budgets",
       "Goals": "Goals",
+      "Incomes": "Incomes",
+      "Subscriptions": "Subscriptions",
+      "Bills": "Bills",
+      "Loans": "Loans",
+      "Cryptos": "Cryptos",
+      "Stocks": "Stocks",
   },
   German: {
       "Spendings": "Ausgaben",
       "Budgets": "Budgets",
       "Goals": "Ziele",
+      "Incomes": "Einkommen",
+      "Subscriptions": "Abonnements",
+      "Bills": "Rechnungen",
+      "Loans": "Darlehen",
+      "Cryptos": "Kryptowährungen",
+      "Stocks": "Aktien",
   },
   Hungarian: {
       "Spendings": "Kiadások",
       "Budgets": "Költségvetések",
       "Goals": "Célok",
+      "Incomes": "Jövedelmek",
+      "Subscriptions": "Előfizetések",
+      "Bills": "Számlák",
+      "Loans": "Kölcsönök",
+      "Cryptos": "Kriptovaluták",
+      "Stocks": "Részvények",
   }
 };
 
 export const models = {
+    latestModel: "gpt-4o",
     gpt4Turbo	: "gpt-4-turbo",
     gpt3_5Turbo: "gpt-3.5-turbo",
     gpt4TurboOld: "gpt-4-turbo-2024-04-09"

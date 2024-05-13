@@ -194,7 +194,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
           <View style={TransactionInputStyles.inputWrapper}>
             <TouchableOpacity style={TransactionInputStyles.inputContainer} onPress={() => setModalProviderVisible(true)}>
               <View style={TransactionInputStyles.iconContainer}>
-                {/* <Image source={selectProvider} style={styles.icon} /> */}
                 <Image
                   source={selectedCategory !== null ? transactionInputIconMapping[selectedCategory] : selectCategoryIcon}
                   style={TransactionInputStyles.icon}
