@@ -1,23 +1,71 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import * as Progress from 'react-native-progress';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { languages } from '../../commonConstants/sharedConstants';
 import { GoalCardStyles } from './GoalComponentStyles';
+import { Timestamp, collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 
 const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) => {
   const navigation = useNavigation();
-  let progressValue = 0;
+  const [monthlyAdded, setMonthlyAdded] = useState(0);
+
+  let progressValue = 0; 
   let remainingAmount = 0;
 
+  const fetchMonthlyAdded = async () => {
+    console.log("!!!!!!!!!!!fetchMonthlyAdded!!!!!!!!!!!!!4")
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const q = query(
+      collection(db, "goalFunds"),
+      where("goalId", "==", goal.id),
+      where("dateAdded", ">=", Timestamp.fromDate(startOfMonth)),
+      where("dateAdded", "<=", Timestamp.fromDate(endOfMonth))
+    );
+
+    try {
+      const querySnapshot = await getDocs(q);
+      let totalAdded = 0;
+      querySnapshot.forEach((doc) => {
+        totalAdded += doc.data().amountAdded;
+      });
+      setMonthlyAdded(totalAdded);
+    } catch (error) {
+      console.error(`Error fetching funds for goal ${goal.id}:`, error);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchMonthlyAdded();
+    }, [goal.id])
+  );
+   
   if (goal.Current_Ammount < 1 || goal.Current_Ammount == null || goal.Current_Ammount == undefined) {
     progressValue = 0;
     remainingAmount = goal.Total_Ammount;
+    console.log("Progress Value in undefined:", progressValue);
   } else {
-    progressValue = goal.Current_Ammount / goal.Total_Ammount;
-    remainingAmount = goal.Total_Ammount - goal.Current_Ammount;
+    console.log("Current_Ammount: ", goal.Current_Ammount);
+    console.log("Total_Ammount: ", goal.Total_Ammount);
+
+    progressValue = (goal.Current_Ammount && goal.Total_Ammount > 0) ? 
+      goal.Current_Ammount / goal.Total_Ammount : 
+      0; 
+
+    remainingAmount = Number(goal.Total_Ammount - goal.Current_Ammount);
+
+    console.log("Progress Value:", progressValue);
+    console.log("remainingAmount Value:", remainingAmount);
   }
+
+const isCompleted = progressValue >= 1;
+
+console.log(progressValue); 
 
   return (
     // @ts-ignore
@@ -47,13 +95,13 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
 
         <View style={GoalCardStyles.progressBarWrapper}>
         <Progress.Bar
-          progress={progressValue}
-          width={Math.round(Dimensions.get('window').width * 0.82)}
+          progress={isNaN(progressValue) ? 0 : progressValue} 
+          width={320}
           height={15}
           color={'#35BA52'}
           borderRadius={10}
           borderColor='#FFFFFF'
-          animationType='decay'   
+          // animationType='decay'   
           unfilledColor='#F3F4F7'  
           />
         </View>
@@ -61,9 +109,16 @@ const GoalCard: React.FC<any> = ({ goal, onDelete, onEdit, selectedLanguage }) =
       </View>
 
       <View style={GoalCardStyles.monthlySpentRowContainer}>
-        <Text style={[GoalCardStyles.amountTextCurrent, { color: '#35BA52' }]}>$200</Text> 
+        <Text style={[GoalCardStyles.amountTextCurrent, { color: '#35BA52' }]}>${monthlyAdded}</Text> 
         <Text style={[GoalCardStyles.remainingAmount, { color: '#7E8086', marginRight: 4 }]}>this month</Text> 
       </View>
+
+      {isCompleted && (
+          <View style={GoalCardStyles.completionBadge}>
+            <Feather name="check-circle" size={24} color="#4CAF50" />
+            <Text style={GoalCardStyles.completionText}>Completed</Text>
+          </View>
+        )}
     </TouchableOpacity>
   );
 };

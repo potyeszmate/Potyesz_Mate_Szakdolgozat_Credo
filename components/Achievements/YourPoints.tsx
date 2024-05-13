@@ -6,12 +6,19 @@ import { Feather } from '@expo/vector-icons';
 import { languages } from '../../commonConstants/sharedConstants';
 import { YourPointsStyles } from './AchievementsComponentStyles';
 
-const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
+const YourPoints: React.FC<any> = ({ score, selectedLanguage }) => {
+
   const scorePoint = parseFloat(score);
-  const totalPoint = parseFloat(total);
-  const progressPercentage = total !== '0' ? (scorePoint / totalPoint) * 100 : 0;
+  
+  const pointsPerLevel = 300;
+  const pointsCurrentLevel = score % pointsPerLevel; 
+  
+  const progressPercentage = Math.round((pointsCurrentLevel / pointsPerLevel * 100) / 5) * 5;
+
   const navigation = useNavigation();
 
+  console.log(progressPercentage)
+  
   const handleGamificationClick = () => {
     // @ts-ignore
     navigation.navigate('Gamification');
@@ -33,7 +40,7 @@ const YourPoints: React.FC<any> = ({ score, total, selectedLanguage }) => {
         <View style={YourPointsStyles.pointsContainer}>
           <Text style={YourPointsStyles.yourPointsText}>{languages[selectedLanguage].yourPoints}</Text>
           <Text style={YourPointsStyles.pointsText}>
-            <Text style={{ color: '#1A1A2C', fontWeight: 'bold' }}>{scorePoint}</Text> / <Text style={{ color: '#7E8086', fontWeight: 'bold' }}>{totalPoint}</Text>
+            <Text style={{ color: '#1A1A2C', fontWeight: 'bold' }}>{pointsCurrentLevel}</Text> / <Text style={{ color: '#7E8086', fontWeight: 'bold' }}>{pointsPerLevel}</Text>
           </Text>
         </View>
       </View>

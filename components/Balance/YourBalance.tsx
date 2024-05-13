@@ -10,9 +10,11 @@ const YourBalance = ({ balance, incomes, transactions, selectedLanguage, symbol,
   const ArrowDown = require('../../assets/arrow-down-circle.png');
   const ArrowUp = require('../../assets/arrow-up-circle.png');
 
-  const [selectedMonth, setSelectedMonth] = React.useState('January');
+  const currentMonthIndex = new Date().getMonth();
+  const [selectedMonth, setSelectedMonth] = React.useState(currentMonthIndex);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
+
 
   console.log("selectedLanguage in Balance: ", selectedLanguage)
   const calculateTotals = () => {

@@ -160,8 +160,8 @@ export const RecurringInputStyles = StyleSheet.create({
       borderRadius: 8,
       padding: 10,
       alignItems: 'center',
-      marginTop: 20
-  
+      marginTop: 20,
+      marginBottom: -100
     },
     deleteButtonText: {
       color: '#FFFFFF', 
@@ -189,7 +189,7 @@ export const RecurringInputStyles = StyleSheet.create({
       justifyContent: 'space-between',
       backgroundColor: '#FFFFFF',
       borderRadius: 12,
-      elevation: 3,
+      // elevation: 3,
       paddingHorizontal: 2,
       paddingVertical: 2,
     },

@@ -126,11 +126,11 @@ function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarStyle: { backgroundColor: '#F5F6F5' },
+        tabBarStyle: { backgroundColor: '#F5F6F5', paddingBottom: 6, paddingTop: 6  },
         tabBarActiveTintColor: '#35BA52',
         tabBarIndicatorStyle: {
           backgroundColor: '#35BA52', 
-          height: '100%', 
+          height: '110%', 
         },
         headerShown: route.name === 'Welcome' ? true : false,
       })}

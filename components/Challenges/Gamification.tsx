@@ -80,8 +80,8 @@ const Gamification: React.FC = () => {
         name: fullName,
         rank: userGamification.rank,
         score:  userGamification.score,
-        total: userGamification.total,
-        level: userGamification.level,
+        // total: userGamification.total,
+        // level: userGamification.level,
         profilePicUrl: userSettings.profilePicture
       }} />
       <BadgesList badges={{

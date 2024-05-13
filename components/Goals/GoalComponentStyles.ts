@@ -5,6 +5,17 @@ export const GoalCardStyles = StyleSheet.create({
       flex: 1,
       padding: 12,
     },
+    completionBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 10,
+    },
+    completionText: {
+      marginLeft: 10,
+      color: '#4CAF50',
+      fontWeight: 'bold',
+    },
     rightPart: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -77,22 +88,75 @@ export const GoalCardStyles = StyleSheet.create({
 });
   
 export const GoalDetailStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 20,
-      justifyContent: 'center',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
-    },
-    input: {
-      borderColor: 'gray',
-      borderWidth: 1,
-      padding: 10,
-      marginBottom: 20,
-    },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  detailCard: {
+    width: '90%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 8,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  amountText: {
+    fontSize: 18,
+    color: '#555',
+    marginBottom: 8,
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    width: '100%',
+    backgroundColor: '#fff',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#4CAF50',  // Vibrant green
+    paddingVertical: 12,
+    width: '100%',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#2E7D32',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  completedContainer: {
+    padding: 15,
+    marginTop: 10,
+  },
+  completedText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#388E3C',
+  },
 });
 
 export const GoalInputStyles = StyleSheet.create({

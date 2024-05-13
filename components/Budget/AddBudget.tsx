@@ -75,7 +75,7 @@ const AddBudget = ({ updateIncome, selectedLanguage, symbol, conversionRate, cur
         </Text>
         ) : (
             <Text style={AddBudgetStyles.incomeText}>
-                {availableCategories.length} {languages[selectedLanguage].xMoreLeft}
+                {availableCategories.length - 1} {languages[selectedLanguage].xMoreLeft}
             </Text>
         )}
       </View>

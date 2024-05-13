@@ -1,26 +1,16 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, ScrollView, Pressable, Alert } from 'react-native';
 import { AuthContext } from '../../../store/auth-context';
 import { db } from '../../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc, deleteDoc, updateDoc, doc, DocumentData } from 'firebase/firestore'; 
+import { query, collection, where, getDocs, addDoc, deleteDoc, updateDoc, doc, DocumentData, setDoc } from 'firebase/firestore'; 
 import GoalCard from '../../../components/Goals/GoalCard';
 import { Feather } from '@expo/vector-icons';
 import BottomSheet from '@gorhom/bottom-sheet';
 import GoalInput from '../../../components/Goals/GoalInput';
-import en from '../../../languages/en.json';
-import de from '../../../languages/de.json';
-import hu from '../../../languages/hu.json';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { goalStyles } from '../SavingsStyles';
-
-
-const languages: any = {
-  English: en,
-  German: de,
-  Hungarian: hu,
-};
-
+import { languages } from '../../../commonConstants/sharedConstants';
 
 const GoalScreen = () => {
   const [goals, setGoals] = useState<any[]>([]);
@@ -34,8 +24,67 @@ const GoalScreen = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('English'); 
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
+  const snapPoints = useMemo(() => ['333%', '66%', '85%'], []);
+
+  const updatePoints = async (userId, pointsToAdd) => {
+    const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
+    const pointsSnapshot = await getDocs(pointsQuery);
+
+    if (!pointsSnapshot.empty) {
+        const pointsDoc = pointsSnapshot.docs[0];
+        const currentPoints = pointsDoc.data().score;
+        const newPoints = currentPoints + pointsToAdd;
+        await updateDoc(pointsDoc.ref, { score: newPoints });
+        console.log("Points updated: ", newPoints);
+    } else {
+        const pointsRef = doc(collection(db, 'points'));
+        await setDoc(pointsRef, { uid: userId, score: pointsToAdd });
+        console.log("Points document created and initialized.");
+    }
+};
+
+  const checkAndCompleteFinancialGoalSettingChallenge = async (completedGoalsCount) => {
+
+    console.log("completedGoalsCount: ", completedGoalsCount)
+    const challengeName = "Financial Goal Setting";
+    const joinedChallengesQuery = query(
+        collection(db, 'joinedChallenges'),
+        where('uid', '==', userId),
+        where('name', '==', challengeName),
+        where('isActive', '==', true)
+    );
+    const challengeSnapshot = await getDocs(joinedChallengesQuery);
+
+    if (challengeSnapshot.empty) {
+        console.log("No active 'Financial Goal Setting' challenge found.");
+        return;
+    }
+
+    const challengeDoc = challengeSnapshot.docs[0];
+    const challenge = challengeDoc.data();
+    const challengeEndDate = new Date(challenge.joinedDate.toDate().getTime() + challenge.durationInWeek * 7 * 24 * 60 * 60 * 1000);
+
+    if (new Date() < challengeEndDate) {
+        await updateDoc(challengeDoc.ref, { isActive: false });
+        console.log("Challenge 'Financial Goal Setting' completed.");
+
+        // Award points for completing the challenge
+        const pointsAward = 300; // Set the points reward for this challenge
+        updatePoints(userId, pointsAward);
+
+        Alert.alert(
+            "🎉 Challenge Complete 🎉",
+            `Congratulations! You've established and completed three financial goals and earned ${pointsAward} points!`,
+            [{ text: "OK", onPress: () => console.log("Financial Goal Setting Challenge Completion Acknowledged") }],
+            { cancelable: false }
+        );
+    } else {
+        console.log("Challenge criteria not met or challenge expired.");
+    }
+};
 
   const fetchGoals = async () => {
+    console.log("!!!! FETCHING GOAL !!!!!") 
     try {
       const goalsQuery = query(collection(db, 'goals'), where('uid', '==', userId));
       const querySnapshot = await getDocs(goalsQuery);
@@ -44,6 +93,15 @@ const GoalScreen = () => {
         id: doc.id,
         ...doc.data(),
       }));
+
+      const completedGoals = fetchedGoals.filter(goal => goal.Total_Ammount === goal.Current_Ammount);
+      console.log(`Total completed goals: ${completedGoals.length}`);
+      console.log("Total completed goals:",completedGoals);
+
+      if (completedGoals.length >= 3) {
+          console.log(completedGoals.length)
+          await checkAndCompleteFinancialGoalSettingChallenge(completedGoals.length);
+      }
 
       const totalAmount = fetchedGoals.reduce((sum, goal: any) => sum + goal.Current_Ammount, 0);
       setTotalSaved(totalAmount);
@@ -121,9 +179,6 @@ const GoalScreen = () => {
 
   const isFocused = useIsFocused();
 
- 
-  const snapPoints = useMemo(() => ['333%', '66%', '85%'], []);
-
   const showDeleteModal = (goal: any) => {
     setSelectedGoal(goal);
     setDeleteModalVisible(true);
@@ -147,13 +202,9 @@ const GoalScreen = () => {
   useEffect(() => {
     if (isFocused) {
       fetchLanguage();
+      fetchGoals();
     }
   }, [isFocused]);
-   
-  useEffect(() => {
-    fetchGoals();
-  }, [userId]);
-
 
   return (
     <View style={goalStyles.container}>
@@ -191,7 +242,7 @@ const GoalScreen = () => {
       >
         <View style={goalStyles.deleteModalContainer}>
           <View style={goalStyles.deleteModalContent}>
-            <Text style={goalStyles.deleteModalText}>{languages[selectedLanguage].delete}</Text>
+            <Text style={goalStyles.deleteModalText}>{languages[selectedLanguage].deleteGoalModalText}</Text>
             <View style={goalStyles.deleteModalButtons}>
               <TouchableOpacity onPress={() => setDeleteModalVisible(false)} style={goalStyles.deleteModalButton}>
                 <Text style={goalStyles.deleteModalButtonText}>{languages[selectedLanguage].no}</Text>

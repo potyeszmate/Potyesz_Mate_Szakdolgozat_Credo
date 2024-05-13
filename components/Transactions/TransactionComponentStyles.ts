@@ -85,11 +85,7 @@ export const LatestTransactionsStyles = StyleSheet.create({
       borderRadius: 20,
       width: '80%',
       alignSelf: 'center',
-    },
-    container: {
-    
-    },
-  
+    }, 
     modalTitle: {
       fontSize: 18,
       fontWeight: 'bold',
@@ -118,7 +114,6 @@ export const LatestTransactionsStyles = StyleSheet.create({
     inputWrapper: {
       marginBottom: 10, 
       marginTop: 10, 
-  
     },
     contentContainer: {
       paddingTop: 20, 
@@ -139,11 +134,12 @@ export const LatestTransactionsStyles = StyleSheet.create({
     addButton: {
       backgroundColor: '#35BA52',
       borderRadius: 14,
-      paddingVertical: 10,
+      paddingVertical: 8,
+      marginTop: 5,
+      // paddingHorizontal: 20,  // Added for better padding
       alignItems: 'center',
-      flexDirection: 'row',
       justifyContent: 'center',
-      bottom: -40
+      // bottom: -15
     },
     providerList: {
       flexGrow: 1,
@@ -270,7 +266,7 @@ export const LatestTransactionsStyles = StyleSheet.create({
       justifyContent: 'space-between',
       backgroundColor: '#FFFFFF',
       borderRadius: 12,
-      elevation: 3,
+      // elevation: 3,  //for IOS it is needed
       paddingHorizontal: 2,
       paddingVertical: 2,
     },

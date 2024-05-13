@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal,  FlatList,Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal,  FlatList,Pressable, Image, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc, getDoc } from 'firebase/firestore';
+import { query, collection, where, getDocs,addDoc, deleteDoc,updateDoc,  doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { AuthContext } from '../../store/auth-context';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -70,6 +70,71 @@ const TransactionsList: React.FC = () => {
   const { symbol, selectedLanguage, conversionRate, currency } = route.params || {}
   const snapPoints = useMemo(() => ['20%', '70%', '85%'], []);
 
+  const checkAndCompleteFirstBigSpendingChallenge = async () => {
+    console.log("in checkAndCompleteFirstBigSpendingChallenge ")
+    const challengeName = "First big spending";
+
+    const joinedChallengesQuery = query(
+        collection(db, 'joinedChallenges'),
+        where('uid', '==', userId),
+        where('name', '==', challengeName),
+        where('isActive', '==', true)
+    );
+
+    const challengeSnapshot = await getDocs(joinedChallengesQuery);
+    const challengeDoc = challengeSnapshot.docs[0];
+    const challenge = challengeDoc.data();
+
+    const challengeEndDate = new Date(challenge.joinedDate.toDate().getTime() + challenge.durationInWeek * 7 * 24 * 60 * 60 * 1000);
+
+    if (challengeEndDate >= new Date()) {  
+
+      if (!challengeSnapshot.empty) {
+          const challengeDoc = challengeSnapshot.docs[0];
+          await updateDoc(challengeDoc.ref, { isActive: false });
+
+          console.log("There is a challenge saved")
+
+          // Query for points document based on userId
+          const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
+          const pointsSnapshot = await getDocs(pointsQuery);
+
+          if (!pointsSnapshot.empty) {
+              const pointsDoc = pointsSnapshot.docs[0];
+              const currentPoints = pointsDoc.data().score;
+              const newPoints = currentPoints + 60;
+              console.log("newPoints: ", newPoints)
+
+              await updateDoc(pointsDoc.ref, { score: newPoints });
+              console.log("Points updated for First Big Spending: ", newPoints);
+          } else {
+              console.log("No points document found for user:", userId);
+              const pointsRef = doc(collection(db, 'points'));
+              await setDoc(pointsRef, { uid: userId, score: 60 });
+              console.log("Points document created for First Big Spending.");
+          }
+
+          Alert.alert(
+            " 🎉 Challenge Complete 🎉",
+            "Congratulations! You've completed the First Big Spending challenge and earned 60 points!",
+            [
+              {
+                text: "OK",
+                onPress: () => console.log("First Big Spending Challenge Completion Acknowledged"),
+                style: "cancel"
+              }
+            ],
+            { cancelable: false }
+          );
+      } else {
+          console.log("No active 'First big spending' challenge found or criteria not met.");
+      }
+    }
+    else {
+      console.log("Challenge criteria not met or challenge expired.");
+  }
+  };
+
   const addTransactionHandler = async (newTransaction: any) => {
     try {
       console.log("IN addtransaction, ", newTransaction);
@@ -93,13 +158,19 @@ const TransactionsList: React.FC = () => {
 
         // Update the income document
         await updateDoc(balanceDoc.ref, { balance: updatedBalance });
+
       } else {
-        console.log("No income record found for user!");
+        console.log("No balance record found for user!");
       }
 
       fetchData();
       await AsyncStorage.setItem('transactionsChanged', 'true');
       setModalVisible(false);
+
+      if (parseFloat(newTransaction.value) > 99) {
+        console.log("value more then 99")
+        await checkAndCompleteFirstBigSpendingChallenge();
+      }
     } catch (error: any) {
       console.error('Error adding transaction:', error.message);
       setModalVisible(false);

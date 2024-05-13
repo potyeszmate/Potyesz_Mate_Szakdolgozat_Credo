@@ -171,7 +171,7 @@ const ProfileInput: React.FC<any> = ({ onEditProfile, initialProfile, selectedLa
         )} 
 
         {openProvider === false && (
-          <Button title={languages[selectedLanguage].updateProfile} onPress={addOrUpdateProfileHandler} color="blue" />
+          <Button title={languages[selectedLanguage].updateProfile} onPress={addOrUpdateProfileHandler} color="green" />
         )}
 
       </View>

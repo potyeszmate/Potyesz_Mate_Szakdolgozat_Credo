@@ -147,7 +147,16 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
             onChangeText={(text) => setRecurringTransactionValue(text)}
           />
 
-          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A2C', marginLeft: 10, marginBottom: 5 }}>{currency}</Text>
+          <Text style={{  
+            fontSize: 32,
+            fontWeight: 'bold',
+            color: '#1A1A2C',
+            marginLeft: 10, 
+            marginBottom: 3, 
+            alignSelf: 'center' }}
+            >
+            {currency}
+            </Text>
 
           </View>
         </View>
@@ -372,9 +381,21 @@ const RecurringLoanInput: React.FC<RecurringTransactionInputProps> = ({ onAddRec
         </Modal>
 
         {openProvider === false && (
-          <View style={RecurringInputStyles.addButton}>
-            <Button title={initialRecurringTransaction ? languages[selectedLanguage].updateSubscription : languages[selectedLanguage].create} onPress={addOrUpdateRecurringTransactionHandler} color="#FFFFFF"/>
-          </View>
+          <TouchableOpacity 
+          style={{
+            backgroundColor: '#35BA52', 
+            padding: 10,
+            borderRadius: 10,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }} 
+          onPress={addOrUpdateRecurringTransactionHandler}
+          activeOpacity={0.7} 
+        >
+          <Text style={{ color: 'white', fontSize: 16 }}>
+            {initialRecurringTransaction ? languages[selectedLanguage].updateSubscription : languages[selectedLanguage].create}
+          </Text>
+        </TouchableOpacity>
         )}
       </View>
     </TouchableWithoutFeedback>

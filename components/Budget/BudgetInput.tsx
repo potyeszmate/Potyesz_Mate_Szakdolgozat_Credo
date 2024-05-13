@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
-import { TextInput, Button, StyleSheet,TouchableWithoutFeedback,Keyboard, Text, View } from 'react-native';
+import { TextInput, Button, StyleSheet,TouchableWithoutFeedback,Keyboard, Text, View, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { BudgetInputAllCategories } from './BudgetComponentConstants';
 import { BudgetInputStyles } from './BudgetComponentStyles';
@@ -92,12 +92,24 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
 
         {filteredCategories.length > 1 && !openCategory && (
           <View style={BudgetInputStyles.addButton}>
-          <Button
-            title={initialBudget ? 'Update Budget' : 'Add Budget'}
+          <TouchableOpacity
             onPress={addOrUpdateBudgetHandler}
-            color="#FFFFFF"
-          />
+            style={{
+              backgroundColor: '#35BA52', // Set your desired button color
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 14,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            activeOpacity={0.7}
+          >
+            <Text style={{ color: 'white', fontSize: 16 }}>
+              {initialBudget ? 'Update Budget' : 'Add Budget'}
+            </Text>
+          </TouchableOpacity>
         </View>
+        
         
         )}
       </View>

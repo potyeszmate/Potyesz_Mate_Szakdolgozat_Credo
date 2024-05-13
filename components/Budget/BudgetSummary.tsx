@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Pressable, Alert } from 'react-native';
 import Budget from './Budget';
 import * as Progress from 'react-native-progress';
 import { Dimensions } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import BudgetInput from './BudgetInput';
 import { db } from '../../firebaseConfig';
-import { query, collection, where, getDocs, addDoc,deleteDoc,updateDoc, doc } from 'firebase/firestore';
+import { query, collection, where, getDocs, addDoc,deleteDoc,updateDoc, doc, setDoc } from 'firebase/firestore';
 import { AuthContext } from '../../store/auth-context';
 import { languages } from '../../commonConstants/sharedConstants';
 import { BudgetSummaryStyles } from './BudgetComponentStyles';
@@ -33,6 +33,61 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     progressBarColor = '#FFA500';
   }
 
+  const updatePoints = async (userId, pointsToAdd) => {
+    const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
+    const pointsSnapshot = await getDocs(pointsQuery);
+
+    if (!pointsSnapshot.empty) {
+        const pointsDoc = pointsSnapshot.docs[0];
+        const currentPoints = pointsDoc.data().score;
+        const newPoints = currentPoints + pointsToAdd;
+        await updateDoc(pointsDoc.ref, { score: newPoints });
+        console.log("Points updated: ", newPoints);
+    } else {
+        const pointsRef = doc(collection(db, 'points'));
+        await setDoc(pointsRef, { uid: userId, score: pointsToAdd });
+        console.log("Points document created and initialized.");
+    }
+};
+
+  const checkAndCompleteComprehensiveBudgetingChallenge = async () => {
+    const challengeName = "Comprehensive Budgeting";
+    const joinedChallengesQuery = query(
+        collection(db, 'joinedChallenges'),
+        where('uid', '==', userId),
+        where('name', '==', challengeName),
+        where('isActive', '==', true)
+    );
+    const challengeSnapshot = await getDocs(joinedChallengesQuery);
+
+    if (challengeSnapshot.empty) {
+        console.log("No active 'Comprehensive Budgeting' challenge found.");
+        return;
+    }
+
+    const challengeDoc = challengeSnapshot.docs[0];
+    const challenge = challengeDoc.data();
+    const challengeEndDate = new Date(challenge.joinedDate.toDate().getTime() + challenge.durationInWeek * 7 * 24 * 60 * 60 * 1000);
+
+    if (new Date() < challengeEndDate) {
+        await updateDoc(challengeDoc.ref, { isActive: false });
+        console.log("Challenge 'Comprehensive Budgeting' completed.");
+
+        // Award points for completing the challenge
+        const pointsAward = 100; // Set the points reward for this challenge
+        updatePoints(userId, pointsAward);
+
+        Alert.alert(
+            "🎉 Challenge Complete 🎉",
+            `Congratulations! You've set up a comprehensive budget plan across all categories and earned ${pointsAward} points!`,
+            [{ text: "OK", onPress: () => console.log("Comprehensive Budgeting Challenge Completion Acknowledged") }],
+            { cancelable: false }
+        );
+    } else {
+        console.log("Challenge expired or other criteria not met.");
+    }
+  };
+
   const fetchBudgets = async () => {
     try {
       const budgetsQuery = query(collection(db, 'budgets'), where('uid', '==', userId));
@@ -42,6 +97,14 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         ...doc.data(),
       }) as any);
       setBudgets(fetchedBudgets);
+
+      if (fetchedBudgets.length === 7) {
+        console.log("All categories have budgets set.");
+        await checkAndCompleteComprehensiveBudgetingChallenge();
+      } else {
+          console.log(`Budgets set for ${fetchedBudgets.length} categories, not complete.`);
+      }
+
     } catch (error: any) {
       console.error('Error fetching budgets:', error.message);
     }

@@ -150,6 +150,7 @@ export const LoanPaymentChartsStyles = StyleSheet.create({
       justifyContent: 'center', 
       alignItems: 'center', 
       marginTop: 20, 
+      marginBottom: 60
     },
     chart: {
       marginVertical: 10,

@@ -158,13 +158,13 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
             ref={valueInputRef}
             placeholder={`0`}
             placeholderTextColor="#1A1A2C"
-            style={[TransactionInputStyles.input, { fontWeight: 'bold', fontSize: 32, textAlign: 'center', color: 'black', borderBottomWidth: 0 }]}
+            style={[TransactionInputStyles.input, { fontWeight: 'bold', fontSize: 32, textAlign: 'center', color: 'black', borderBottomWidth: 0 ,  padding: 0, margin: 0}]}
             keyboardType="numeric"
             value={transactionValue}
             onChangeText={(text) => setTransactionValue(text)}
           />
 
-          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A2C', marginLeft: 10, marginBottom: 5 }}>{currency}</Text>
+          <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#1A1A2C', marginLeft: 10, marginBottom: 2, alignSelf: 'center' }}>{currency}</Text>
 
           </View>
         </View>
@@ -475,7 +475,6 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
             </BottomSheet>
           </Pressable>
         </Modal>
-        {/* Delete Modal */}
         <Modal
           visible={deleteModalVisible}
           transparent={true}
@@ -499,8 +498,17 @@ const TransactionInput: React.FC<any> = ({ onAddTransaction, onAddIncomes, initi
 
         {openProvider === false && (
           <View style={TransactionInputStyles.addButton}>
-            <Button title={initialTransaction ? languages[selectedLanguage].updateTransaction : languages[selectedLanguage].create} onPress={addOrUpdateTransactionHandler}/>
-          </View>
+          <TouchableOpacity 
+            style={TransactionInputStyles.addButton} 
+            onPress={addOrUpdateTransactionHandler}
+            activeOpacity={0.7} 
+          >
+            <Text style={{ color: 'white', fontSize: 16 }}> 
+              {initialTransaction ? languages[selectedLanguage].updateTransaction : languages[selectedLanguage].create}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        
         )}
       </View>
     </TouchableWithoutFeedback>

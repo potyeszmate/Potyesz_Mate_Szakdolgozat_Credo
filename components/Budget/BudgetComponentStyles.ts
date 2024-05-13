@@ -194,10 +194,10 @@ export const BudgetInputStyles = StyleSheet.create({
       width: '80%',
       alignSelf: 'center',
       marginTop: 'auto',
-      marginBottom: 'auto',
+      // marginBottom: 'auto',
     },
     inputWrapper: {
-      marginBottom: 20,
+      marginBottom: 5,
     },
     label: {
       fontSize: 16,
@@ -212,7 +212,7 @@ export const BudgetInputStyles = StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'center',
-      bottom: -90
+      bottom: -10
     },
     input: {
       borderBottomWidth: 1,

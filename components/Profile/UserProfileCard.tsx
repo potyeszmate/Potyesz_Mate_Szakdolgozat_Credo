@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ProgressBarAndroid, Dimensions, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, Image, Dimensions } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { ProfileCardStyles } from './ProfileComponentStyles';
 
@@ -8,12 +8,18 @@ const UserProfileCard = ({ userData }) => {
     name,
     rank,
     score,
-    total,
-    level,
     profilePicUrl
   } = userData;
 
-  const getColor = (percentage: any) => {
+  // Constants for level calculations
+  const pointsPerLevel = 300;
+  const currentLevel = Math.floor(score / pointsPerLevel) + 1;
+  const pointsCurrentLevel = score % pointsPerLevel;
+  const pointsNeeded = pointsPerLevel - pointsCurrentLevel;
+  const progress = pointsCurrentLevel / pointsPerLevel;
+
+  // Color based on progress
+  const getColor = (percentage) => {
     if (percentage < 0.25) {
       return '#FF0000'; 
     } else if (percentage < 0.50) {
@@ -24,16 +30,14 @@ const UserProfileCard = ({ userData }) => {
       return '#008000'; 
     }
   };
-  
-  const progress = score / total;
-  
+
   return (
     <View style={ProfileCardStyles.card}>
       <View style={ProfileCardStyles.profileSection}>
-      <Image
-        source={profilePicUrl ? { uri: profilePicUrl } : require('../../assets/avatar.png')}
-        style={ProfileCardStyles.profilePic}
-      />
+        <Image
+          source={profilePicUrl ? { uri: profilePicUrl } : require('../../assets/avatar.png')}
+          style={ProfileCardStyles.profilePic}
+        />
       </View>
       <View style={ProfileCardStyles.detailsSection}>
         <Text style={ProfileCardStyles.name}>{name}</Text>
@@ -48,8 +52,8 @@ const UserProfileCard = ({ userData }) => {
             unfilledColor="#F3F4F7"
         />
         <View style={ProfileCardStyles.levelDetails}>
-          <Text style={ProfileCardStyles.level}>LEVEL {level}</Text>
-          <Text style={ProfileCardStyles.pointsNeeded}>{total - score} points needed</Text>
+          <Text style={ProfileCardStyles.level}>LEVEL {currentLevel}</Text>
+          <Text style={ProfileCardStyles.pointsNeeded}>{pointsNeeded} points needed</Text>
         </View>
       </View>
     </View>

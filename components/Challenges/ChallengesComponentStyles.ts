@@ -20,13 +20,24 @@ export const ChallengesStyles = StyleSheet.create({
       justifyContent: 'center',
       height: 38,
       borderRadius: 99,
+      borderColor: '#149E53',
+      borderWidth: 0.8,
+      marginRight: 5
     },
     tabButtonText: {
       color: '#1A1A2C',
       fontSize: 14,
     },
+    tabBarContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 5,
+      paddingHorizontal: 30,
+      paddingTop: 10,
+      gap: 10
+    },
     activeTabButton: {
-      backgroundColor: '#149E53',
+      backgroundColor: '#35BA52',
     },
     activeTabButtonText: {
       color: '#FFFFFF',
@@ -57,15 +68,15 @@ export const ChallengesStyles = StyleSheet.create({
 
 export const ChallengesitemStyles = StyleSheet.create({
     card: {
-      height: 230,
+      height: 220,
       borderRadius: 14,
       borderWidth: 1,
-      borderColor: '#EEEEEE',
+      borderColor: '#CCCCCC',
       overflow: 'hidden',
       backgroundColor: '#fff',
       marginBottom: 12,
-      width: 300,
-      
+      width: 340,
+    
     },
     badgeContainer: {
       position: 'absolute',

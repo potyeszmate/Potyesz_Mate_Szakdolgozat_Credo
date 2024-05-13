@@ -300,10 +300,12 @@ function Home() {
         await fetchCurrency();
   
         const isTransactionChanged = await AsyncStorage.getItem('transactionsChanged');
+
         const isIncomesChanged = await AsyncStorage.getItem('incomesChanged');
         const isprofileChanged = await AsyncStorage.getItem('profileChanged');
   
         if (isTransactionChanged == "true") {
+          console.log("BALANCE CHANGED")
           setIsTransactionsLoading(true);
   
           await AsyncStorage.setItem('transactionsChanged', 'false');
@@ -341,13 +343,13 @@ function Home() {
       }
     };
   
-    Toast.show({
-      type: 'success',
-      position: 'top',
-      text1: 'Hello',
-      text2: 'This is some something 👋',
-      visibilityTime: 2000
-    });
+    // Toast.show({
+    //   type: 'success',
+    //   position: 'top',
+    //   text1: 'Hello',
+    //   text2: 'This is some something 👋',
+    //   visibilityTime: 2000
+    // });
   
     checkDataAndUpdate();
   }, [isFocused]);
@@ -547,7 +549,6 @@ return (
       {activeTab === 'progress' && points && !!points[0] && (
         <YourPoints
           score={points[0].score}
-          total={points[0].total}
           selectedLanguage={selectedLanguage}
         />
       )}

@@ -103,7 +103,7 @@ const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedL
           )}
         </View>
 
-        <Button title={initialGoal ? languages[selectedLanguage].updateGoal : languages[selectedLanguage].create} onPress={addOrUpdateGoalsHandler} color="blue" />
+        <Button title={initialGoal ? languages[selectedLanguage].updateGoal : languages[selectedLanguage].create} onPress={addOrUpdateGoalsHandler} color="green" />
       </View>
     </TouchableWithoutFeedback>
   );
