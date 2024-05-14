@@ -52,7 +52,7 @@ Before you can run this app, you need to have Node.js and npm installed on your 
      npx react-native run-android
      ```
 
-   - **Or with expo, just simply build the app for the desires platform (scan the created QR to use the expo go app or use emulators)**
+   - **Or with expo, after npx expo start, just simply build the app for the desires platform (scan the created QR code to use the expo go app or use emulators)**
      ```bash
      npx expo start
      ```
