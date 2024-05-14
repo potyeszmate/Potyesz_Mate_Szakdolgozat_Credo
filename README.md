@@ -39,12 +39,17 @@ Before you can run this app, you need to have Node.js and npm installed on your 
 
 3. **Install dependencies**
 
-4. **Run the app**:
- ```IOS
-  npx react-native run-ios
+4. **Run the app:**
 
-```Android
-  npx react-native run-ios
+   - **iOS:**
+     ```bash
+     npx react-native run-ios
+     ```
+
+   - **Android:**
+     ```bash
+     npx react-native run-android
+     ```
 
 
 
