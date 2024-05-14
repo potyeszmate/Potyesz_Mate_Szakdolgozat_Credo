@@ -33,13 +33,14 @@ Before you can run this app, you need to have Node.js and npm installed on your 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/financial-dashboard-app.git
+   git clone [https://github.com/potyeszmate/Potyesz_Mate_Szakdolgozat_Credo.git]
 
-2. **Navigate to the project directory:**
+2. **Navigate to the project directory and install dependencies**
 
-3. **Install dependencies**
+   ```bash
+   npm install
 
-4. **Run the app:**
+3. **Run the app:**
 
    - **iOS:**
      ```bash
@@ -49,6 +50,11 @@ Before you can run this app, you need to have Node.js and npm installed on your 
    - **Android:**
      ```bash
      npx react-native run-android
+     ```
+
+   - **Or with expo, just simply build the app for the desires platform (scan the created QR to use the expo go app or use emulators)**
+     ```bash
+     npx expo start
      ```
 
 
