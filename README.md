@@ -33,7 +33,7 @@ Before you can run this app, you need to have Node.js and npm installed on your 
 1. **Clone the repository:**
 
    ```bash
-   git clone [https://github.com/potyeszmate/Potyesz_Mate_Szakdolgozat_Credo.git]
+   git clone https://github.com/potyeszmate/Potyesz_Mate_Szakdolgozat_Credo.git
 
 2. **Navigate to the project directory and install dependencies**
 
