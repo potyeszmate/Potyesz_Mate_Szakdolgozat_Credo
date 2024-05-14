@@ -2,7 +2,7 @@
 
 ![build](https://img.shields.io/badge/build-passing-brightgreen)
 ![react-native](https://img.shields.io/badge/react--native-v0.73.2-informational)
-![expo](https://img.shields.io/badge/react--native-v50.0.2-informational)
+![expo](https://img.shields.io/badge/expo-v50.0.2-informational)
 
 
 This React Native application was developed for my MSc masters thesis. It is a financial management app, designed to help users manage their personal finances effectively.  It provides tools for tracking income, expenses, investments, and debts. With a focus on usability and visualization, the app offers a comprehensive overview of your financial health, making personal finance management both straightforward and efficient.
