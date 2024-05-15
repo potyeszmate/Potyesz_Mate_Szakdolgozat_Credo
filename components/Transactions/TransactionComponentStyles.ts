@@ -136,10 +136,8 @@ export const LatestTransactionsStyles = StyleSheet.create({
       borderRadius: 14,
       paddingVertical: 8,
       marginTop: 5,
-      // paddingHorizontal: 20,  // Added for better padding
       alignItems: 'center',
       justifyContent: 'center',
-      // bottom: -15
     },
     providerList: {
       flexGrow: 1,
@@ -266,7 +264,6 @@ export const LatestTransactionsStyles = StyleSheet.create({
       justifyContent: 'space-between',
       backgroundColor: '#FFFFFF',
       borderRadius: 12,
-      // elevation: 3,  //for IOS it is needed
       paddingHorizontal: 2,
       paddingVertical: 2,
     },

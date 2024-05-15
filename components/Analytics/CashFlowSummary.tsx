@@ -31,7 +31,6 @@ import { CashFlowSummaryStyles } from "./AnalyticsComponentStyles";
         <View style={CashFlowSummaryStyles.netCashFlowContainer}>
           <Text style={CashFlowSummaryStyles.netCashFlow}>
           {(parseFloat(netCashFlow) * conversionRate).toFixed(2)} {symbol}
-            {/* {netCashFlow.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} */}
           </Text>
           {netCashFlow < 0 && (
             <MaterialIcons name="warning" size={24} color="red" style={CashFlowSummaryStyles.warningIcon} />

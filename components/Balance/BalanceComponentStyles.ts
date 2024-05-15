@@ -185,21 +185,6 @@ export const MonthlyIncomeStyles = StyleSheet.create({
       borderBottomRightRadius: 20,
       marginLeft: 10, 
     },
-    // monthSelectorContainer: {
-    //   position: 'absolute',
-    //   top: 16,
-    //   right: 16,
-    //   zIndex: 1,
-    // },
-    // monthSelectorCard: {
-    //   backgroundColor: '#FFFFFF',
-    //   borderRadius: 20,
-    //   padding: 8,
-    //   borderWidth: 1,
-    //   borderColor: '#F0F0F0',
-    //   flexDirection: 'row',
-    //   alignItems: 'center',
-    // },
     monthSelectorContainer: {
       position: 'absolute',
       top: 16,
@@ -209,34 +194,20 @@ export const MonthlyIncomeStyles = StyleSheet.create({
       borderWidth: 1,
       borderColor: '#F0F0F0',
       padding: 10,
-      width: 140, // Increased width to accommodate longer month names
+      width: 140,
       height: 35,
-      justifyContent: 'center', // This helps center the picker vertically
-      alignItems: 'center', // Center align items
+      justifyContent: 'center',
+      alignItems: 'center',
       overflow: 'hidden',
     },
     monthSelector: {
       color: '#000',
-      width: '120%', // Ensure it fills the container
-      height: '100%', // Ensure it fills the container vertically
+      width: '120%', 
+      height: '100%', 
       backgroundColor: 'transparent',
-      // padding: -10, // Reduce or remove padding
     },
     monthSelectorIcon: {
       position: 'absolute',
-      // right: 10,
     },
-    // monthSelectorContainer: {
-    //   position: 'absolute',
-    //   top: 16,
-    //   right: 16,
-    //   backgroundColor: 'white',
-    //   borderRadius: 20,
-    //   padding: 8
-    // },
-    // monthSelector: {
-    //   height: 44,
-    //   width: 150,
-    // },
   });
   

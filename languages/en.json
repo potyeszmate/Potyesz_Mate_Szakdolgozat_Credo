@@ -116,7 +116,7 @@
     "female": "Female",
     "editProfile": "Edit Profile",
     "selectGender": "Select gender",
-    "selectBirthday": "Select gebirtday",
+    "selectBirthday": "Select birtday",
     "updateProfile": "Update Profile",
     "updateSubscription": "Update subscription",
     "updateBill": "Update Bill",
@@ -130,7 +130,7 @@
     "Shopping": "Shopping",
     "Entertainment": "Entertainment",
     "Food": "Food",
-    "Grocieries": "Grocieries",
+    "Grocieries": "Groceries",
     "Housing": "Housing",
     "Transport": "Transport",
     "subscriptionValue": "Subscription value",
@@ -268,6 +268,7 @@
     "upcomingSubs": "Upcoming subscription",
     "viewall": "View all",
     "thisWeek": "On this week",
+
     "budgetsForCat": "Budget for categories",
     "xMoreLeft": "more categories left",
     "setUpNew": "Set up new"

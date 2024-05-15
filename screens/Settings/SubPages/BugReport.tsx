@@ -10,7 +10,6 @@ const BugReportPage = () => {
   const route: any = useRoute();
   const selectedLanguage = route.params?.selectedLanguage ?? 'English';
   
-  // upload it to firebase
   const handleReportBug = () => {
   };
 

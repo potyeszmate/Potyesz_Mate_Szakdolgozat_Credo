@@ -105,12 +105,6 @@ const StockScreen = () => {
     setLoading(false);
   };
   
-  // const handleCardPress = (name: any, symbol: any) => {
-  //   // @ts-ignore
-  //   navigation.navigate("Stock Details", {name: name, symbol: symbol, onGoBack: fetchStocks});
-  // };
-
-  
   const handleCardPress = (name: string, currencySymbol: string) => {
     console.log(selectedLanguage)
     // @ts-ignore

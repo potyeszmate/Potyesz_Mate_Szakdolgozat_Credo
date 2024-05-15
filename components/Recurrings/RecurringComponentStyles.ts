@@ -189,7 +189,6 @@ export const RecurringInputStyles = StyleSheet.create({
       justifyContent: 'space-between',
       backgroundColor: '#FFFFFF',
       borderRadius: 12,
-      // elevation: 3,
       paddingHorizontal: 2,
       paddingVertical: 2,
     },

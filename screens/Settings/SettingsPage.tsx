@@ -167,7 +167,6 @@ const SettingsPage = () => {
         <Text style={SettingsPageStyles.logoutButtonText}>{languages[selectedLanguage].signOut}</Text>
       </TouchableOpacity>
 
-      {/* Logout confirmation modal */}
       <Modal
         animationType="slide"
         transparent={true}

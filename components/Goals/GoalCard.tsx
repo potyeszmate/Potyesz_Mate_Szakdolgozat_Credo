@@ -101,7 +101,6 @@ console.log(progressValue);
           color={'#35BA52'}
           borderRadius={10}
           borderColor='#FFFFFF'
-          // animationType='decay'   
           unfilledColor='#F3F4F7'  
           />
         </View>

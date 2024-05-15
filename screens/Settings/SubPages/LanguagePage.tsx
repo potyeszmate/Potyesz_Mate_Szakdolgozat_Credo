@@ -6,7 +6,6 @@ import { db } from '../../../firebaseConfig';
 import { useRoute } from '@react-navigation/native';
 import Radio from '../../../components/CommonComponents/Radio';
 import { LanguageStyles } from '../SettingsStyles';
-// import { updateUserLanguage } from '../SettingsHelpers';
 import { languages } from '../../../commonConstants/sharedConstants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 

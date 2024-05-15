@@ -354,7 +354,6 @@ const RecurringBillsInput: React.FC<RecurringTransactionInputProps> = ({ onAddRe
           </Pressable>
         </Modal>
   
-        {/* Delete Modal */}
         <Modal
           visible={deleteModalVisible}
           transparent={true}

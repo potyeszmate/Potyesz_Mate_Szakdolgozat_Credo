@@ -19,8 +19,6 @@ const LatestTransactions: React.FC<any> = ({ incomes, transactions, selectedLang
     });
   };
   
-  // const now = new Date();
-
     const combinedData = [...transactions, ...incomes].sort((a, b) => {
         const dateA = new Date(a.date.toDate());
         const dateB = new Date(b.date.toDate());

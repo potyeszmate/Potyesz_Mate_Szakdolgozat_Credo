@@ -25,6 +25,8 @@ const GoalScreen = () => {
   const authCtx = useContext(AuthContext);
   const { userId } = authCtx as any;
   const snapPoints = useMemo(() => ['333%', '66%', '85%'], []);
+  let challengeName = "Financial Goal Setting";
+  let pointsAward = 300;
 
   const updatePoints = async (userId, pointsToAdd) => {
     const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
@@ -43,10 +45,8 @@ const GoalScreen = () => {
     }
 };
 
-  const checkAndCompleteFinancialGoalSettingChallenge = async (completedGoalsCount) => {
+  const checkAndCompleteFinancialGoalSettingsChallenge = async () => {
 
-    console.log("completedGoalsCount: ", completedGoalsCount)
-    const challengeName = "Financial Goal Setting";
     const joinedChallengesQuery = query(
         collection(db, 'joinedChallenges'),
         where('uid', '==', userId),
@@ -56,20 +56,15 @@ const GoalScreen = () => {
     const challengeSnapshot = await getDocs(joinedChallengesQuery);
 
     if (challengeSnapshot.empty) {
-        console.log("No active 'Financial Goal Setting' challenge found.");
         return;
     }
 
-    const challengeDoc = challengeSnapshot.docs[0];
+    const challengeDoc: any = challengeSnapshot.docs[0];
     const challenge = challengeDoc.data();
     const challengeEndDate = new Date(challenge.joinedDate.toDate().getTime() + challenge.durationInWeek * 7 * 24 * 60 * 60 * 1000);
 
     if (new Date() < challengeEndDate) {
         await updateDoc(challengeDoc.ref, { isActive: false });
-        console.log("Challenge 'Financial Goal Setting' completed.");
-
-        // Award points for completing the challenge
-        const pointsAward = 300; // Set the points reward for this challenge
         updatePoints(userId, pointsAward);
 
         Alert.alert(
@@ -81,7 +76,7 @@ const GoalScreen = () => {
     } else {
         console.log("Challenge criteria not met or challenge expired.");
     }
-};
+  };
 
   const fetchGoals = async () => {
     console.log("!!!! FETCHING GOAL !!!!!") 
@@ -100,7 +95,7 @@ const GoalScreen = () => {
 
       if (completedGoals.length >= 3) {
           console.log(completedGoals.length)
-          await checkAndCompleteFinancialGoalSettingChallenge(completedGoals.length);
+          await checkAndCompleteFinancialGoalSettingsChallenge(completedGoals.length);
       }
 
       const totalAmount = fetchedGoals.reduce((sum, goal: any) => sum + goal.Current_Ammount, 0);

@@ -73,8 +73,7 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
         await updateDoc(challengeDoc.ref, { isActive: false });
         console.log("Challenge 'Comprehensive Budgeting' completed.");
 
-        // Award points for completing the challenge
-        const pointsAward = 100; // Set the points reward for this challenge
+        const pointsAward = 100;
         updatePoints(userId, pointsAward);
 
         Alert.alert(
@@ -139,19 +138,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     }
   };
 
-  // const addBudgetHandler = async (newBudget: any) => {
-  //   try {
-  //     await addDoc(collection(db, 'budgets'), {
-  //       ...newBudget,
-  //       uid: userId,
-  //     });
-  //     fetchBudgets();
-  //     setModalVisible(false);
-  //   } catch (error: any) {
-  //     console.error('Error adding budget:', error.message);
-  //   }
-  // };
-
   const showDeleteModal = (budget: any) => {
     setSelectedBudget(budget);
     setDeleteModalVisible(true);
@@ -213,11 +199,6 @@ const BudgetSummary: React.FC<any> = ({ transactions, selectedLanguage, currency
     }
   }, [loading, budgets, transactions]);
   
-  // useEffect(() => {
-   
-  // }, [spentAmount, totalAmount, spentPercentage]);
-
-
   return (
     !loading && 
     <View style={BudgetSummaryStyles.container}>

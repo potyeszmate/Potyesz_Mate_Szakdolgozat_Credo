@@ -270,7 +270,6 @@ const StockDetails = () => {
         <View style={StockDetailsStyles.priceContainer}>
           <Text style={StockDetailsStyles.label}>{languages[selectedLanguage].currentPrice}</Text>
           <Text style={StockDetailsStyles.price}>
-            {/* ${stockDetails.price.toFixed(2)} */}
             {(parseFloat(stockDetails.price) * conversionRate).toFixed(2)} {symbol}
             </Text>
         </View>

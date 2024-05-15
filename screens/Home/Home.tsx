@@ -343,14 +343,6 @@ function Home() {
       }
     };
   
-    // Toast.show({
-    //   type: 'success',
-    //   position: 'top',
-    //   text1: 'Hello',
-    //   text2: 'This is some something 👋',
-    //   visibilityTime: 2000
-    // });
-  
     checkDataAndUpdate();
   }, [isFocused]);
   

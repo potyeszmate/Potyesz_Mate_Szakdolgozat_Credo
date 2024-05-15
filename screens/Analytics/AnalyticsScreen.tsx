@@ -22,7 +22,6 @@ const AnalyticsScreen = () => {
         setSymbol(savedSymbol);
         setConversionRate(parseFloat(savedConversionRate));
       } else {
-        // Set default values if nothing is saved
         setSymbol("$");
         setConversionRate(1);
         await AsyncStorage.setItem('conversionRate', '1');
@@ -45,7 +44,6 @@ const AnalyticsScreen = () => {
   };
   
   const fetchAllData = async () => {
-    // setIsLoading(true); 
     await Promise.all([
       fetchCurrencyData(),
       fetchLanguageData(),

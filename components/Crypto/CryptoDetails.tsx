@@ -273,7 +273,6 @@ const CryptoDetails = () => {
         <View style={CryptoDetailsStyles.priceContainer}>
           <Text style={CryptoDetailsStyles.label}>{languages[selectedLanguage].currentPrice}</Text>
           <Text style={CryptoDetailsStyles.price}>
-            {/* ${cryptoDetails.price.toFixed(2)} */}
             {(parseFloat(cryptoDetails.price) * conversionRate).toFixed(2)} {symbol}
             </Text>
         </View>
@@ -318,7 +317,6 @@ const CryptoDetails = () => {
         />
       </View>
 
-      {/* Modal for adding to portfolio */}
       <Modal
         animationType="fade"
         transparent={true}

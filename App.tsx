@@ -70,6 +70,7 @@ function AuthStackScreen() {
     <Stack.Navigator
     screenOptions={{
       headerShown: false,
+      headerTitleAlign: 'center',
     }}
   >
     <Stack.Screen name="Welcome" component={Welcome} />
@@ -94,7 +95,6 @@ function AuthenticatedStack() {
 
 function TabNavigator() {
 
-  // TODO -> bugfix/refactor -> make language change dynamic here in tabs as well
   const authCtx = useContext(AuthContext);
   const [selectedLanguage, setSelectedLanguage] = useState('English');
 
@@ -252,7 +252,7 @@ function ExpensesStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen
@@ -281,6 +281,7 @@ function HomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen
@@ -367,6 +368,7 @@ function SavingsStack() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen
@@ -412,6 +414,7 @@ function AnalyticsStack() {
   return (
     <Stack.Navigator
       screenOptions={{     
+        headerTitleAlign: 'center',
       }}
     >
       <Stack.Screen

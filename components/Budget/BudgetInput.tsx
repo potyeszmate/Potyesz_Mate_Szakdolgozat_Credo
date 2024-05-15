@@ -95,7 +95,7 @@ const BudgetInput: React.FC<any> = ({ onAddBudget, existingCategories, initialBu
           <TouchableOpacity
             onPress={addOrUpdateBudgetHandler}
             style={{
-              backgroundColor: '#35BA52', // Set your desired button color
+              backgroundColor: '#35BA52',
               paddingVertical: 10,
               paddingHorizontal: 20,
               borderRadius: 14,

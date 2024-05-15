@@ -7,40 +7,34 @@ export const handleSend = async (params: any) => {
         setConversation, setUserInput, setShowTopics, setCurrentTopic, basicMessages, api, models, apiKeys, selectedLanguage, setIsAnswerLoading
     } = params;
 
-    console.log(currentTopic)
 
     if (!userInput.trim()) return;
 
     setIsAnswerLoading(true);
 
-    const isAwaitingFollowUp = conversation.length > 0 && conversation[conversation.length - 1].includes("Do you want to ask another question about");
+    const isAwaitingFollowUp = conversation.length > 0 && 
+    conversation[conversation.length - 1].includes("Do you want to ask another question about");
 
     if (isAwaitingFollowUp) {
       setIsAnswerLoading(false);
-      console.log("In phase: isAwaitingFollowUp")
       const userResponse = userInput.trim().toLowerCase();
       if (userResponse === 'yes') {
-        console.log("Typed yes")
-
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, `Chatbot: What else would you like to know about ${currentTopic}?`]);
         setUserInput(''); 
       } else if (userResponse === 'no') {
-        console.log("Typed no")
 
         setShowTopics(true); 
         setConversation((prev: string[]) => [...prev, `You: ${userInput}`, basicMessages[selectedLanguage].selectFromTopics]);
         setCurrentTopic(''); 
         setUserInput(''); 
       } else {
-        console.log("Typed other then yes or no")
-
-        setConversation((prev: string[]) => [...prev, `You: ${userInput}`, `Chatbot: I didn't really catch that, can you answer again with 'yes' or 'no', please?`]);
+        setConversation((prev: string[]) => [...prev, `You: ${userInput}`, 
+        `Chatbot: I didn't really catch that, can you answer again with 'yes' or 'no', please?`]);
         setUserInput(''); 
         return;  
       }
     } 
     else {      
-      console.log("not in isAwaitingFollowUp phase")
       setConversation((prev: string[]) => [...prev, `You: ${userInput}`]);
       setUserInput('');
       let systemMessageContent = "";
@@ -63,7 +57,6 @@ export const handleSend = async (params: any) => {
       else {
         systemMessageContent = "The user has no recent transactions.";
       }
-
       try {
         const response = await axios.post(api, {
           model: models.latestModel,
@@ -356,7 +349,7 @@ export const handleSend = async (params: any) => {
             const today = new Date();
             const dateOptions: any = { year: 'numeric', month: 'long', day: 'numeric' };
             const todayFormatted = today.toLocaleDateString('en-US', dateOptions);
-            
+
             // @ts-ignore
             formattedStocks = stocks.map(stock => {
               const amountFormatted = stock.amount.toFixed(3);

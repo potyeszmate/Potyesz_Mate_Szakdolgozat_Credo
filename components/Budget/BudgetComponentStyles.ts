@@ -194,7 +194,6 @@ export const BudgetInputStyles = StyleSheet.create({
       width: '80%',
       alignSelf: 'center',
       marginTop: 'auto',
-      // marginBottom: 'auto',
     },
     inputWrapper: {
       marginBottom: 5,

@@ -95,7 +95,6 @@ const TransactionsList: React.FC = () => {
 
           console.log("There is a challenge saved")
 
-          // Query for points document based on userId
           const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
           const pointsSnapshot = await getDocs(pointsQuery);
 
@@ -138,25 +137,22 @@ const TransactionsList: React.FC = () => {
   const addTransactionHandler = async (newTransaction: any) => {
     try {
       console.log("IN addtransaction, ", newTransaction);
-      // Add the new transaction
       await addDoc(collection(db, 'transactions'), {
         ...newTransaction,
         uid: userId,
       });
 
-      // Query to find the income document based on uid
       const balanceQuery = query(collection(db, 'balance'), where('uid', '==', userId));
       const querySnapshot = await getDocs(balanceQuery);
 
       if (!querySnapshot.empty) {
-        const balanceDoc = querySnapshot.docs[0];  // Assuming there is only one income document per user
+        const balanceDoc = querySnapshot.docs[0]; 
         const currentBalance = balanceDoc.data().balance;
         console.log("currentIncome", currentBalance)
         const updatedBalance = currentBalance - parseFloat(newTransaction.value);
         console.log("newTransaction.value", newTransaction.value)
         console.log("updatedIncome", updatedBalance)
 
-        // Update the income document
         await updateDoc(balanceDoc.ref, { balance: updatedBalance });
 
       } else {
@@ -168,7 +164,6 @@ const TransactionsList: React.FC = () => {
       setModalVisible(false);
 
       if (parseFloat(newTransaction.value) > 99) {
-        console.log("value more then 99")
         await checkAndCompleteFirstBigSpendingChallenge();
       }
     } catch (error: any) {
@@ -210,23 +205,20 @@ const TransactionsList: React.FC = () => {
 
   const addIncomesHandler = async (newIncome: any) => {
     try {
-      // Add the new income record
       await addDoc(collection(db, 'incomes'), {
         ...newIncome,
         category: "Income",
         uid: userId,
       });
 
-      // Query to find the balance document based on uid
       const balanceQuery = query(collection(db, 'balance'), where('uid', '==', userId));
       const querySnapshot = await getDocs(balanceQuery);
 
       if (!querySnapshot.empty) {
-        const balanceDoc = querySnapshot.docs[0];  // Assuming there is only one balance document per user
+        const balanceDoc = querySnapshot.docs[0]; 
         const currentBalance = balanceDoc.data().balance;
         const updatedBalance = currentBalance + parseFloat(newIncome.value);
 
-        // Update the balance document
         await updateDoc(balanceDoc.ref, { balance: updatedBalance });
       } else {
         console.log("No balance record found for user!");
@@ -285,18 +277,17 @@ const TransactionsList: React.FC = () => {
       ]);
   
       const fetchedTransactions = transactionsSnapshot.docs.map(doc => ({
-        type: 'transaction', // Additional field to distinguish between transactions and incomes
+        type: 'transaction',
         id: doc.id,
         ...doc.data()
       }));
   
       const fetchedIncomes = incomesSnapshot.docs.map(doc => ({
-        type: 'income', // Additional field to distinguish between transactions and incomes
+        type: 'income', 
         id: doc.id,
         ...doc.data()
       }));
   
-      // Combine and set the data
       setData([...fetchedTransactions, ...fetchedIncomes]);
       setIsLoading(false);
 

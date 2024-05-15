@@ -186,7 +186,6 @@ const OnboardingModal = ({ isVisible, onComplete }) => {
                 </View>
                 <View style={OnBoardingStyles.formGroup}>
 
-                {/* Financial Details Form */}
                 <Text style={OnBoardingStyles.inputLabel}>Current Estimated Balance in USD</Text>
                 <TextInput
                   style={OnBoardingStyles.input}

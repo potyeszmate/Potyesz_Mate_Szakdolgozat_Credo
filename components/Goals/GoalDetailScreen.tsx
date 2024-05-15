@@ -38,7 +38,6 @@ const GoalDetailScreen = ({ route, navigation }) => {
     if (challengeEndDate >= new Date() && addedAmount >= 300) {  
         await updateDoc(challengeDoc.ref, { isActive: false });
 
-        // Query for points document based on userId
         const pointsQuery = query(collection(db, 'points'), where('uid', '==', userId));
         const pointsSnapshot = await getDocs(pointsQuery);
 
@@ -51,7 +50,7 @@ const GoalDetailScreen = ({ route, navigation }) => {
         } else {
             console.log("No points document found for user:", userId);
             const pointsRef = doc(collection(db, 'points'));
-            await setDoc(pointsRef, { uid: userId, score: 60 }); // Initialize points if not present
+            await setDoc(pointsRef, { uid: userId, score: 60 }); 
             console.log("Points document created and initialized to 60 points.");
         }
 
@@ -107,7 +106,6 @@ const GoalDetailScreen = ({ route, navigation }) => {
       return;
     }
   
-    // Proceed with adding funds if not exceeding the goal
     await addFunds(amountToAddNumber);
   };
   
@@ -120,7 +118,6 @@ const GoalDetailScreen = ({ route, navigation }) => {
   const addFunds = async (amount) => {
     const batch = writeBatch(db);
   
-    // Add fund to the goalFunds collection
     const goalFundsRef = collection(db, 'goalFunds');
     const newFundDocRef = doc(goalFundsRef);
     const updatedAmount = parseFloat(goal.Current_Ammount) + amount;
@@ -132,24 +129,21 @@ const GoalDetailScreen = ({ route, navigation }) => {
       dateAdded: Timestamp.now(),
     });
   
-    // Update the current amount in the goal document
     const goalRef = doc(db, 'goals', goal.id);
     batch.update(goalRef, { Current_Ammount: updatedAmount });
   
-    // Fetch and update the user's balance
     const balanceQuery = query(collection(db, 'balance'), where('uid', '==', userId));
     const balanceSnapshot = await getDocs(balanceQuery);
   
     if (!balanceSnapshot.empty) {
-      const balanceDoc = balanceSnapshot.docs[0];  // Assuming one balance document per user
+      const balanceDoc = balanceSnapshot.docs[0]; 
       const currentBalance = balanceDoc.data().balance;
-      const newBalance = currentBalance - amount;  // Subtract the amount added to the goal from the balance
+      const newBalance = currentBalance - amount; 
   
       console.log("Current Balance:", currentBalance);
       console.log("Amount to Subtract:", amount);
       console.log("Updated Balance:", newBalance);
   
-      // Update the balance document within the same batch
       batch.update(balanceDoc.ref, { balance: newBalance });
 
       await checkAndCompleteChallenge(amount);
@@ -159,10 +153,9 @@ const GoalDetailScreen = ({ route, navigation }) => {
     } else {
       console.error("No balance document found for user:", userId);
       Alert.alert("Error", "No balance document found.");
-      return;  // Exit if no balance document is found
+      return; 
     }
   
-    // Commit the batch
     try {
       await batch.commit();
       

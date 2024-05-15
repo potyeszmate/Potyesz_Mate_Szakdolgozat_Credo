@@ -23,7 +23,6 @@ const RecurringDonutChart = ({ data, total, recurringType, symbol, selectedLangu
     decimalPlaces: 2,
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
   };
-  // const calculatePercentage = (value) => (value / total * 100).toFixed(2) + '%';
 
   if (!data || data.length === 0) {
     return <Text style={RecurringDonutChartStyles.noDataText}>{languages[selectedLanguage].noDataAvailable}</Text>;

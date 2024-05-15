@@ -10,17 +10,19 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
   };
 
   const processData = (transactions) => {
-    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-    const cumulativeSpending = Array(daysInMonth).fill(0);
+    const today = new Date().getDate();
+    const cumulativeSpending = Array(today).fill(0);
 
     transactions.forEach(transaction => {
       const date = convertTimestampToDate(transaction.date);
-      const dayIndex = date.getDate() - 1; 
-      cumulativeSpending[dayIndex] += Number(transaction.value);
+      const dayIndex = date.getDate() - 1;
+      if (dayIndex < today) {
+        cumulativeSpending[dayIndex] += Number(transaction.value);
+      }
     });
 
     for (let i = 1; i < cumulativeSpending.length; i++) {
-      cumulativeSpending[i]  += (cumulativeSpending[i - 1] * conversionRate); 
+      cumulativeSpending[i] += (cumulativeSpending[i - 1] * conversionRate);
     }
     
     return cumulativeSpending;
@@ -28,13 +30,15 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
 
   const generateMonthDays = (date) => {
     const days = [];
+    const today = date.getDate();
     let day = new Date(date.getFullYear(), date.getMonth(), 1);
-    while (day.getMonth() === date.getMonth()) {
+    while (day.getMonth() === date.getMonth() && day.getDate() <= today) {
       const label = `${day.getMonth() + 1}.${day.getDate().toString().padStart(2, '0')}`;
       days.push(label);
-      day.setDate(day.getDate() + 5);
+      day.setDate(day.getDate() + 1); 
     }
-    return days;
+    const step = Math.max(1, Math.floor(days.length / 6)); 
+    return days.filter((_, index) => index % step === 0);
   };
 
   const xLabels = generateMonthDays(new Date());
@@ -45,7 +49,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
     labels: xLabels,
     datasets: [{
       data: xLabels.map(label => {
-        const day = parseInt(label.split('.')[1], 10) - 1; 
+        const day = parseInt(label.split('.')[1], 10) - 1;
         return cumulativeData[day];
       })
     }]
@@ -56,7 +60,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
     backgroundGradientFrom: '#ffffff',
     backgroundGradientTo: '#ffffff',
     decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`, 
+    color: (opacity = 1) => `rgba(53, 186, 82, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     style: {
       borderRadius: 16
@@ -67,7 +71,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
       stroke: '#35BA52'
     },
     propsForBackgroundLines: {
-      stroke: '#35BA52' 
+      stroke: '#35BA52'
     },
   };
 
@@ -76,7 +80,7 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
       <Text style={{ fontSize: 16, marginBottom: 8 }}>Spending Over Time</Text>
       <LineChart
         data={chartData}
-        width={screenWidth - 32} 
+        width={screenWidth - 32}
         height={220}
         chartConfig={chartConfig}
         bezier
@@ -87,12 +91,14 @@ const SpendingBudgetChart = ({ transactions, totalAmount, conversionRate, symbol
         yAxisLabel={symbol}
         yLabelsOffset={1}
         xLabelsOffset={-10}
-        yAxisInterval={1} 
+        yAxisInterval={1}
         verticalLabelRotation={30}
         formatYLabel={(value) => `${Number(value).toFixed(2)}`}
       />
     </View>
   );
 };
+
+
 
 export default SpendingBudgetChart;

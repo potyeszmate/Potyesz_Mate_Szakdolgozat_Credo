@@ -131,7 +131,7 @@ export const GoalDetailStyles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#4CAF50',  // Vibrant green
+    backgroundColor: '#4CAF50', 
     paddingVertical: 12,
     width: '100%',
     borderRadius: 8,

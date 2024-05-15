@@ -11,14 +11,12 @@ const UserProfileCard = ({ userData }) => {
     profilePicUrl
   } = userData;
 
-  // Constants for level calculations
   const pointsPerLevel = 300;
   const currentLevel = Math.floor(score / pointsPerLevel) + 1;
   const pointsCurrentLevel = score % pointsPerLevel;
   const pointsNeeded = pointsPerLevel - pointsCurrentLevel;
   const progress = pointsCurrentLevel / pointsPerLevel;
 
-  // Color based on progress
   const getColor = (percentage) => {
     if (percentage < 0.25) {
       return '#FF0000'; 

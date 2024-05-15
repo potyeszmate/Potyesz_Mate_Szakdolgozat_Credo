@@ -6,9 +6,6 @@ import { db, storage } from '../../firebaseConfig';
 import BottomSheet from '@gorhom/bottom-sheet';
 import ProfileInput from '../../components/Profile/ProfileInput';
 import { Feather } from '@expo/vector-icons';
-import en from '../../languages/en.json';
-import de from '../../languages/de.json';
-import hu from '../../languages/hu.json';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
@@ -30,7 +27,6 @@ const ProfilePage = () => {
   const { userId } = authCtx as any;
   const snapPoints = useMemo(() => ['20%', '70%', '85%'], []);
 
-  // TODO - szakdogaba belerakni
   const handleSelectImage = async () => {
     setIsLoading(true);
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();

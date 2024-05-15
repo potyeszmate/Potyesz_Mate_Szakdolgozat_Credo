@@ -10,7 +10,6 @@ const GoalInput: React.FC<GoalInputProps> = ({ onAddGoal, initialGoal, selectedL
   const [goalTotalAmount, setGoalTotalAmount] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  // const valueInputRef = useRef<TextInput>(null);
 
   const addOrUpdateGoalsHandler = () => {
     if (!goalName || !goalTotalAmount) {

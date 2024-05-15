@@ -196,7 +196,6 @@ const CryptoCurrenciesScreen = () => {
               <Text style={CryptoStyles.totalValueText}>
               {(parseFloat(totalOwnedValue) * conversionRate ).toFixed(2)} {symbol}
               </Text>
-              {/* `${(parseFloat(totalOwnedValue) * conversionRate).toFixed(2)} ${symbol}` */}
             </>
           )}
         </View>

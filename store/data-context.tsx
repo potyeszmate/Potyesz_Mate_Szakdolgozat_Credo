@@ -10,7 +10,6 @@ const defaultData: DataContextType = {
   updateData: () => {}
 };
 
-//TOD: Delete if not using anymore
 const DataContext = createContext<DataContextType>(defaultData);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
